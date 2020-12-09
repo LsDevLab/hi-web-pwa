@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "nebula-example": {
+    "project-hi": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/nebula-example",
+            "outputPath": "dist/project-hi",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -24,6 +24,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@nebular/theme/styles/prebuilt/default.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -62,18 +63,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "nebula-example:build"
+            "browserTarget": "project-hi:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "nebula-example:build:production"
+              "browserTarget": "project-hi:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "nebula-example:build"
+            "browserTarget": "project-hi:build"
           }
         },
         "test": {
@@ -110,15 +111,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "nebula-example:serve"
+            "devServerTarget": "project-hi:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "nebula-example:serve:production"
+              "devServerTarget": "project-hi:serve:production"
             }
           }
         }
       }
-    }},
-  "defaultProject": "nebula-example"
+    }
+  },
+  "defaultProject": "project-hi"
 }

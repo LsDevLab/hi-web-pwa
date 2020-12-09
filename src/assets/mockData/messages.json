@@ -1,0 +1,30 @@
+[
+    {
+        "type": "text",
+        "text": "text",
+        "reply": false,
+        "user":{
+            "name": "John",
+            "avatar": null
+        },
+        "date": null,
+        "files": null,
+        "quote": null,
+        "latitude": null,
+        "longitude": null
+    },
+    {
+        "type": "text",
+        "text": "text",
+        "reply": true,
+        "user":{
+            "name": "Hi",
+            "avatar": null
+        },
+        "date": null,
+        "files": null,
+        "quote": null,
+        "latitude": null,
+        "longitude": null
+    }
+]
