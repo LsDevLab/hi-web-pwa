@@ -8,8 +8,58 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ChatCoreService {
+  private gqlQueryMessage = gql`
+    query queryMessage($senderUserName: String!, $receiverUserName: String!){
+      queryMessage(filter:{
+        senderUserName:{allofterms:$senderUserName},
+        receiverUserName:{allofterms:$receiverUserName},
+        or:{
+        senderUserName:{allofterms:$receiverUserName},
+        receiverUserName:{allofterms:$senderUserName},
+      }}){
+        text
+        senderUserName
+        date
+        latitude
+        longitude
+      }
+    }
+  `;
+  private gqlSubMessage = gql`
+  subscription queryMessage($senderUserName: String!, $receiverUserName: String!){
+      queryMessage(filter:{
+        senderUserName:{allofterms:$senderUserName},
+        receiverUserName:{allofterms:$receiverUserName},
+        or:{
+        senderUserName:{allofterms:$receiverUserName},
+        receiverUserName:{allofterms:$senderUserName},
+      }}){
+        text
+        senderUserName
+        date
+        latitude
+        longitude
+      }
+    }
+  `;
+  private gqlAddMessage = gql`
+    mutation addMessage($date: DateTime!, $type: String!, $text: String! $senderUserName: String!, $receiverUserName: String!) {
+      addMessage(
+        input: [
+          {
+            date: $date
+            type: $type
+            text: $text
+            senderUserName: $senderUserName
+            receiverUserName: $receiverUserName
+          }
+        ]
+      ) {
+        numUids
+      }
+    }
+  `;
 
-  messageQuery = null;
   private currentUsernameSource = new BehaviorSubject<string>("default-sender");
   currentUsernameObservable = this.currentUsernameSource.asObservable();
   currentUsername: string;
@@ -26,66 +76,33 @@ export class ChatCoreService {
     this.loadedMessagesObservable.subscribe(msgs => this.loadedMessages = msgs);
   }
 
-  subscribeToMessages() {
+  private subscribeToMessages() {
 
     console.log("ChatCoreService.subscribeToMessages of chat with", this.targetUsername);
-
-    this.messageQuery = this.apollo
+    
+    let messageQuery = this.apollo
       .watchQuery<any[]>({
-        query: gql`
-          query queryMessage($senderUserName: String!, $receiverUserName: String!){
-            queryMessage(filter:{
-              senderUserName:{allofterms:$senderUserName},
-              receiverUserName:{allofterms:$receiverUserName},
-              or:{
-              senderUserName:{allofterms:$receiverUserName},
-              receiverUserName:{allofterms:$senderUserName},
-            }}){
-              text
-              senderUserName
-              date
-              latitude
-              longitude
-            }
-          }
-        `,
+        query: this.gqlQueryMessage,
         variables: {
           senderUserName: this.currentUsername,
           receiverUserName: this.targetUsername
         }
       });
 
+    messageQuery.subscribeToMore({
+      document: this.gqlSubMessage,
+      variables: {
+        senderUserName: this.currentUsername,
+        receiverUserName: this.targetUsername
+      },
+      updateQuery: (prev, {subscriptionData}) => {
+        return subscriptionData.data
+      }
+    });
 
-      this.messageQuery.subscribeToMore({
-        document: gql`
-            subscription queryMessage($senderUserName: String!, $receiverUserName: String!){
-                queryMessage(filter:{
-                senderUserName:{allofterms:$senderUserName},
-                receiverUserName:{allofterms:$receiverUserName},
-                or:{
-                senderUserName:{allofterms:$receiverUserName},
-                receiverUserName:{allofterms:$senderUserName},
-              }}){
-                text
-                senderUserName
-                date
-                latitude
-                longitude
-              }
-            }
-        `,
-        variables: {
-          senderUserName: this.currentUsername,
-          receiverUserName: this.targetUsername
-        },
-        updateQuery: (prev, {subscriptionData}) => {
-          return subscriptionData.data
-        }
-      });
-
-      this.messageQuery.valueChanges.subscribe(
-        response => this.loadedMessagesSource.next(response.data["queryMessage"])
-        );
+    messageQuery.valueChanges.subscribe(
+      response => this.loadedMessagesSource.next(response.data["queryMessage"])
+    );
   }
 
   sendMessage(message: any) {
@@ -93,23 +110,7 @@ export class ChatCoreService {
     console.log("ChatCoreService.sendMessage to", this.targetUsername);
 
     this.apollo.mutate({
-      mutation: gql`
-        mutation addMessage($date: DateTime!, $type: String!, $text: String! $senderUserName: String!, $receiverUserName: String!) {
-          addMessage(
-            input: [
-              {
-                date: $date
-                type: $type
-                text: $text
-                senderUserName: $senderUserName
-                receiverUserName: $receiverUserName
-              }
-            ]
-          ) {
-            numUids
-          }
-        }
-      `,
+      mutation: this.gqlAddMessage,
       variables: {
         date: message.date,
         type: message.type,

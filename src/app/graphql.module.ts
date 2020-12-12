@@ -5,20 +5,21 @@ import {HttpLink} from 'apollo-angular/http';
 
 import { split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
-import {WebSocketLink} from 'apollo-link-ws';
+import { WebSocketLink } from 'apollo-link-ws';
 //import { HttpLink } from 'apollo-angular-link-http';  //Documentation use this import, but Data wasn't with it
 //so i use the oder one up
 
 
-const uri = 'http://localhost:8080/graphql'; // <-- add the URL of the GraphQL server here
+const httpUri = 'http://localhost:8080/graphql'; 
+const wsUri = 'ws://localhost:8080/graphql';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
 //Create a HttpLink
-  const http = httpLink.create({uri})
+  const http = httpLink.create({uri: httpUri})
 
   // Create a WebSocket link, subscription link
   const ws = new WebSocketLink({
-    uri: `ws://localhost:8080/graphql`,
+    uri: wsUri,
     options: {
       reconnect: true
     }
