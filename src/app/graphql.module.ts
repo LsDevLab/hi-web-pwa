@@ -10,8 +10,8 @@ import { WebSocketLink } from 'apollo-link-ws';
 //so i use the oder one up
 
 
-const httpUri = 'http://localhost:8080/graphql'; 
-const wsUri = 'ws://localhost:8080/graphql';
+const httpUri = 'https://afraid-bridge.us-west-2.aws.cloud.dgraph.io/graphql';//'http://localhost:8080/graphql'; 
+const wsUri = 'wss://afraid-bridge.us-west-2.aws.cloud.dgraph.io/graphql';//'ws://localhost:8080/graphql';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
 //Create a HttpLink

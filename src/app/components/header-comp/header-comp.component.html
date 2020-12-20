@@ -2,16 +2,31 @@
   <!-- Header component -->
   <nb-layout-header>
       <img src="assets/img/logo_img_colorized_b.png" style="height: 100%">
-      <nb-select placeholder="johndoe98" filled status="primary" (selectedChange)="changeLocation($event)">
+      <!--<nb-select placeholder="johndoe98" filled status="primary" (selectedChange)="changeUser($event)">
         <nb-option value="johndoe98">johndoe98</nb-option>
         <nb-option value="kaktus98">kaktus98</nb-option>
-      </nb-select>
+      </nb-select>-->
+      <div class="log-header">
+        <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+        <!--<ng-container *ngIf="true else loggedOut">-->
+          <nb-user class="current-user-info" *ngIf="auth.user$ | async as user"
+             [name]="user.name"
+             [title]="user.email"
+             >
+          </nb-user>
+          <button  nbButton status="primary" (click)="auth.logout({ returnTo: document.location.origin })">Log out</button>
+        </ng-container>
+        <ng-template #loggedOut>
+          <button nbButton status="primary" (click)="auth.loginWithRedirect()">Log in</button>
+        </ng-template>
+      </div>
   </nb-layout-header>
   <!-- Body component -->
-  <nb-layout-column class="colored-column-basic" style="padding-right: 0px">
+  <!--*ngIf="auth.isAuthenticated$ | async" -->
+  <nb-layout-column  class="colored-column-basic" style="padding-right: 0px">
     <app-contacts-list></app-contacts-list>
   </nb-layout-column>
-  <nb-layout-column class="colored-column-basic">
+  <nb-layout-column  class="colored-column-basic">
     <app-chat-form></app-chat-form>
   </nb-layout-column>
   <!-- Footer component -->

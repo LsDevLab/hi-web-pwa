@@ -1,6 +1,7 @@
 import { JsonPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ChatCoreService } from '../../services/chat-core.service';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-chat-form',
@@ -14,7 +15,7 @@ export class ChatFormComponent {
   thisUser: string;
   otherUser: string;
 
-  constructor(private chatCoreService: ChatCoreService) {
+  constructor(private chatCoreService: ChatCoreService, public auth: AuthService) {
     
   }
 
@@ -61,14 +62,12 @@ export class ChatFormComponent {
     */
     let messages = [];
 
-    //let unformattedMessagesData = unformattedMessages.data["queryMessage"];
-
     unformattedMessages.forEach(element => {
-      let reply = false;
-      let user = this.otherUser;
-      if (element.senderUserName === this.thisUser){
-        reply = true;
-        user = this.thisUser
+      let reply = true;
+      let user = this.thisUser;
+      if (element.senderUser.username === this.otherUser){
+        reply = false;
+        user = this.otherUser
       }
        
       let message = {
@@ -87,6 +86,7 @@ export class ChatFormComponent {
       };
 
       messages.push(message);
+      messages.sort((a, b) => a.date-b.date);
     });
     
     //console.log("ChatFormComponent.formatMessages.dataResponse",messages);

@@ -9,6 +9,13 @@ nb-layout-column:last-child {
   flex: 3 !important;
 }
 
-nb-select {
-  margin: auto 0 auto auto;
+.log-header{
+  display:flex; 
+  justify-content:flex-end; 
+  width:100%; 
+  padding:0;
+}
+
+.current-user-info{
+  margin-right: 15px;
 }

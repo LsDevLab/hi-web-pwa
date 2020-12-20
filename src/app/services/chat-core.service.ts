@@ -9,52 +9,42 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ChatCoreService {
   private gqlQueryMessage = gql`
-    query queryMessage($senderUserName: String!, $receiverUserName: String!){
-      queryMessage(filter:{
-        senderUserName:{allofterms:$senderUserName},
-        receiverUserName:{allofterms:$receiverUserName},
-        or:{
-        senderUserName:{allofterms:$receiverUserName},
-        receiverUserName:{allofterms:$senderUserName},
-      }}){
+    query queryMessage($USER: String!, $targetUser: String!) {
+      queryMessage {
         text
-        senderUserName
-        date
-        latitude
+        type
         longitude
+        latitude
+        date
+        senderUser(filter: {username: {eq: $USER}, or: {username: {eq: $targetUser}}}) {
+          username
+        }
+        receiverUser(filter: {username: {eq: $targetUser}, or: {username: {eq: $USER}}}) {
+          username
+        }
       }
     }
   `;
   private gqlSubMessage = gql`
-  subscription queryMessage($senderUserName: String!, $receiverUserName: String!){
-      queryMessage(filter:{
-        senderUserName:{allofterms:$senderUserName},
-        receiverUserName:{allofterms:$receiverUserName},
-        or:{
-        senderUserName:{allofterms:$receiverUserName},
-        receiverUserName:{allofterms:$senderUserName},
-      }}){
+  subscription queryMessage($USER: String!, $targetUser: String!) {
+      queryMessage {
         text
-        senderUserName
-        date
-        latitude
+        type
         longitude
+        latitude
+        date
+        senderUser(filter: {username: {eq: $USER}, or: {username: {eq: $targetUser}}}) {
+          username
+        }
+        receiverUser(filter: {username: {eq: $targetUser}, or: {username: {eq: $USER}}}) {
+          username
+        }
       }
     }
   `;
   private gqlAddMessage = gql`
-    mutation addMessage($date: DateTime!, $type: String!, $text: String! $senderUserName: String!, $receiverUserName: String!) {
-      addMessage(
-        input: [
-          {
-            date: $date
-            type: $type
-            text: $text
-            senderUserName: $senderUserName
-            receiverUserName: $receiverUserName
-          }
-        ]
-      ) {
+    mutation addMessage($date: DateTime!, $type: String!, $text: String! $USER: String!, $targetUser: String!) {
+      addMessage(input: {type: $type, date: $date, receiverUser: {username: $targetUser}, text: $text, senderUser: {username: $USER}}) {
         numUids
       }
     }
@@ -84,16 +74,16 @@ export class ChatCoreService {
       .watchQuery<any[]>({
         query: this.gqlQueryMessage,
         variables: {
-          senderUserName: this.currentUsername,
-          receiverUserName: this.targetUsername
+          USER: this.currentUsername,
+          targetUser: this.targetUsername
         }
       });
 
     messageQuery.subscribeToMore({
       document: this.gqlSubMessage,
       variables: {
-        senderUserName: this.currentUsername,
-        receiverUserName: this.targetUsername
+        USER: this.currentUsername,
+        targetUser: this.targetUsername
       },
       updateQuery: (prev, {subscriptionData}) => {
         return subscriptionData.data
@@ -101,7 +91,10 @@ export class ChatCoreService {
     });
 
     messageQuery.valueChanges.subscribe(
-      response => this.loadedMessagesSource.next(response.data["queryMessage"])
+      response =>{
+        this.loadedMessagesSource.next(response.data["queryMessage"]);
+        console.log(response.data["queryMessage"]);
+      }
     );
   }
 
@@ -115,8 +108,8 @@ export class ChatCoreService {
         date: message.date,
         type: message.type,
         text: message.text,
-        senderUserName: this.currentUsername,
-        receiverUserName: this.targetUsername
+        USER: this.currentUsername,
+        targetUser: this.targetUsername
       }
     }).subscribe(({ data }) => {
     },(error) => {
