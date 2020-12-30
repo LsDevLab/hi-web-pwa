@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { BehaviorSubject } from 'rxjs';
@@ -49,6 +50,22 @@ export class ChatCoreService {
       }
     }
   `;
+  private gqlQueryUser = gql`
+  query queryUser($USER: String!) {
+    queryUser(filter: {not: {username: {eq: $USER}}}) {
+      username
+      name
+    }
+  }
+  `;
+  private gqlSubUser = gql`
+  subscription queryUser($USER: String!) {
+      queryUser(filter: {not: {username: {eq: $USER}}}) {
+        username
+        name
+      }
+    }
+  `;
 
   private currentUsernameSource = new BehaviorSubject<string>("default-sender");
   currentUsernameObservable = this.currentUsernameSource.asObservable();
@@ -59,11 +76,16 @@ export class ChatCoreService {
   private loadedMessagesSource = new BehaviorSubject<any[]>([]);
   loadedMessagesObservable = this.loadedMessagesSource.asObservable();
   loadedMessages: any[];
+  private targetUsersSource = new BehaviorSubject<any[]>([]);
+  targetUsersObservable = this.targetUsersSource.asObservable();
+  targetUsers: any[];
 
   constructor(private apollo: Apollo) {
+    console.log("ChatCoreService initialized");
     this.currentUsernameObservable.subscribe(c => this.currentUsername = c);
     this.targetUsernameObservable.subscribe(t => this.targetUsername = t);
     this.loadedMessagesObservable.subscribe(msgs => this.loadedMessages = msgs);
+    this.targetUsersObservable.subscribe(tu => this.targetUsers = tu);
   }
 
   private subscribeToMessages() {
@@ -98,6 +120,36 @@ export class ChatCoreService {
     );
   }
 
+  private subscribeToTargetUsers() {
+
+    console.log("ChatCoreService.subscribeToTargetUsers of", this.currentUsername);
+    
+    let userQuery = this.apollo
+      .watchQuery<any[]>({
+        query: this.gqlQueryUser,
+        variables: {
+          USER: this.currentUsername
+        }
+      });
+
+    userQuery.subscribeToMore({
+      document: this.gqlSubUser,
+      variables: {
+        USER: this.currentUsername
+      },
+      updateQuery: (prev, {subscriptionData}) => {
+        return subscriptionData.data
+      }
+    });
+
+    userQuery.valueChanges.subscribe(
+      response =>{
+        this.targetUsersSource.next(response.data["queryUser"]);
+        console.log(response.data["queryUser"]);
+      }
+    );
+  }
+
   sendMessage(message: any) {
     
     console.log("ChatCoreService.sendMessage to", this.targetUsername);
@@ -125,11 +177,7 @@ export class ChatCoreService {
     this.targetUsernameSource.next(targetUsername);
     console.log("ChatCoreService.setTargetUser to", this.targetUsername);  
     this.subscribeToMessages();
+    this.subscribeToTargetUsers();
   }
-
-  getLoadedMessages() {
-    return this.loadedMessages;
-  }
-
 
 }

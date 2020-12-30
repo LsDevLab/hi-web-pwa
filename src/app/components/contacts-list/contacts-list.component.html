@@ -2,11 +2,11 @@
   <nb-list
     nbInfiniteList
     [threshold]="500">
-    <nb-list-item *ngFor="let user of users" (click)="selectUser(user)" [style.background-color]="user.email===otherUser ? '#c7e2ff' : ''">
+    <nb-list-item *ngFor="let user of targetUsers" (click)="selectUser(user)" [style.background-color]="user.username===otherUser ? '#c7e2ff' : ''">
       <nb-user [name]="user.name"
-                [title]="user.email" 
+                [title]="user.username" 
                 picture="https://via.placeholder.com/50/4479e7/ffffff?Text=IMG"
-                [badgeText]="user.unreaded"
+                [badgeText]="0"
                 badgeStatus="success"
                 badgePosition="bottom right">
       </nb-user>

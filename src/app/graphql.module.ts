@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {APOLLO_OPTIONS} from 'apollo-angular';
-import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+import {ApolloClientOptions, InMemoryCache, ApolloLink} from '@apollo/client/core';
 import {HttpLink} from 'apollo-angular/http';
 
 import { split } from 'apollo-link';
@@ -8,22 +8,48 @@ import { getMainDefinition } from 'apollo-utilities';
 import { WebSocketLink } from 'apollo-link-ws';
 //import { HttpLink } from 'apollo-angular-link-http';  //Documentation use this import, but Data wasn't with it
 //so i use the oder one up
+import { setContext } from 'apollo-link-context';
+import { ChatCoreService } from './services/chat-core.service';
 
 
 const httpUri = 'https://afraid-bridge.us-west-2.aws.cloud.dgraph.io/graphql';//'http://localhost:8080/graphql'; 
 const wsUri = 'wss://afraid-bridge.us-west-2.aws.cloud.dgraph.io/graphql';//'ws://localhost:8080/graphql';
 
+console.warn("graph-ql module loaded")
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
-//Create a HttpLink
-  const http = httpLink.create({uri: httpUri})
+ 
+ var token = localStorage.getItem('currentToken');
+ //console.log("create apollo with token", token);
 
-  // Create a WebSocket link, subscription link
-  const ws = new WebSocketLink({
-    uri: wsUri,
-    options: {
-      reconnect: true
+  const authContext = setContext(async(operation, context) => {
+    if (token === null) {
+      return {};
+    } else {
+      let returnValue = {
+        headers: {
+          "X-Auth-Token": `${token}`
+        }
+      };
+      //console.log("HTTP Request Token", returnValue);
+      return returnValue;
     }
   });
+
+
+  //Create a HttpLink
+  const http = ApolloLink.from([authContext as any, httpLink.create({uri: httpUri})]);
+
+  // Create a WebSocket link, subscription link
+  const ws = WebSocketLink.from([new WebSocketLink({
+    uri: wsUri,
+    options: {
+      reconnect: true,
+      connectionParams: {
+        "X-Auth-Token": `${token}`
+      }
+    }
+    })
+  ]);
 
   const link = split(
   // split based on operation type

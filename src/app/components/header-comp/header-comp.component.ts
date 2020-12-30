@@ -1,5 +1,4 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { DOCUMENT } from '@angular/common';
 
@@ -12,15 +11,23 @@ export class HeaderCompComponent implements OnInit {
 
   thisUser: string;
 
-  constructor(@Inject(DOCUMENT) public document: Document,private chatCoreService: ChatCoreService, public auth: AuthService) { }
+  constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService) { }
 
   ngOnInit(): void {
-    this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
+    
   }
 
+  logOut(){
+    localStorage.setItem('isAuth', "false");
+    localStorage.removeItem('currentToken'); 
+    //console.log(localStorage.getItem('currentToken'));
+    this.auth.logout({ returnTo: document.location.origin });
+  }
+
+  /*
   changeUser(user) {
     if(user != this.thisUser){
       this.chatCoreService.setUsers(user, "jaki@gmail.com");
     }
-  }
+  }*/
 }

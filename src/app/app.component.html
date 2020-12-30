@@ -1,1 +1,11 @@
-<app-header-comp></app-header-comp>
+<nb-layout>
+  <!-- Header component -->
+  <nb-layout-header style="min-height: 10px">
+      <app-header-comp style="height: 100%; width: 100%;"></app-header-comp>
+  </nb-layout-header>
+  <!-- Body component -->
+  <!--*ngIf="auth.isAuthenticated$ | async" -->
+  <nb-layout-column style="padding: 0px;">
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+</nb-layout> 

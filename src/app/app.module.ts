@@ -4,26 +4,22 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule, NbChatModule, NbCardModule, NbListModule, 
+import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule, 
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
   NbButtonModule, NbMenuModule, NbContextMenuModule, } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HeaderCompComponent } from './components/header-comp/header-comp.component';
-import { ChatFormComponent } from './components/chat-form/chat-form.component';
-import { ContactsListComponent } from './components/contacts-list/contacts-list.component';
-import { ChatCoreService } from './services/chat-core.service';
 import { HttpClientModule } from '@angular/common/http';
-import { GraphQLModule } from './graphql.module'
 import { AuthModule } from '@auth0/auth0-angular';
+import { ChatPageModule } from './pages/chat-page/chat-page.module';
+import { HomePageModule } from './pages/home-page/home-page.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderCompComponent,
-    ChatFormComponent,
-    ContactsListComponent
-    ],
+    HeaderCompComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -31,7 +27,6 @@ import { AuthModule } from '@auth0/auth0-angular';
     NbThemeModule.forRoot({ name: 'default' }),
     NbLayoutModule,
     NbEvaIconsModule,
-    NbChatModule,
     NbCardModule,
     NbListModule,
     NbUserModule,
@@ -41,15 +36,16 @@ import { AuthModule } from '@auth0/auth0-angular';
     NbButtonModule,
     HttpClientModule,
     NbSelectModule,
-    GraphQLModule,
     NbContextMenuModule,
     NbMenuModule.forRoot(),
     AuthModule.forRoot({
       domain: 'lslab.us.auth0.com',
-      clientId: 'q4xpoVk12GYpGbr9k2ZwncBUl8P9jsuV'
-    })
+      clientId: 'q4xpoVk12GYpGbr9k2ZwncBUl8P9jsuV',
+      cacheLocation: 'localstorage'
+    }),
+    ChatPageModule,
+    HomePageModule
   ],
-  providers: [ChatCoreService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
