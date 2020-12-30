@@ -65,7 +65,7 @@ export class ChatFormComponent {
     unformattedMessages.forEach(element => {
       let reply = true;
       let user = this.thisUser;
-      if (element.senderUser.username === this.otherUser){
+      if (element.senderUsername === this.otherUser){
         reply = false;
         user = this.otherUser
       }
@@ -86,7 +86,7 @@ export class ChatFormComponent {
       };
 
       messages.push(message);
-      messages.sort((a, b) => a.date-b.date);
+      //messages.sort((a, b) => a.date-b.date);
     });
     
     //console.log("ChatFormComponent.formatMessages.dataResponse",messages);

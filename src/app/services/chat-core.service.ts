@@ -11,44 +11,43 @@ import { BehaviorSubject } from 'rxjs';
 export class ChatCoreService {
   private gqlQueryMessage = gql`
     query queryMessage($USER: String!, $targetUser: String!) {
-      queryMessage {
+      queryMessage(filter: {senderUsername: {eq: $USER}, receiverUsername: {eq: $targetUser}, or: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}) {
         text
         type
         longitude
         latitude
         date
-        senderUser(filter: {username: {eq: $USER}, or: {username: {eq: $targetUser}}}) {
-          username
-        }
-        receiverUser(filter: {username: {eq: $targetUser}, or: {username: {eq: $USER}}}) {
-          username
+        senderUsername
+        receiverUsername
         }
       }
-    }
   `;
   private gqlSubMessage = gql`
   subscription queryMessage($USER: String!, $targetUser: String!) {
-      queryMessage {
+      queryMessage(filter: {senderUsername: {eq: $USER}, receiverUsername: {eq: $targetUser}, or: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}) {
         text
         type
         longitude
         latitude
         date
-        senderUser(filter: {username: {eq: $USER}, or: {username: {eq: $targetUser}}}) {
-          username
-        }
-        receiverUser(filter: {username: {eq: $targetUser}, or: {username: {eq: $USER}}}) {
-          username
+        senderUsername
+        receiverUsername
         }
       }
-    }
   `;
   private gqlAddMessage = gql`
     mutation addMessage($date: DateTime!, $type: String!, $text: String! $USER: String!, $targetUser: String!) {
-      addMessage(input: {type: $type, date: $date, receiverUser: {username: $targetUser}, text: $text, senderUser: {username: $USER}}) {
+      addMessage(input: {type: $type, date: $date, receiverUsername: $targetUser, text: $text, senderUsername: $USER}) {
         numUids
       }
     }
+  `;
+  private gqlGetUser = gql`
+  query getUser($USER: String!) {
+    getUser(username: $USER) {
+      username
+    }
+  }
   `;
   private gqlQueryUser = gql`
   query queryUser($USER: String!) {
@@ -66,6 +65,13 @@ export class ChatCoreService {
       }
     }
   `;
+    private gqlAddUser = gql`
+    mutation addUser($USER: String!, $name: String!) {
+        addUser(input: {username: $USER, name: $name}) {
+          numUids
+        }
+      }
+    `;
 
   private currentUsernameSource = new BehaviorSubject<string>("default-sender");
   currentUsernameObservable = this.currentUsernameSource.asObservable();
@@ -90,8 +96,6 @@ export class ChatCoreService {
 
   private subscribeToMessages() {
 
-    console.log("ChatCoreService.subscribeToMessages of chat with", this.targetUsername);
-    
     let messageQuery = this.apollo
       .watchQuery<any[]>({
         query: this.gqlQueryMessage,
@@ -122,8 +126,6 @@ export class ChatCoreService {
 
   private subscribeToTargetUsers() {
 
-    console.log("ChatCoreService.subscribeToTargetUsers of", this.currentUsername);
-    
     let userQuery = this.apollo
       .watchQuery<any[]>({
         query: this.gqlQueryUser,
@@ -170,14 +172,51 @@ export class ChatCoreService {
 
   }
 
+  private userExists(username){
+    return this.apollo.watchQuery<any[]>({
+      query: this.gqlGetUser,
+      variables: {
+        USER: username
+      }
+    }).valueChanges;
+  }
+
+  private addUser(username, name){
+
+    console.log("ChatCoreService.addUser", username);
+
+    this.apollo.mutate({
+      mutation: this.gqlAddUser,
+      variables: {
+        USER: username,
+        name: name
+      }
+    }).subscribe(({ data }) => {
+    },(error) => {
+      console.log('ChatCoreService.addUser ERROR while adding user', error);
+    });
+  }
+
   // to be called before using the service
-  setUsers(currentUsername: string, targetUsername: string) {
+  setUsers(currentUsername: string, currentName: string, targetUsername: string) {
+
     this.currentUsernameSource.next(currentUsername);
     console.log("ChatCoreService.setCurrentUser to", this.currentUsername);
     this.targetUsernameSource.next(targetUsername);
     console.log("ChatCoreService.setTargetUser to", this.targetUsername);  
+
+    this.userExists(currentUsername).subscribe(response => {
+      var result = response.data["getUser"];
+      console.log(response)
+      if (!result){
+        this.addUser(currentUsername, currentName);  
+        window.location.reload(); 
+      }  
+    });    
     this.subscribeToMessages();
+    console.log("ChatCoreService.subscribeToMessages of chat with", this.targetUsername);
     this.subscribeToTargetUsers();
+    console.log("ChatCoreService.subscribeToTargetUsers of", this.currentUsername);
   }
 
 }

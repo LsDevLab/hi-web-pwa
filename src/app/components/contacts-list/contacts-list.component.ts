@@ -12,11 +12,10 @@ export class ContactsListComponent implements OnInit {
 
   //@Output() userSelectedEvent = new EventEmitter<any>();
 
-  users: { name: string, email: string, unreaded: number}[] = [
-    { name: 'jaki', email: 'jaki@gmail.com', unreaded: 0 }
-  ];
+
   targetUsers: any = [];
   thisUser: string;
+  thisName: string;
   otherUser: string;
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService) {
@@ -27,14 +26,17 @@ export class ContactsListComponent implements OnInit {
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.otherUser = t);
     this.chatCoreService.targetUsersObservable.subscribe(tu => this.targetUsers = tu)
-    this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, u.email));
+    this.auth.user$.subscribe(u => {
+      this.thisName = u.name;
+      this.chatCoreService.setUsers(u.email, u.name, "none");
+      });
     //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
   }
 
   selectUser(user) {
     if (user.name != this.otherUser){
       this.otherUser = user.name;
-      this.chatCoreService.setUsers(this.thisUser, user.username);
+      this.chatCoreService.setUsers(this.thisUser, this.thisName, user.username);
     }
   }
 
