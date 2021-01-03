@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ChatCoreService } from '../../services/chat-core.service';
+import { Component, OnInit, Inject } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
+import {BreakpointObserver} from '@angular/cdk/layout';
 
 
 @Component({
@@ -10,14 +12,27 @@ import { ChatCoreService } from '../../services/chat-core.service';
 export class HeaderCompComponent implements OnInit {
 
   thisUser: string;
+  screenIsSmall = false;
 
-  constructor(private chatCoreService: ChatCoreService) { }
+  constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService, private breakpointObserver: BreakpointObserver) { }
 
   ngOnInit(): void {
-    this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
+    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+      this.screenIsSmall = r.matches;
+    });
   }
 
-  changeLocation(event) {
-    this.chatCoreService.setUsers(event, "kamala");
+  logOut(){
+    localStorage.setItem('isAuth', "false");
+    localStorage.removeItem('currentToken'); 
+    //console.log(localStorage.getItem('currentToken'));
+    this.auth.logout({ returnTo: document.location.origin });
   }
+
+  /*
+  changeUser(user) {
+    if(user != this.thisUser){
+      this.chatCoreService.setUsers(user, "jaki@gmail.com");
+    }
+  }*/
 }

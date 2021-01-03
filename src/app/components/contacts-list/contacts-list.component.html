@@ -1,15 +1,19 @@
-<nb-card size="medium" class="own-scroll">
+<nb-card size="medium" class="own-scroll" style="height: 100vh;" status="primary">
+  <nb-card-header>Chats</nb-card-header>
   <nb-list
     nbInfiniteList
     [threshold]="500">
-    <nb-list-item *ngFor="let user of users" (click)="selectUser(user)" [style.background-color]="user.name===otherUser ? '#c7e2ff' : ''">
-      <nb-user [name]="user.name"
-                [title]="user.email" 
+    <nb-list-item *ngFor="let username of chats" (click)="selectChat(username)" [style.background-color]="username===otherUser ? '#c7e2ff' : ''" style="cursor: pointer;">
+      <nb-user [name]="username"
+                [title]="username" 
                 picture="https://via.placeholder.com/50/4479e7/ffffff?Text=IMG"
-                [badgeText]="user.unreaded"
+                [badgeText]="0"
                 badgeStatus="success"
                 badgePosition="bottom right">
       </nb-user>
+    </nb-list-item>
+    <nb-list-item style="cursor: pointer;" (click)="openAddChatDialog()">
+      <nb-icon icon="plus-outline" style="display: block; margin-left: auto; margin-right: auto;"></nb-icon>
     </nb-list-item>
   </nb-list>
 </nb-card>

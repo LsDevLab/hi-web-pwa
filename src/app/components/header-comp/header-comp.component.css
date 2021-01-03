@@ -1,14 +1,18 @@
-nb-layout{
-  width:100%;
-  height:100%;
-}
-nb-layout-column:first-child {
-  flex: 1 !important;
-}
-nb-layout-column:last-child {
-  flex: 3 !important;
+.log-header{
+  float: right;
+  display:block;
 }
 
-nb-select {
-  margin: auto 0 auto auto;
+.current-user-info{
+  float: left;
+  display:block;
+}
+
+.log-out-btn{
+  float: right;
+  display:block;
+}
+
+.current-user-info{
+  margin-right: 15px;
 }

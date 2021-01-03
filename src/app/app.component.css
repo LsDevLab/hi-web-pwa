@@ -1,0 +1,11 @@
+nb-layout{
+  width:100%;
+  height:100%;
+}
+nb-layout-column:first-child {
+  flex: 1 !important;
+}
+nb-layout-column:last-child {
+  flex: 3 !important;
+}
+
