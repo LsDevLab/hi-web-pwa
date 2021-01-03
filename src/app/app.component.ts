@@ -21,7 +21,7 @@ export class AppComponent {
           if (t){
             localStorage.setItem('isAuth', "true");
             localStorage.setItem('currentToken', t.__raw);
-            console.log("Authenticated with the token", localStorage.getItem('currentToken'));
+            console.log("AC: Session authenticated with token", [localStorage.getItem('currentToken')]);
             this.router.navigateByUrl('/chat');
           }
         });

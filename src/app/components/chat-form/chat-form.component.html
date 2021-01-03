@@ -1,4 +1,4 @@
-<nb-chat [title]="otherUser" size="medium" style="max-height: 97%; min-height: 97%">
+<nb-chat [title]="otherUser" size="medium" style="height: 100vh; max-height: 97%; min-height: 97%," scrollBottom="true" status="primary">
   <nb-chat-message  *ngFor="let msg of messages"
                     [type]="msg.type"
                     [message]="msg.text"
@@ -9,7 +9,8 @@
                     [quote]="msg.quote"
                     [latitude]="msg.latitude"
                     [longitude]="msg.longitude"
-                    [avatar]="msg.user.avatar">
+                    [avatar]="msg.user.avatar"
+                    >
   </nb-chat-message>
   <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true">
   </nb-chat-form>

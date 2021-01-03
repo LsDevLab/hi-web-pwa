@@ -15,7 +15,7 @@ import { ChatCoreService } from './services/chat-core.service';
 const httpUri = 'https://aspiring-thing.us-west-2.aws.cloud.dgraph.io/graphql';//'http://localhost:8080/graphql'; 
 const wsUri = 'wss://aspiring-thing.us-west-2.aws.cloud.dgraph.io/graphql';//'ws://localhost:8080/graphql';
 
-console.warn("graph-ql module loaded")
+console.log("GQLM: Apollo settings module loaded")
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
  
  var token = localStorage.getItem('currentToken');

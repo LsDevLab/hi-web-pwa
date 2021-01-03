@@ -10,6 +10,7 @@
       <nb-user class="current-user-info" *ngIf="auth.user$ | async as user"
           [name]="user.name"
           [title]="user.email"
+          [onlyPicture]="screenIsSmall"
           >
       </nb-user>
       <!-- must delete from local storage the key and then do the logout -->

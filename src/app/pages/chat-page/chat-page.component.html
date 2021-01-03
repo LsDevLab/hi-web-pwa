@@ -1,9 +1,40 @@
 <nb-layout>
-  <nb-layout-column  class="colored-column-basic" style="padding-right: 0px">
-    <app-contacts-list></app-contacts-list>
+  <!-- when screen is large-->
+  <nb-layout-column *ngIf="!screenIsSmall" class="colored-column-basic" style="padding-right: 0px;">
+    <app-contacts-list (selectedUser)="toggleChatLarge($event)"></app-contacts-list>
   </nb-layout-column>
-  <nb-layout-column  class="colored-column-basic">
+  <nb-layout-column *ngIf="(!screenIsSmall && isSelectedUser)" class="colored-column-basic">
     <app-chat-form></app-chat-form>
+  </nb-layout-column>
+  <nb-layout-column *ngIf="(!screenIsSmall && !isSelectedUser)" class="colored-column-basic" style="margin: auto; text-align: center;">
+    <img src="assets/img/logo_gif.gif" style="height: 60vh">
+  </nb-layout-column>
+
+  <!-- when screen is small-->
+  <nb-layout-column *ngIf="screenIsSmall" class="colored-column-basic" style="padding: 3%;">
+      <nb-flip-card [showToggleButton]="false">
+        <nb-card-front>
+          <nb-card style="margin-bottom: 0px;">
+            <nb-card-body style="padding: 0px">
+              <app-contacts-list (selectedUser)="toggleChat($event)"></app-contacts-list>
+            </nb-card-body>
+            <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; text-align: right;">
+              <button *ngIf="isSelectedUser" nbButton ghost status="control" (click)="toggleChat()"><nb-icon icon="arrow-forward"></nb-icon></button>
+            </nb-card-footer>
+          </nb-card>
+        </nb-card-front>
+        <nb-card-back>
+          <nb-card style="margin-bottom: 0px;"> 
+            <nb-card-body style="padding: 0px;" >
+              <app-chat-form></app-chat-form>
+            </nb-card-body>
+            <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+              <button nbButton ghost status="control" (click)="toggleChat()"><nb-icon icon="arrow-back"></nb-icon></button>
+            </nb-card-footer>
+          </nb-card>
+        </nb-card-back>
+      </nb-flip-card>
+    
   </nb-layout-column>
 </nb-layout>
 

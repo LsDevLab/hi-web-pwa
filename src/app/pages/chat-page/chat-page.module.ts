@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { ChatPageComponent } from './chat-page.component';
 import { ChatFormComponent } from '../../components/chat-form/chat-form.component';
 import { ContactsListComponent } from '../../components/contacts-list/contacts-list.component';
+import { DialogAddChatComponent } from '../../components/dialog-add-chat/dialog-add-chat.component';
 import { GraphQLModule } from '../../graphql.module';
 import { NbThemeModule, NbLayoutModule, NbChatModule, NbCardModule, NbListModule, 
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
-  NbButtonModule, NbMenuModule, NbContextMenuModule, } from '@nebular/theme';
-import { ChatPageRoutingModule } from './chat-page-routing.module'
+  NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule, NbDialogModule} from '@nebular/theme';
+import { ChatPageRoutingModule } from './chat-page-routing.module';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 
 @NgModule({
   declarations: [
     ChatPageComponent,
     ChatFormComponent,
-    ContactsListComponent
+    ContactsListComponent,
+    DialogAddChatComponent,
   ],
   imports: [
     ChatPageRoutingModule,
@@ -26,7 +28,8 @@ import { ChatCoreService } from 'src/app/services/chat-core.service';
     NbListModule,
     NbCardModule,
     NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
-    NbButtonModule, NbMenuModule, NbContextMenuModule, 
+    NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule,
+    NbDialogModule.forChild(),
   ],
   exports: [
     ChatPageComponent

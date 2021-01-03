@@ -8,3 +8,12 @@ nb-layout-column:first-child {
 nb-layout-column:last-child {
   flex: 3 !important;
 }
+/* On screens that are 992px or less, set the background color to blue */
+@media screen and (max-width: 992px) {
+  nb-layout-column:last-child {
+    flex: 5 !important;
+  }
+  nb-layout-column.colored-column-basic {
+    padding: 0px 0px 0px 0px;
+  }
+}

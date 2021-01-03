@@ -6,14 +6,13 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule, 
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
-  NbButtonModule, NbMenuModule, NbContextMenuModule, } from '@nebular/theme';
+  NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HeaderCompComponent } from './components/header-comp/header-comp.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
-
 
 @NgModule({
   declarations: [
@@ -44,7 +43,9 @@ import { HomePageModule } from './pages/home-page/home-page.module';
       cacheLocation: 'localstorage'
     }),
     ChatPageModule,
-    HomePageModule
+    HomePageModule,
+    NbDialogModule.forRoot(),
+    NbToastrModule.forRoot(),
   ],
   bootstrap: [AppComponent]
 })
