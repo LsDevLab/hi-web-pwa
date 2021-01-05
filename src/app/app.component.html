@@ -1,6 +1,6 @@
 <nb-layout>
   <!-- Header component -->
-  <nb-layout-header style="min-height: 10px">
+  <nb-layout-header *ngIf="!screenIsSmall" style="min-height: 10px">
       <app-header-comp style="height: 100%; width: 100%;"></app-header-comp>
   </nb-layout-header>
   <!-- Body component -->

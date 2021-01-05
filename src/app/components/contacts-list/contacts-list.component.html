@@ -1,5 +1,12 @@
 <nb-card size="medium" class="own-scroll" style="height: 100vh;" status="primary">
-  <nb-card-header>Chats</nb-card-header>
+  <nb-card-header style="padding-right: 10px;">
+    <div class="columnl">
+      Chats
+    </div>
+    <div class="columnr">
+      <button *ngIf="screenIsSmall" nbButton ghost status="control" style="height: 8px;"><nb-icon icon="settings-outline"></nb-icon></button>
+    </div>
+    </nb-card-header>
   <nb-list
     nbInfiniteList
     [threshold]="500">

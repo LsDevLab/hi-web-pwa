@@ -4,6 +4,7 @@
         <nb-option value="johndoe98">johndoe98</nb-option>
         <nb-option value="kaktus98">kaktus98</nb-option>
       </nb-select>-->
+  
   <div class="log-header">
     <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
     <!--<ng-container *ngIf="true else loggedOut">-->
@@ -13,6 +14,7 @@
           [onlyPicture]="screenIsSmall"
           >
       </nb-user>
+      <button class="settings-btn" nbButton ghost status="primary"><nb-icon icon="settings-outline"></nb-icon></button>
       <!-- must delete from local storage the key and then do the logout -->
       <button nbButton class="log-out-btn" status="primary" (click)="logOut()">Log out</button>
     </ng-container>

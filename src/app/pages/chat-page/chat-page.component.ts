@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import {BreakpointObserver} from '@angular/cdk/layout';

@@ -17,3 +17,14 @@ nb-list-item:hover{
     margin: 0px;
   }
 }
+
+.columnl {
+  float: left;
+  width: 50%;
+}
+
+.columnr {
+  float: right;
+  text-align: right;
+  width: 50%;
+}
