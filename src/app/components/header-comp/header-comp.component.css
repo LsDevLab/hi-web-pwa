@@ -9,6 +9,7 @@
 }
 
 .log-out-btn{
+  margin-left: 10px;
   float: right;
   display:block;
 }
@@ -18,6 +19,3 @@
   margin-left: 15px;
 }
 
-.current-user-info{
-  margin-right: 15px;
-}

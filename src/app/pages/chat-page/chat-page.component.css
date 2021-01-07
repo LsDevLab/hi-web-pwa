@@ -35,6 +35,5 @@ nb-layout-column:last-child {
 
 .last-access-div {
   float: left;
-  width: 90%;
   display: flex;
 }
