@@ -1,41 +1,108 @@
-<nb-layout>
+<div style="height: 100%;">
   <!-- when screen is large-->
-  <nb-layout-column *ngIf="!screenIsSmall" class="colored-column-basic" style="padding-right: 0px;">
-    <app-contacts-list (selectedUser)="toggleChatLarge($event)"></app-contacts-list>
-  </nb-layout-column>
-  <nb-layout-column *ngIf="(!screenIsSmall && isSelectedUser)" class="colored-column-basic">
-    <app-chat-form></app-chat-form>
-  </nb-layout-column>
-  <nb-layout-column *ngIf="(!screenIsSmall && !isSelectedUser)" class="colored-column-basic" style="margin: auto; text-align: center;">
-    <img src="assets/img/logo_gif.gif" style="height: 60vh">
-  </nb-layout-column>
+  <!--
+  <div *ngIf="(!screenIsSmall && !isUserSelected)" class="colored-column-basic" style="display: flex; align-items: center; justify-content: center;  width: 65%; height: 100%;">
+    <img src="assets/img/logo_gif.gif" style="max-width: 60%; max-height: 60%;">
+  </div>-->
+  <!--
+  <div *ngIf="!screenIsSmall" class="contact-col" style="height: 100%;">
+    <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
+  </div>-->
+  <div *ngIf="!screenIsSmall" class="contact-col" style="height: 100%;">
+    <nb-reveal-card [showToggleButton]="false" revealed=true style="height: 100%">
+      
+      <nb-card-back style="height: 100%;">
+        <nb-card style="margin-bottom: 0px; height: 100%"> 
+          <nb-card-body style="padding: 0px; height: 100%" >
+            <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
+          </nb-card-body>
+          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+            <div class="contact-col" style="padding: 0; width: 10%;">
+            </div>
+          </nb-card-footer> 
+        </nb-card>
+        
+      </nb-card-back>
+
+    </nb-reveal-card>
+  </div>
+
+  <div *ngIf="(!screenIsSmall && isUserSelected)" class="chat-col" style="height: 100%;">
+    <nb-reveal-card [showToggleButton]="false" revealed=false style="height: 100%">
+      
+      <nb-card-back style="height: 100%;">
+        <nb-card style="margin-bottom: 0px; height: 100%"> 
+          <nb-card-body style="padding: 0px; height: 100%" >
+            <app-chat-form></app-chat-form>
+          </nb-card-body>
+          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+            <div class="last-access-div">
+              <nb-user style="width: fit-content;"
+                size="medium" 
+                color="white" 
+                onlyPicture=true 
+                [name]="targetUsername">
+              </nb-user>
+              <div style="color: white; width: fit-content">
+                <div class="user-name" style="font-weight: bold;">{{targetUsername}}</div>
+                <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
+              </div>
+            </div>
+          </nb-card-footer> 
+        </nb-card>
+        
+      </nb-card-back>
+
+    </nb-reveal-card>
+  
+</div>
 
   <!-- when screen is small-->
-  <nb-layout-column *ngIf="screenIsSmall" class="colored-column-basic" style="padding: 3%;">
-      <nb-flip-card [showToggleButton]="false">
-        <nb-card-front>
-          <nb-card style="margin-bottom: 0px;">
-            <nb-card-body style="padding: 0px">
-              <app-contacts-list (selectedUser)="toggleChat($event)"></app-contacts-list>
+  <div *ngIf="screenIsSmall" class="colored-column-basic" style="padding: 3%; height: 100%;">
+      <nb-reveal-card [showToggleButton]="false" [revealed]="isChatOpened" style="height: 100%">
+        
+        <nb-card-front style="height: 100%;">
+          <nb-card style="margin-bottom: 0px; height: 100%">
+            <nb-card-body style="padding: 0px; height: 100%;">
+              <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
             </nb-card-body>
-            <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; text-align: right;">
-              <button *ngIf="isSelectedUser" nbButton ghost status="control" (click)="toggleChat()"><nb-icon icon="arrow-forward"></nb-icon></button>
+            <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+              <div style="float: right; padding: 0">
+                <button *ngIf="isUserSelected" nbButton ghost status="control" (click)="openChat()"><nb-icon icon="arrow-ios-upward-outline"></nb-icon></button>
+              </div>           
             </nb-card-footer>
           </nb-card>
         </nb-card-front>
-        <nb-card-back>
-          <nb-card style="margin-bottom: 0px;"> 
-            <nb-card-body style="padding: 0px;" >
+        
+        <nb-card-back style="height: 100%;">
+          <nb-card style="margin-bottom: 0px; height: 100%"> 
+            <nb-card-body style="padding: 0px; height: 100%" >
               <app-chat-form></app-chat-form>
             </nb-card-body>
             <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
-              <button nbButton ghost status="control" (click)="toggleChat()"><nb-icon icon="arrow-back"></nb-icon></button>
+              <div style="float: right; padding: 0;">
+                <button nbButton ghost status="control" (click)="closeChat()"><nb-icon icon="arrow-ios-downward-outline"></nb-icon></button>
+              </div>
+              <div class="last-access-div">
+                <nb-user style="width: fit-content;"
+                  size="medium" 
+                  color="white" 
+                  onlyPicture=true 
+                  [name]="targetUsername">
+                </nb-user>
+                <div style="color: white; width: fit-content">
+                  <div class="user-name" style="font-weight: bold;">{{targetUsername}}</div>
+                  <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
+                </div>
+              </div>
             </nb-card-footer>
           </nb-card>
         </nb-card-back>
-      </nb-flip-card>
+
+      </nb-reveal-card>
     
-  </nb-layout-column>
-</nb-layout>
+  </div>
+
+</div>
 
 

@@ -17,8 +17,6 @@ export class ChatFormComponent {
 
   // displayed messages
   messages = [];
-  // identifiers (dates) of messages to confirm 
-  messageToConfIDs = {};
 
   thisUser: string;
   otherUser: string;
@@ -31,7 +29,6 @@ export class ChatFormComponent {
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.otherUser = t;
       this.messages = [];
-      this.messageToConfIDs = {};
     });
     this.chatCoreService.loadedMessagesObservable.subscribe(msgs => this.formatUpdateMessages(msgs));
   }
@@ -43,6 +40,7 @@ export class ChatFormComponent {
     this.messages.push(this.formatMessage(message, true));
     // sending messages with CCS
     this.chatCoreService.sendMessage(message);
+    console.log("CFC: currently displayed messages", this.messages);
   }
 
   // Makes a Message from a FormattedMessage 
@@ -99,7 +97,7 @@ export class ChatFormComponent {
         // marking the message on the UI as confirmed (displaying the date of sent)
         this.messages[indexOfMessage].date = message.date;
         this.messages[indexOfMessage].confirmDate = null;
-        this.messages[indexOfMessage].user = "Sent on";
+        this.messages[indexOfMessage].user = "";
         console.log("CFC: message marked to confirmed", this.messages[indexOfMessage]);
       }
       // else if the message is already displayed, do nothing
@@ -109,7 +107,7 @@ export class ChatFormComponent {
       }
       // else add the message to the displayed messages
       else{
-        let formattedMessage = this.formatMessage(message, false)
+        let formattedMessage = this.formatMessage(message, false);
         this.messages.push(formattedMessage);
       }
 
@@ -135,7 +133,7 @@ export class ChatFormComponent {
       this.messages.shift();
     }
     //console.log("FINE");
-    console.log(this.messages);
+    console.log("CFC: currently displayed messages", this.messages);
 
   }
 

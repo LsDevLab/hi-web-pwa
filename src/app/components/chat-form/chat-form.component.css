@@ -1,3 +1,8 @@
 nb-chat.size-large {
   height: 100%;
 }
+
+.nb-theme-default nb-chat-message nb-chat-message-text .text {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
