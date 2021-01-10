@@ -17,8 +17,6 @@ export class ChatFormComponent {
 
   // displayed messages
   messages = [];
-  // identifiers (dates) of messages to confirm 
-  messageToConfIDs = {};
 
   thisUser: string;
   otherUser: string;
@@ -31,7 +29,6 @@ export class ChatFormComponent {
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.otherUser = t;
       this.messages = [];
-      this.messageToConfIDs = {};
     });
     this.chatCoreService.loadedMessagesObservable.subscribe(msgs => this.formatUpdateMessages(msgs));
   }
@@ -43,6 +40,7 @@ export class ChatFormComponent {
     this.messages.push(this.formatMessage(message, true));
     // sending messages with CCS
     this.chatCoreService.sendMessage(message);
+    console.log("CFC: currently displayed messages", this.messages);
   }
 
   // Makes a Message from a FormattedMessage 
@@ -90,6 +88,8 @@ export class ChatFormComponent {
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
+    let justReadedMessagesId = [];
+
     // taking the messages loaded from CCS, but ordered from the older to the newer
     unformattedMessages.slice().reverse().forEach(message => {
 
@@ -99,17 +99,34 @@ export class ChatFormComponent {
         // marking the message on the UI as confirmed (displaying the date of sent)
         this.messages[indexOfMessage].date = message.date;
         this.messages[indexOfMessage].confirmDate = null;
-        this.messages[indexOfMessage].user = "Sent on";
+        // marking as readed messages
+        if(!message.readed)
+          this.messages[indexOfMessage].user.name = "";
+        else
+          this.messages[indexOfMessage].user.name = "✔";
+        
         console.log("CFC: message marked to confirmed", this.messages[indexOfMessage]);
       }
       // else if the message is already displayed, do nothing
       else if (indexOfMessage != -1){
         //console.log("alreadyhas", message);
+        // marking as readed messages
+        if(this.messages[indexOfMessage].reply){
+          if(!message.readed)
+          this.messages[indexOfMessage].user.name = "";
+          else
+            this.messages[indexOfMessage].user.name = "✔";
+        }
+        
         return;
       }
       // else add the message to the displayed messages
       else{
-        let formattedMessage = this.formatMessage(message, false)
+        // marking as to send the readed notify the messages just readed
+        if(message.senderUsername === this.otherUser && message.readed == null){
+          justReadedMessagesId.push(message.id);
+        }
+        let formattedMessage = this.formatMessage(message, false);
         this.messages.push(formattedMessage);
       }
 
@@ -125,17 +142,23 @@ export class ChatFormComponent {
         else
           d2 = new Date(b.confirmDate);
         return d1 - d2;
-      })
+      });
+
+      
       
     });
 
     // removing messages if too much
     while (this.messages.length > unformattedMessages.length){
-      console.log("removing a message from the displayed ones")
       this.messages.shift();
     }
     //console.log("FINE");
-    console.log(this.messages);
+    console.log("CFC: currently displayed messages", this.messages);
+
+    this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
+    console.log("CFC: set as readed the following messages", justReadedMessagesId);
+
+
 
   }
 
@@ -150,12 +173,17 @@ export class ChatFormComponent {
 
     if (unformattedMessage.senderUsername === this.otherUser){
       reply = false;
+    }else{
+      if(!unformattedMessage.readed)
+        user = "";
+      else
+        user = "✔";
     }
     
     if (toConfirm){
       date = null;
       confirmDate = unformattedMessage.date.toISOString();
-      user = "...";
+      user += "...";
     }
 
     let formattedMessage = {

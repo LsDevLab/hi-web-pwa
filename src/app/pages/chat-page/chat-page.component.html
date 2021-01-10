@@ -1,41 +1,121 @@
-<nb-layout>
+<div style="height: 100%;">
   <!-- when screen is large-->
-  <nb-layout-column *ngIf="!screenIsSmall" class="colored-column-basic" style="padding-right: 0px;">
-    <app-contacts-list (selectedUser)="toggleChatLarge($event)"></app-contacts-list>
-  </nb-layout-column>
-  <nb-layout-column *ngIf="(!screenIsSmall && isSelectedUser)" class="colored-column-basic">
-    <app-chat-form></app-chat-form>
-  </nb-layout-column>
-  <nb-layout-column *ngIf="(!screenIsSmall && !isSelectedUser)" class="colored-column-basic" style="margin: auto; text-align: center;">
-    <img src="assets/img/logo_gif.gif" style="height: 60vh">
-  </nb-layout-column>
+  <div *ngIf="!screenIsSmall" class="contact-col" style="height: 100%;">
+    <nb-reveal-card [showToggleButton]="false" revealed=true style="height: 100%">
+      <nb-card-back style="height: 100%;">
+        <nb-card style="margin-bottom: 0px; height: 100%"> 
+          <nb-card-body style="padding: 0px; height: 100%" >
+            <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
+          </nb-card-body>
+          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+            <div style="float: left; padding: 0; padding-right: 5px;">
+              <button nbButton ghost status="control" (click)="toggleGeneralMenu()"><nb-icon icon="menu-outline"></nb-icon></button>
+            </div>
+          </nb-card-footer> 
+        </nb-card>
+      </nb-card-back>
+    </nb-reveal-card>
+  </div>
+  <div *ngIf="(!screenIsSmall && isUserSelected)" class="chat-col" style="height: 100%;">
+    <nb-reveal-card [showToggleButton]="false" revealed=false style="height: 100%">   
+      <nb-card-back style="height: 100%;">
+        <nb-card style="margin-bottom: 0px; height: 100%"> 
+          <nb-card-body style="padding: 0px; height: 100%" >
+            <app-chat-form></app-chat-form>
+          </nb-card-body>
+          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+            <div class="last-access-div">
+              <nb-user style="width: fit-content;"
+                size="medium" 
+                color="white" 
+                onlyPicture=true 
+                [name]="targetUsername">
+              </nb-user>
+              <div style="color: white; width: fit-content">
+                <div class="user-name" style="font-weight: bold;">{{targetUsername}}</div>
+                <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
+              </div>
+            </div>
+            <div style="float: right; padding: 0; padding-right: 5px;">
+              <button nbButton ghost status="control" (click)="toggleChatMenu()"><nb-icon icon="menu-2-outline"></nb-icon></button>
+            </div>
+          </nb-card-footer> 
+        </nb-card>
+      </nb-card-back>
+    </nb-reveal-card>
+  </div>
 
   <!-- when screen is small-->
-  <nb-layout-column *ngIf="screenIsSmall" class="colored-column-basic" style="padding: 3%;">
-      <nb-flip-card [showToggleButton]="false">
-        <nb-card-front>
-          <nb-card style="margin-bottom: 0px;">
-            <nb-card-body style="padding: 0px">
-              <app-contacts-list (selectedUser)="toggleChat($event)"></app-contacts-list>
+  <div *ngIf="screenIsSmall" class="colored-column-basic" style="padding: 3%; height: 100%;">
+      <nb-reveal-card [showToggleButton]="false" [revealed]="isChatOpened" style="height: 100%">
+        <nb-card-front style="height: 100%;">
+          <nb-card style="margin-bottom: 0px; height: 100%">
+            <nb-card-body style="padding: 0px; height: 100%;">
+              <div style="background-color: #36f; width: 100%; height: 80px; padding: 15px;">
+                
+                <img src="assets/img/logo_gif.gif" style="height: 100%; padding: 5px; padding-right: 15px; float: left;">
+
+                  <div *ngIf="auth.isAuthenticated$ | async" style="padding: 5px;">
+                    <div class="user-details-div" *ngIf="auth.user$ | async as user">
+                      <nb-user style="width: fit-content;"
+                        size="medium" 
+                        color="white" 
+                        onlyPicture=true 
+                        [name]="user.email"
+                        [title]="user.name">
+                      </nb-user>
+                      <div style="color: white; width: fit-content; height: 100%;">
+                        <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{user.name}}</div>
+                        <div style="font-size: 8pt;">{{user.email}}</div>
+                      </div>
+                    </div>
+                    <button nbButton ghost class="log-out-btn" status="control" (click)="logOut()"><nb-icon icon="log-out-outline"></nb-icon></button>
+                  </div>
+
+              </div>
+
+              <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
             </nb-card-body>
-            <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; text-align: right;">
-              <button *ngIf="isSelectedUser" nbButton ghost status="control" (click)="toggleChat()"><nb-icon icon="arrow-forward"></nb-icon></button>
+            <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+              <div style="float: left; padding: 0">
+                <button *ngIf="isUserSelected" nbButton ghost status="control" (click)="openChat()"><nb-icon icon="arrow-ios-upward-outline"></nb-icon></button>
+              </div> 
+              <div style="float: right; padding: 0; padding-right: 5px;">
+                <button nbButton ghost status="control" (click)="toggleGeneralMenu()"><nb-icon icon="menu-outline"></nb-icon></button>
+              </div>          
             </nb-card-footer>
           </nb-card>
         </nb-card-front>
-        <nb-card-back>
-          <nb-card style="margin-bottom: 0px;"> 
-            <nb-card-body style="padding: 0px;" >
+        <nb-card-back style="height: 100%;">
+          <nb-card style="margin-bottom: 0px; height: 100%"> 
+            <nb-card-body style="padding: 0px; height: 100%" >
               <app-chat-form></app-chat-form>
             </nb-card-body>
             <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
-              <button nbButton ghost status="control" (click)="toggleChat()"><nb-icon icon="arrow-back"></nb-icon></button>
+              <div style="float: left; padding: 0; padding-right: 5px;">
+                <button nbButton ghost status="control" (click)="closeChat()"><nb-icon icon="arrow-ios-downward-outline"></nb-icon></button>
+              </div>
+              <div class="last-access-div">
+                <nb-user style="width: fit-content;"
+                  size="medium" 
+                  color="white" 
+                  onlyPicture=true 
+                  [name]="targetUsername">
+                </nb-user>
+                <div style="color: white; width: fit-content">
+                  <div class="user-name" style="font-weight: bold;">{{targetUsername}}</div>
+                  <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
+                </div>
+              </div>
+              <div style="float: right; padding: 0; padding-right: 5px;">
+                <button nbButton ghost status="control" (click)="toggleChatMenu()"><nb-icon icon="menu-2-outline"></nb-icon></button>
+              </div>
             </nb-card-footer>
           </nb-card>
         </nb-card-back>
-      </nb-flip-card>
-    
-  </nb-layout-column>
-</nb-layout>
+      </nb-reveal-card>
+  </div>
+
+</div>
 
 

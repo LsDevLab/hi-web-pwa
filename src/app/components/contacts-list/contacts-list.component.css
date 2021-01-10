@@ -1,9 +1,9 @@
-nb-card {
+/*nb-card {
   min-width: 3rem;
   margin: 0 auto 0;
   min-height: 97%;
   max-height: 97%;
-}
+}*/
 
 nb-list-item{
   margin: 0px;
@@ -16,4 +16,15 @@ nb-list-item:hover{
   nb-list-item{
     margin: 0px;
   }
+}
+
+.columnl {
+  float: left;
+  width: 50%;
+}
+
+.columnr {
+  float: right;
+  text-align: right;
+  width: 50%;
 }

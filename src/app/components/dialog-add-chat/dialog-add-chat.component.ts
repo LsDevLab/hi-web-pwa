@@ -38,38 +38,36 @@ export class DialogAddChatComponent implements OnInit {
       this.userExists = false;
       return;
     }
-    // if not, verify if the user exists
+
+    // verifying if a chat with the given user already exists
+    if (this.chatCoreService.chatExists(username)){
+      console.log("DACC: a chat with this user already exists.")
+      this.toastrService.show("Chat already exists", "Error", new NbToastrConfig({status:"danger"}));
+      this.userExists = false;
+      return;
+    }
+
     this.chatCoreService.userExists(username).subscribe(r => {
       var result = r.data["getUser"];
+      // verifying if the given user exists
       if (result){
-        // if exists, verify if the chat with him already exists
-        this.chatCoreService.chatExists(this.chatCoreService.currentUsername, username).subscribe(r => {
-          var resultChat = r.data["queryChats"];
-          console.log(resultChat);
-          // if the chat not exists yet, taking the name and the username
-          if (resultChat.length == 0){
-            console.log("DACC: user exists and chat not yet")
-            this.userExists = true;
-            this.username = result.username;
-            this.name =result.name;
-            // if the flag alsoAdd is true add the chat eith the given username
-            if (alsoAdd){
-              console.log("DACC: adding chat with", this.username);
-              this.chatCoreService.addChat(this.username);
-              this.dialogRef.close();
-            }
-          }else{
-            console.log("DACC: a chat with this user already exists.")
-            this.toastrService.show("Chat already exists", "Error", new NbToastrConfig({status:"danger"}));
-            this.userExists = false;
-          }
-        });
+        console.log("DACC: user exists and chat not yet")
+        this.userExists = true;
+        this.username = result.username;
+        this.name =result.name;
+        // if alsoAdd is true, addding the chat
+        if (alsoAdd){
+          console.log("DACC: adding chat with", this.username);
+          this.chatCoreService.addChat(this.username);
+          this.dialogRef.close();
+        }
       }else{
         console.log("DACC: user not exists")
         this.toastrService.show("User not exists", "Error", new NbToastrConfig({status:"danger"}));
         this.userExists = false;
       }
     });
+    
   }
 
 }

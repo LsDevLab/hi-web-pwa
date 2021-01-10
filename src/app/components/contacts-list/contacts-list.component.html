@@ -1,19 +1,28 @@
-<nb-card size="medium" class="own-scroll" style="height: 100vh;" status="primary">
-  <nb-card-header>Chats</nb-card-header>
+<!--<nb-card size="medium" class="own-scroll" status="primary" style="height: 100%; margin: 0;">-->
+  <!--
+  <nb-card-header style="padding-right: 10px;">
+    <div class="columnl">
+      Chats
+    </div>
+    <div class="columnr">
+      <button *ngIf="screenIsSmall" nbButton ghost status="control" style="height: 8px;"><nb-icon icon="settings-outline"></nb-icon></button>
+    </div>
+    </nb-card-header>-->
   <nb-list
     nbInfiniteList
     [threshold]="500">
     <nb-list-item *ngFor="let username of chats" (click)="selectChat(username)" [style.background-color]="username===otherUser ? '#c7e2ff' : ''" style="cursor: pointer;">
       <nb-user [name]="username"
-                [title]="username" 
-                picture="https://via.placeholder.com/50/4479e7/ffffff?Text=IMG"
-                [badgeText]="0"
-                badgeStatus="success"
-                badgePosition="bottom right">
+               [title]="username" 
+               [badgeText]="0"
+               badgeStatus="success"
+               badgePosition="bottom right"
+               color="white" >
       </nb-user>
     </nb-list-item>
     <nb-list-item style="cursor: pointer;" (click)="openAddChatDialog()">
       <nb-icon icon="plus-outline" style="display: block; margin-left: auto; margin-right: auto;"></nb-icon>
     </nb-list-item>
   </nb-list>
-</nb-card>
+
+<!--</nb-card>-->

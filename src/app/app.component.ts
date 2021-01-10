@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ChatCoreService } from './services/chat-core.service';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 
 @Component({
@@ -11,9 +12,15 @@ import { ChatCoreService } from './services/chat-core.service';
 })
 export class AppComponent {
   title = 'project-hi';
-  constructor(private auth: AuthService, private router: Router) { }
+
+  screenIsSmall: boolean;
+
+  constructor(public auth: AuthService, private router: Router, private breakpointObserver: BreakpointObserver) { }
 
   ngOnInit(){
+    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+      this.screenIsSmall = r.matches;
+    });
 
     this.auth.isAuthenticated$.subscribe(isAuth => {
       if (isAuth)

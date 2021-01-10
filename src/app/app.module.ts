@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule, 
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
-  NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule } from '@nebular/theme';
+  NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule, NbActionsModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HeaderCompComponent } from './components/header-comp/header-comp.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -26,6 +26,7 @@ import { HomePageModule } from './pages/home-page/home-page.module';
     NbThemeModule.forRoot({ name: 'default' }),
     NbLayoutModule,
     NbEvaIconsModule,
+    NbIconModule,
     NbCardModule,
     NbListModule,
     NbUserModule,
@@ -47,6 +48,6 @@ import { HomePageModule } from './pages/home-page/home-page.module';
     NbDialogModule.forRoot(),
     NbToastrModule.forRoot(),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

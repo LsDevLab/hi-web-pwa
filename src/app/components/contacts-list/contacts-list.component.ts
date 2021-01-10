@@ -22,6 +22,7 @@ export class ContactsListComponent implements OnInit {
   thisName: string;
   otherUser: string;
 
+  topMenuActivated = false;
   screenIsSmall = false;
   size = "medium";
 
@@ -73,4 +74,5 @@ export class ContactsListComponent implements OnInit {
   openAddChatDialog(){
     this.dialogService.open(DialogAddChatComponent);
   }
+
 }

@@ -4,12 +4,32 @@ import { AuthService } from '@auth0/auth0-angular';
 import { Apollo } from 'apollo-angular';
 import { parse } from 'graphql';
 import gql from 'graphql-tag';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatCoreService {
+  private gqlAggregateMessage = gql`
+    query aggregateMessage($USER: String!, $targetUser: String!) {
+      aggregateMessage(
+          filter: {not: {readed: true}, 
+              and: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}
+        ) {
+        count
+        }
+      }
+  `;
+  private gqlSubAggregateMessage = gql`
+    subscription aggregateMessage($USER: String!, $targetUser: String!) {
+    aggregateMessage(
+        filter: {not: {readed: true},
+            and: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}
+      ) {
+      count
+      }
+    }
+`;
   private gqlQueryMessage = gql`
     query queryMessage($USER: String!, $targetUser: String!) {
       queryMessage(
@@ -26,6 +46,7 @@ export class ChatCoreService {
         date
         senderUsername
         receiverUsername
+        readed
         }
       }
   `;
@@ -45,6 +66,7 @@ export class ChatCoreService {
         date
         senderUsername
         receiverUsername
+        readed
         }
       }
   `;
@@ -55,6 +77,13 @@ export class ChatCoreService {
       }
     }
   `;
+  private gqlUpdateMessages = gql`
+   mutation updateMessage($ids: [ID!], $readed: Boolean) {
+     updateMessage(input: {filter:{id: $ids}, set: {readed: $readed}}) {
+       numUids
+     }
+   }
+ `;
   private gqlGetUser = gql`
   query getUser($USER: String!) {
     getUser(username: $USER) {
@@ -98,23 +127,32 @@ export class ChatCoreService {
  `;
   private gqlQueryUser = gql`
   query queryUser($USER: String!) {
-    queryUser(filter: {not: {username: {eq: $USER}}}) {
+    queryUser(filter: {username: {eq: $USER}}) {
       username
       name
+      lastAccess
     }
   }
   `;
   private gqlSubUser = gql`
   subscription queryUser($USER: String!) {
-      queryUser(filter: {not: {username: {eq: $USER}}}) {
+      queryUser(filter: {username: {eq: $USER}}) {
         username
         name
+        lastAccess
       }
     }
   `;
   private gqlAddUser = gql`
-    mutation addUser($USER: String!, $name: String!) {
-        addUser(input: {username: $USER, name: $name}) {
+    mutation addUser($USER: String!, $name: String!, $lastAccess: DateTime!) {
+        addUser(input: {username: $USER, name: $name, lastAccess: $lastAccess}) {
+          numUids
+        }
+      }
+  `;
+  private gqlUpdateUser = gql`
+    mutation updateUser($USER: String!, $lastAccess: DateTime!) {
+        updateUser(input: {filter: {username: {eq: $USER}}, set: {lastAccess: $lastAccess}}) {
           numUids
         }
       }
@@ -132,16 +170,23 @@ export class ChatCoreService {
   private chatsSource = new BehaviorSubject<any[]>([]);
   chatsObservable = this.chatsSource.asObservable();
   chats: any[];
+  private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
+  targetUserlastAccessObservable = this.targetUserlastAccessSource.asObservable();
+  targetUserlastAccess: Date;
+
+  private chatMessagesSubscription: Subscription = null;
+  private targetUserLastAccessSubscription: Subscription = null;
 
   constructor(private apollo: Apollo) {
     this.currentUsernameObservable.subscribe(c => this.currentUsername = c);
     this.targetUsernameObservable.subscribe(t => this.targetUsername = t);
     this.loadedMessagesObservable.subscribe(msgs => this.loadedMessages = msgs);
     this.chatsObservable.subscribe(c => this.chats = c);
+    this.targetUserlastAccessObservable.subscribe(tula => this.targetUserlastAccess = tula);
     console.log("CCS: service loaded");
   }
 
-  private subscribeToChatMessages() {
+  private subscribeToChatMessages(): Subscription {
     // Subscribes to the message of the current chat
 
     let messageQuery = this.apollo
@@ -164,18 +209,18 @@ export class ChatCoreService {
       }
     });
 
-    messageQuery.valueChanges.subscribe(
+    return messageQuery.valueChanges.subscribe(
       response =>{
         this.loadedMessagesSource.next(response.data["queryMessage"]);
-        console.log("CSS: messages received", response.data["queryMessage"]);
+        console.log("CCS: messages received", response.data["queryMessage"]);
       }
-    );
+    )
   }
 
   private subscribeToChats() {
     // Subscribes to the chats of the current user
 
-    let userQuery = this.apollo
+    let chatQuery = this.apollo
       .watchQuery<any[]>({
         query: this.gqlQueryChats,
         variables: {
@@ -183,7 +228,7 @@ export class ChatCoreService {
         }
       });
 
-    userQuery.subscribeToMore({
+    chatQuery.subscribeToMore({
       document: this.gqlSubChats,
       variables: {
         USER: this.currentUsername
@@ -193,12 +238,41 @@ export class ChatCoreService {
       }
     });
 
-    userQuery.valueChanges.subscribe(
+    chatQuery.valueChanges.subscribe(
       response =>{
         this.chatsSource.next(response.data["queryChats"]);
-        console.log("CSS: chats received", response.data["queryChats"]);
+        console.log("CCS: chats received", response.data["queryChats"]);
       }
     );
+  }
+
+  private subscribeToTargetUserLastAccess(): Subscription{
+    // Subscribes to the activity of the target user
+
+    let targetLastAccessQuery = this.apollo
+      .watchQuery<any[]>({
+        query: this.gqlQueryUser,
+        variables: {
+          USER: this.targetUsername
+        }
+      });
+
+      targetLastAccessQuery.subscribeToMore({
+      document: this.gqlSubUser,
+      variables: {
+        USER: this.targetUsername
+      },
+      updateQuery: (prev, {subscriptionData}) => {
+        return subscriptionData.data
+      }
+    });
+
+    return targetLastAccessQuery.valueChanges.subscribe(
+      response =>{
+        this.targetUserlastAccessSource.next(response.data["queryUser"][0].lastAccess);
+        console.log("CCS: target last access received", response.data["queryUser"][0].lastAccess);
+      }
+    )
   }
 
   sendMessage(message: any) {
@@ -221,6 +295,23 @@ export class ChatCoreService {
 
   }
 
+  sendMessagesReaded(messagesId: string[]) {
+    // Send a message to the other user in the selected chat
+
+    this.apollo.mutate({
+      mutation: this.gqlUpdateMessages,
+      variables: {
+        ids: messagesId,
+        readed: true
+      }
+    }).subscribe(({ data }) => {
+      console.log("CCS: messages confirmed (ids:", messagesId, ")");
+    },(error) => {
+      console.log('CCS: ERROR while confirming messages', error);
+    });
+
+  }
+
   userExists(username){
     // Returns an observable saying if a user with the given username already exists.
 
@@ -239,11 +330,27 @@ export class ChatCoreService {
       mutation: this.gqlAddUser,
       variables: {
         USER: username,
-        name: name
+        name: name,
+        lastAccess: new Date().toISOString()
       }
     }).subscribe(({ data }) => {
     },(error) => {
       console.log('CCS: ERROR while adding user', error);
+    });
+  }
+
+  updateCurrentUserLastAccess(){
+    // Updates to now the last access of the current user
+
+    this.apollo.mutate({
+      mutation: this.gqlUpdateUser,
+      variables: {
+        USER: this.currentUsername,
+        lastAccess: new Date().toISOString()
+      }
+    }).subscribe(({ data }) => {
+    },(error) => {
+      console.log('CCS: ERROR while updating last access of the current user', error);
     });
   }
 
@@ -260,32 +367,43 @@ export class ChatCoreService {
         console.log("CCS: user first login. Created profile."); 
         this.addUser(currentUsername, currentName);  
         window.location.reload(); 
-      }  
+      }else{
+        // subscribing to chats of the current user
+        this.subscribeToChats();
+        this.updateCurrentUserLastAccess();
+        console.log("CCS: setted current user (", this.currentUsername, ")");
+      }
     });    
 
-    // subscribing to chats of the current user
-    this.subscribeToChats();
-    console.log("CCS: setted current user (", this.currentUsername, ")");  
+    
+      
   }
 
   setChat(targetUsername: string){
-    // setting as current chat the one with the user with the given username
+    // settings as current chat the one with the user with the given username
 
     this.targetUsernameSource.next(targetUsername);
 
-    // subscribing to the messages of the current chat
-    this.subscribeToChatMessages();
+    // subscribing to the messages of the current chat and to the target user last access
+    if (this.chatMessagesSubscription){
+      this.chatMessagesSubscription.unsubscribe();
+    }
+    if (this.targetUserLastAccessSubscription){
+      this.targetUserLastAccessSubscription.unsubscribe();
+    }
+    this.chatMessagesSubscription = this.subscribeToChatMessages();
+    this.targetUserLastAccessSubscription = this.subscribeToTargetUserLastAccess();
     console.log("CCS: setted current chat (", this.currentUsername, "->", this.targetUsername, ")");
 
   }
 
-  addChat(otherUser: string) {
+  addChat(targetUsername: string) {
     
     this.apollo.mutate({
       mutation: this.gqlAddChat,
       variables: {
         USER: this.currentUsername,
-        otherUser: otherUser,
+        otherUser: targetUsername,
       }
     }).subscribe(({ data }) => {
       console.log("CCS: chat added", this.targetUsername);
@@ -295,16 +413,17 @@ export class ChatCoreService {
 
   }
 
-  chatExists(currentUsername, targetUsername){
-    // Returns an observable saying if a chat with the given username already exists.
-
-    return this.apollo.watchQuery<any[]>({
-      query: this.gqlGetChats,
-      variables: {
-        USER: currentUsername,
-        targetUsername: targetUsername
+  chatExists(targetUsername){
+    // Returns true only if a chat with the given username already exists.
+    let founded = false;
+    this.chats.forEach(chat => {
+      console.log(chat.user1, chat.user2);
+      if(chat.user1 == targetUsername || chat.user2 == targetUsername){
+        founded = true;
       }
-    }).valueChanges;
+        
+    });
+    return founded;
   }
 
 }

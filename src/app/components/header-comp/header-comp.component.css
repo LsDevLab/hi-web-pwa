@@ -1,18 +1,12 @@
-.log-header{
-  float: right;
-  display:block;
-}
-
-.current-user-info{
-  float: left;
-  display:block;
-}
 
 .log-out-btn{
+  margin-left: 20px;
   float: right;
   display:block;
 }
 
-.current-user-info{
-  margin-right: 15px;
+.user-details-div {
+  float: left;
+  display: flex;
 }
+

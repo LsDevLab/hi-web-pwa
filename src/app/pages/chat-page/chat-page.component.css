@@ -1,4 +1,4 @@
-nb-layout{
+/*nb-layout{
   width:100%;
   height:100%;
 }
@@ -8,7 +8,6 @@ nb-layout-column:first-child {
 nb-layout-column:last-child {
   flex: 3 !important;
 }
-/* On screens that are 992px or less, set the background color to blue */
 @media screen and (max-width: 992px) {
   nb-layout-column:last-child {
     flex: 5 !important;
@@ -16,4 +15,37 @@ nb-layout-column:last-child {
   nb-layout-column.colored-column-basic {
     padding: 0px 0px 0px 0px;
   }
+}
+*/
+
+
+.contact-col {
+  padding: 2%;
+  padding-right: 1%;
+  float: left;
+  width: 35%;
+}
+
+.chat-col {
+  padding: 2%;
+  padding-left: 1%;
+  float: right;
+  width: 65%;
+}
+
+.last-access-div {
+  float: left;
+  display: flex;
+}
+
+
+.log-out-btn{
+  margin-left: 20px;
+  float: right;
+  display:block;
+}
+
+.user-details-div {
+  float: left;
+  display: flex;
 }
