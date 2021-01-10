@@ -40,6 +40,7 @@ export class ChatFormComponent {
     this.messages.push(this.formatMessage(message, true));
     // sending messages with CCS
     this.chatCoreService.sendMessage(message);
+    this.chatCoreService.notifyMessagesToRead();
     console.log("CFC: currently displayed messages", this.messages);
   }
 
@@ -156,9 +157,7 @@ export class ChatFormComponent {
     console.log("CFC: currently displayed messages", this.messages);
 
     this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
-    console.log("CFC: set as readed the following messages", justReadedMessagesId);
-
-
+    this.chatCoreService.clearNotifyForSelectedChat();
 
   }
 

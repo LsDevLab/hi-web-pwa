@@ -50,7 +50,7 @@ export class ContactsListComponent implements OnInit {
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
       this.chatCoreService.init(u.email, u.name);
-      });
+    });
     //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
   }
 
@@ -62,11 +62,23 @@ export class ContactsListComponent implements OnInit {
 
   formatChats(unformattedChats){
     let chats = [];
+    let chatUsername;
+    let notify;
     unformattedChats.forEach(chat => {
       if (chat.user1 === this.thisUser)
-        chats.push(chat.user2);
+        chatUsername = chat.user2;
       else
-        chats.push(chat.user1);
+        chatUsername = chat.user1;
+      
+      console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
+
+      if (chat.notify == this.thisUser)
+        notify = "⋯";
+      else
+        notify = "";
+
+      chats.push([chatUsername, notify])
+      
     });
     return chats;
   }

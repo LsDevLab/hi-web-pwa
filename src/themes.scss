@@ -3,4 +3,6 @@
 @import '~@nebular/theme/styles/themes/default';
 
 $nb-themes: nb-register-theme((
+    badge-border-radius : 1rem,
+    badge-padding: 0.1rem,
 ), default, default);

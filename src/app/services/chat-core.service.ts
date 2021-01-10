@@ -97,6 +97,7 @@ export class ChatCoreService {
       queryChats(filter: {user1: {eq: $USER}, or: {user2: {eq: $USER}}}) {
         user1
         user2
+        notify
       }
     }
   `;
@@ -115,16 +116,28 @@ export class ChatCoreService {
       queryChats(filter: {user1: {eq: $USER}, or: {user2: {eq: $USER}}}) {
         user1
         user2
+        notify
       }
     }
   `;
   private gqlAddChat = gql`
    mutation addChats($USER: String!, $otherUser: String!) {
-      addChats(input: {user1: $USER, user2: $otherUser}) {
+    addChats(input: {user1: $USER, user2: $otherUser, notify: "none"}) {
       numUids
     }
    }
  `;
+  private gqlUpdateChat = gql`
+   mutation updateChats($USER: String!, $otherUser: String!, $notify: String) {
+    updateChats(input: {filter: {not: {notify: {eq: $otherUser}},
+                            and: {user1: {eq: $USER}, user2: {eq: $otherUser}, 
+                            or: {user1: {eq: $otherUser}, user2: {eq: $USER}}}}, 
+                            set: {notify: $notify}}) {
+      numUids
+    }
+   }
+ `;
+ 
   private gqlQueryUser = gql`
   query queryUser($USER: String!) {
     queryUser(filter: {username: {eq: $USER}}) {
@@ -312,6 +325,24 @@ export class ChatCoreService {
 
   }
 
+  notifyMessagesToRead() {
+    // Send a message to the other user in the selected chat
+
+    this.apollo.mutate({
+      mutation: this.gqlUpdateChat,
+      variables: {
+        USER: this.currentUsername,
+        otherUser: this.targetUsername,
+        notify: this.targetUsername
+      }
+    }).subscribe(({ data }) => {
+      console.log("CCS: setting current chat notify");
+    },(error) => {
+      console.log('CCS: ERROR while setting notify for current chat', error);
+    });
+
+  }
+
   userExists(username){
     // Returns an observable saying if a user with the given username already exists.
 
@@ -334,6 +365,7 @@ export class ChatCoreService {
         lastAccess: new Date().toISOString()
       }
     }).subscribe(({ data }) => {
+      console.log("CCS: user added");
     },(error) => {
       console.log('CCS: ERROR while adding user', error);
     });
@@ -349,8 +381,26 @@ export class ChatCoreService {
         lastAccess: new Date().toISOString()
       }
     }).subscribe(({ data }) => {
+      console.log("CCS: current user last access updated");
     },(error) => {
       console.log('CCS: ERROR while updating last access of the current user', error);
+    });
+  }
+
+  clearNotifyForSelectedChat(){
+    // Updates to now the last access of the current user
+
+    this.apollo.mutate({
+      mutation: this.gqlUpdateChat,
+      variables: {
+        USER: this.currentUsername,
+        otherUser: this.targetUsername,
+        notify: "none"
+      }
+    }).subscribe(({ data }) => {
+      console.log("CCS: current chat notify cleared");
+    },(error) => {
+      console.log('CCS: ERROR while clearing notify for current chat', error);
     });
   }
 
@@ -370,7 +420,7 @@ export class ChatCoreService {
       }else{
         // subscribing to chats of the current user
         this.subscribeToChats();
-        this.updateCurrentUserLastAccess();
+        setInterval(() => this.updateCurrentUserLastAccess(), 30000);
         console.log("CCS: setted current user (", this.currentUsername, ")");
       }
     });    
