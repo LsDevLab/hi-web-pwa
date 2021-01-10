@@ -48,6 +48,6 @@ import { HomePageModule } from './pages/home-page/home-page.module';
     NbDialogModule.forRoot(),
     NbToastrModule.forRoot(),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

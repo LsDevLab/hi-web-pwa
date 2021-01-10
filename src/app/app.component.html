@@ -2,8 +2,8 @@
 
   <!-- Header component -->
   <!--<nb-layout-header *ngIf="!screenIsSmall" style="min-height: 10px"></nb-layout-header>-->
-  <nb-layout-header style="min-height: 10px">
-      <app-header-comp style="height: 100%; width: 100%;"></app-header-comp>
+  <nb-layout-header *ngIf="!screenIsSmall || !(auth.isAuthenticated$ | async)" style="min-height: 10px; background-color: #36f;">
+    <app-header-comp style="height: 100%; width: 100%;"></app-header-comp>
   </nb-layout-header>
 
   <!-- Body component -->

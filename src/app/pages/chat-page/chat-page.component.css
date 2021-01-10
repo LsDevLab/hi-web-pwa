@@ -37,3 +37,15 @@ nb-layout-column:last-child {
   float: left;
   display: flex;
 }
+
+
+.log-out-btn{
+  margin-left: 20px;
+  float: right;
+  display:block;
+}
+
+.user-details-div {
+  float: left;
+  display: flex;
+}

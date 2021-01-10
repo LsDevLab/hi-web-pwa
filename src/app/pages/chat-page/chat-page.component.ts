@@ -21,7 +21,7 @@ export class ChatPageComponent implements OnInit {
 
   @ViewChild(NbRevealCardComponent, { static: false }) chatCard: NbRevealCardComponent;
 
-  constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService) { }
+  constructor(public auth: AuthService, private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -45,5 +45,22 @@ export class ChatPageComponent implements OnInit {
   closeChat(event){
     this.isChatOpened = false;
   }
+
+  logOut(){
+    localStorage.setItem('isAuth', "false");
+    localStorage.removeItem('currentToken'); 
+    //console.log(localStorage.getItem('currentToken'));
+    this.auth.logout({ returnTo: document.location.origin });
+  }
+
+  toggleChatMenu(){
+
+  }
+
+  toggleGeneralMenu(){
+
+  }
+
+
 
 }

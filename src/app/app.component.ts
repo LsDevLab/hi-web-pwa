@@ -15,7 +15,7 @@ export class AppComponent {
 
   screenIsSmall: boolean;
 
-  constructor(private auth: AuthService, private router: Router, private breakpointObserver: BreakpointObserver) { }
+  constructor(public auth: AuthService, private router: Router, private breakpointObserver: BreakpointObserver) { }
 
   ngOnInit(){
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
