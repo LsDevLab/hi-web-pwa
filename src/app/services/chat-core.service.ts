@@ -173,14 +173,9 @@ export class ChatCoreService {
   private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
   targetUserlastAccessObservable = this.targetUserlastAccessSource.asObservable();
   targetUserlastAccess: Date;
-  private targetUserUnreadedMessagesSource = new BehaviorSubject<any>(0);
-  targetUserUnreadedMessagesObservable = this.targetUserUnreadedMessagesSource.asObservable();
-  targetUserUnreadedMessages: any;
 
   private chatMessagesSubscription: Subscription = null;
   private targetUserLastAccessSubscription: Subscription = null;
-  private targetUserUnreadedMessagesSubscription: Subscription = null;
-
 
   constructor(private apollo: Apollo) {
     this.currentUsernameObservable.subscribe(c => this.currentUsername = c);
@@ -276,37 +271,6 @@ export class ChatCoreService {
       response =>{
         this.targetUserlastAccessSource.next(response.data["queryUser"][0].lastAccess);
         console.log("CCS: target last access received", response.data["queryUser"][0].lastAccess);
-      }
-    )
-  }
-
-  private subscribeToUnreadedMessages(): Subscription{
-    // Subscribes to the activity of the target user
-
-    let unreadedMessagesQuery = this.apollo
-      .watchQuery<any[]>({
-        query: this.gqlAggregateMessage,
-        variables: {
-          USER: this.currentUsername,
-          targetUser: this.targetUsername
-        }
-      });
-
-      unreadedMessagesQuery.subscribeToMore({
-      document: this.gqlSubAggregateMessage,
-      variables: {
-        USER: this.currentUsername,
-        targetUser: this.targetUsername
-      },
-      updateQuery: (prev, {subscriptionData}) => {
-        return subscriptionData.data
-      }
-    });
-
-    return unreadedMessagesQuery.valueChanges.subscribe(
-      response =>{
-        this.targetUserUnreadedMessagesSource.next(response.data["aggregateMessage"].count);
-        console.log("CCS: number of chat unreaded messages from target", response.data["aggregateMessage"].count);
       }
     )
   }
@@ -427,12 +391,8 @@ export class ChatCoreService {
     if (this.targetUserLastAccessSubscription){
       this.targetUserLastAccessSubscription.unsubscribe();
     }
-    if (this.targetUserUnreadedMessagesSubscription){
-      this.targetUserUnreadedMessagesSubscription.unsubscribe();
-    }
     this.chatMessagesSubscription = this.subscribeToChatMessages();
     this.targetUserLastAccessSubscription = this.subscribeToTargetUserLastAccess();
-    this.targetUserUnreadedMessagesSubscription = this.subscribeToUnreadedMessages();
     console.log("CCS: setted current chat (", this.currentUsername, "->", this.targetUsername, ")");
 
   }
