@@ -89,7 +89,7 @@
         <nb-card-back style="height: 100%;">
           <nb-card style="margin-bottom: 0px; height: 100%"> 
             <nb-card-body style="padding: 0px; height: 100%" >
-              <app-chat-form></app-chat-form>
+              <app-chat-form *ngIf="isUserSelected"></app-chat-form>
             </nb-card-body>
             <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
               <div style="float: left; padding: 0; padding-right: 5px;">

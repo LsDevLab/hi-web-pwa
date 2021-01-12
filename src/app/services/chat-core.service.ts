@@ -4,7 +4,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { Apollo } from 'apollo-angular';
 import { parse } from 'graphql';
 import gql from 'graphql-tag';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -190,6 +190,8 @@ export class ChatCoreService {
   private chatMessagesSubscription: Subscription = null;
   private targetUserLastAccessSubscription: Subscription = null;
 
+  private intervalID = null;
+
   constructor(private apollo: Apollo) {
     this.currentUsernameObservable.subscribe(c => this.currentUsername = c);
     this.targetUsernameObservable.subscribe(t => this.targetUsername = t);
@@ -225,7 +227,7 @@ export class ChatCoreService {
     return messageQuery.valueChanges.subscribe(
       response =>{
         this.loadedMessagesSource.next(response.data["queryMessage"]);
-        console.log("CCS: messages received", response.data["queryMessage"]);
+        console.log("CCS: messages received", {'messages': response.data["queryMessage"]});
       }
     )
   }
@@ -254,7 +256,7 @@ export class ChatCoreService {
     chatQuery.valueChanges.subscribe(
       response =>{
         this.chatsSource.next(response.data["queryChats"]);
-        console.log("CCS: chats received", response.data["queryChats"]);
+        console.log("CCS: chats received", {'chats': response.data["queryChats"]});
       }
     );
   }
@@ -283,7 +285,7 @@ export class ChatCoreService {
     return targetLastAccessQuery.valueChanges.subscribe(
       response =>{
         this.targetUserlastAccessSource.next(response.data["queryUser"][0].lastAccess);
-        console.log("CCS: target last access received", response.data["queryUser"][0].lastAccess);
+        console.log("CCS: target last access received", {'target last access': response.data["queryUser"][0].lastAccess});
       }
     )
   }
@@ -301,11 +303,13 @@ export class ChatCoreService {
         targetUser: this.targetUsername
       }
     }).subscribe(({ data }) => {
+      this.notifyMessagesToRead();
       console.log("CCS: message sent to", this.targetUsername);
     },(error) => {
       console.log('CCS: ERROR while sending message', error);
     });
-
+    
+  
   }
 
   sendMessagesReaded(messagesId: string[]) {
@@ -318,14 +322,14 @@ export class ChatCoreService {
         readed: true
       }
     }).subscribe(({ data }) => {
-      console.log("CCS: messages confirmed (ids:", messagesId, ")");
+      console.log("CCS: messages READED confirm sent", {'messages': messagesId});
     },(error) => {
-      console.log('CCS: ERROR while confirming messages', error);
+      console.log('CCS: ERROR while confirming messages READED', error);
     });
 
   }
 
-  notifyMessagesToRead() {
+  private notifyMessagesToRead() {
     // Send a message to the other user in the selected chat
 
     this.apollo.mutate({
@@ -336,7 +340,7 @@ export class ChatCoreService {
         notify: this.targetUsername
       }
     }).subscribe(({ data }) => {
-      console.log("CCS: setting current chat notify");
+      console.log("CCS: setting current chat notify to", this.targetUsername);
     },(error) => {
       console.log('CCS: ERROR while setting notify for current chat', error);
     });
@@ -374,6 +378,8 @@ export class ChatCoreService {
   updateCurrentUserLastAccess(){
     // Updates to now the last access of the current user
 
+    //console.log("CCS: UPDATE");
+
     this.apollo.mutate({
       mutation: this.gqlUpdateUser,
       variables: {
@@ -385,6 +391,7 @@ export class ChatCoreService {
     },(error) => {
       console.log('CCS: ERROR while updating last access of the current user', error);
     });
+    
   }
 
   clearNotifyForSelectedChat(){
@@ -407,6 +414,9 @@ export class ChatCoreService {
   init(currentUsername: string, currentName: string) {
     // Initializes the service setting as current user the one with the given username and name
 
+    if(currentUsername == this.currentUsername)
+      return;
+
     this.currentUsernameSource.next(currentUsername);
 
     // checking if the current user exists.
@@ -420,12 +430,12 @@ export class ChatCoreService {
       }else{
         // subscribing to chats of the current user
         this.subscribeToChats();
-        setInterval(() => this.updateCurrentUserLastAccess(), 30000);
+        this.updateCurrentUserLastAccess();
+        // updating last access of current user once every 10s
+        interval(10000).subscribe(() => this.updateCurrentUserLastAccess());
         console.log("CCS: setted current user (", this.currentUsername, ")");
       }
-    });    
-
-    
+    });      
       
   }
 
@@ -456,7 +466,7 @@ export class ChatCoreService {
         otherUser: targetUsername,
       }
     }).subscribe(({ data }) => {
-      console.log("CCS: chat added", this.targetUsername);
+      console.log("CCS: chat with", targetUsername, "added");
     },(error) => {
       console.log('CCS: ERROR while adding chat', error);
     });
@@ -467,7 +477,6 @@ export class ChatCoreService {
     // Returns true only if a chat with the given username already exists.
     let founded = false;
     this.chats.forEach(chat => {
-      console.log(chat.user1, chat.user2);
       if(chat.user1 == targetUsername || chat.user2 == targetUsername){
         founded = true;
       }

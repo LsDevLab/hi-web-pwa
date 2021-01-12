@@ -70,7 +70,7 @@ export class ContactsListComponent implements OnInit {
       else
         chatUsername = chat.user1;
       
-      console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
+      //console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
 
       if (chat.notify == this.thisUser)
         notify = "⋯";
