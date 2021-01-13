@@ -6,18 +6,20 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule, 
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
-  NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule, NbActionsModule } from '@nebular/theme';
+  NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import { HeaderCompComponent } from './components/header-comp/header-comp.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
+import { HeaderComponent } from './components/header/header.component';
+import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component'
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderCompComponent
+    HeaderComponent,
+    ChatLoggerLargeComponent
   ],
   imports: [
     BrowserModule,

@@ -19,16 +19,16 @@ export class ChatPageComponent implements OnInit {
   targetUsername: string;
   targetUserLastAccess: Date;
 
-  @ViewChild(NbRevealCardComponent, { static: false }) chatCard: NbRevealCardComponent;
+  //@ViewChild(NbRevealCardComponent, { static: false }) chatCard: NbRevealCardComponent;
 
-  constructor(public auth: AuthService, private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService) { }
+  constructor(private breakpointObserver: BreakpointObserver) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-    this.chatCoreService.targetUserlastAccessObservable.subscribe(tula => this.targetUserLastAccess = tula);
-    this.chatCoreService.targetUsernameObservable.subscribe(tu => this.targetUsername = tu);
+    //this.chatCoreService.targetUserlastAccessObservable.subscribe(tula => this.targetUserLastAccess = tula);
+    //this.chatCoreService.targetUsernameObservable.subscribe(tu => this.targetUsername = tu);
     //this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     //this.auth.idTokenClaims$.subscribe(t => console.log(t));
   }
@@ -44,13 +44,6 @@ export class ChatPageComponent implements OnInit {
 
   closeChat(event){
     this.isChatOpened = false;
-  }
-
-  logOut(){
-    localStorage.setItem('isAuth', "false");
-    localStorage.removeItem('currentToken'); 
-    //console.log(localStorage.getItem('currentToken'));
-    this.auth.logout({ returnTo: document.location.origin });
   }
 
   toggleChatMenu(){
