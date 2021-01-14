@@ -1,0 +1,10 @@
+<nb-user style="width: fit-content; float: left;"
+  size="medium" 
+  color="white" 
+  onlyPicture=true 
+  [name]="targetUsername">
+</nb-user>
+<div style="color: white; width: fit-content; float: right;">
+  <div class="user-name" style="font-weight: bold;">{{targetUsername}}</div>
+  <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
+</div>

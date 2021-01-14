@@ -40,7 +40,7 @@ export class ChatFormComponent {
     this.messages.push(this.formatMessage(message, true));
     // sending messages with CCS
     this.chatCoreService.sendMessage(message);
-    console.log("CFC: currently displayed messages", this.messages);
+    //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
 
   // Makes a Message from a FormattedMessage 
@@ -105,7 +105,6 @@ export class ChatFormComponent {
         else
           this.messages[indexOfMessage].user.name = "✔";
         
-        console.log("CFC: message marked to confirmed", this.messages[indexOfMessage]);
       }
       // else if the message is already displayed, do nothing
       else if (indexOfMessage != -1){
@@ -113,9 +112,10 @@ export class ChatFormComponent {
         // marking as readed messages
         if(this.messages[indexOfMessage].reply){
           if(!message.readed)
-          this.messages[indexOfMessage].user.name = "";
-          else
+            this.messages[indexOfMessage].user.name = "";
+          else{
             this.messages[indexOfMessage].user.name = "✔";
+          }
         }
         
         return;
@@ -153,12 +153,11 @@ export class ChatFormComponent {
       this.messages.shift();
     }
     //console.log("FINE");
-    console.log("CFC: currently displayed messages", this.messages);
-
-    this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
-    console.log("CFC: set as readed the following messages", justReadedMessagesId);
-
-
+    //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
+    if(justReadedMessagesId.length > 0){
+      this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
+    }
+    this.chatCoreService.clearNotifyForSelectedChat();
 
   }
 

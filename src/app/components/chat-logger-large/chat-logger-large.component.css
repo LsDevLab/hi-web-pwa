@@ -1,0 +1,10 @@
+.log-out-btn{
+  margin-left: 20px;
+  float: right;
+  display:block;
+}
+
+.user-info-div {
+  float: left;
+  display: flex;
+}

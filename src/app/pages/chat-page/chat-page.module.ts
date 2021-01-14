@@ -10,6 +10,8 @@ import { NbThemeModule, NbLayoutModule, NbChatModule, NbCardModule, NbListModule
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule, NbDialogModule} from '@nebular/theme';
 import { ChatPageRoutingModule } from './chat-page-routing.module';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
+import { ChatLoggerComponent } from '../../components/chat-logger/chat-logger.component';
+import { ChatUserInfoComponent } from '../../components/chat-user-info/chat-user-info.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { ChatCoreService } from 'src/app/services/chat-core.service';
     ChatFormComponent,
     ContactsListComponent,
     DialogAddChatComponent,
+    ChatLoggerComponent,
+    ChatUserInfoComponent,
   ],
   imports: [
     ChatPageRoutingModule,
