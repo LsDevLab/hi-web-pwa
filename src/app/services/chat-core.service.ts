@@ -5,6 +5,7 @@ import { Apollo } from 'apollo-angular';
 import { parse } from 'graphql';
 import gql from 'graphql-tag';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import { ChatNotificationsService } from './chat-notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -137,7 +138,6 @@ export class ChatCoreService {
     }
    }
  `;
- 
   private gqlQueryUser = gql`
   query queryUser($USER: String!) {
     queryUser(filter: {username: {eq: $USER}}) {
@@ -192,7 +192,7 @@ export class ChatCoreService {
 
   private intervalID = null;
 
-  constructor(private apollo: Apollo) {
+  constructor(private apollo: Apollo, private chatNotificationsService: ChatNotificationsService) {
     this.currentUsernameObservable.subscribe(c => this.currentUsername = c);
     this.targetUsernameObservable.subscribe(t => this.targetUsername = t);
     this.loadedMessagesObservable.subscribe(msgs => this.loadedMessages = msgs);
@@ -304,6 +304,7 @@ export class ChatCoreService {
       }
     }).subscribe(({ data }) => {
       this.notifyMessagesToRead();
+      this.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUsername, this.targetUsername);
       console.log("CCS: message sent to", this.targetUsername);
     },(error) => {
       console.log('CCS: ERROR while sending message', error);

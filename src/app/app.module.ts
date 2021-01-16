@@ -13,7 +13,11 @@ import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
 import { HeaderComponent } from './components/header/header.component';
-import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component'
+import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment'
+import { ChatCoreService } from './services/chat-core.service';
+import { ChatNotificationsService } from './services/chat-notifications.service';
 
 @NgModule({
   declarations: [
@@ -49,7 +53,11 @@ import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-lo
     HomePageModule,
     NbDialogModule.forRoot(),
     NbToastrModule.forRoot(),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' }),
   ],
   bootstrap: [AppComponent],
+  providers: [
+    ChatNotificationsService
+  ]
 })
 export class AppModule { }

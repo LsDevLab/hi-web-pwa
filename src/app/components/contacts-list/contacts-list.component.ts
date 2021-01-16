@@ -4,6 +4,9 @@ import { AuthService } from '@auth0/auth0-angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NbDialogService } from '@nebular/theme';
 import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.component';
+import { SwPush } from '@angular/service-worker';
+import { HttpClient } from '@angular/common/http';
+import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 
 
 @Component({
@@ -30,7 +33,8 @@ export class ContactsListComponent implements OnInit {
   selectedUser: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService, 
-              private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService) {
+              private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
+              private chatNotificationsService: ChatNotificationsService) {
    }
 
   ngOnInit(): void {
@@ -50,6 +54,7 @@ export class ContactsListComponent implements OnInit {
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
       this.chatCoreService.init(u.email, u.name);
+      this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
     });
     //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
   }
