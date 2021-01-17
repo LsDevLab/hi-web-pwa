@@ -1,8 +1,8 @@
 {
-  "name": "project-hi",
-  "short_name": "project-hi",
-  "theme_color": "#1976d2",
-  "background_color": "#fafafa",
+  "name": "Hi Chat",
+  "short_name": "Hi",
+  "theme_color": "#3366ff",
+  "background_color": "#ffffff",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
@@ -32,7 +32,7 @@
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-152x152.png",
+      "src": "assets/icons/icon-144x144.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "maskable any"
@@ -44,7 +44,7 @@
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-384x384.png",
+      "src": "assets/icons/icon-192x192.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "maskable any"
