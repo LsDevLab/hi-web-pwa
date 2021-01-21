@@ -53,7 +53,7 @@ import { ChatNotificationsService } from './services/chat-notifications.service'
     HomePageModule,
     NbDialogModule.forRoot(),
     NbToastrModule.forRoot(),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' }),
+    ServiceWorkerModule.register('custom-service-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' }),
   ],
   bootstrap: [AppComponent],
   providers: [
