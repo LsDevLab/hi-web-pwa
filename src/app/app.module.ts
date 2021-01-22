@@ -16,8 +16,8 @@ import { HeaderComponent } from './components/header/header.component';
 import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment'
-import { ChatCoreService } from './services/chat-core.service';
 import { ChatNotificationsService } from './services/chat-notifications.service';
+//import { NgxHowlerService } from 'ngx-howler';
 
 @NgModule({
   declarations: [
@@ -60,4 +60,5 @@ import { ChatNotificationsService } from './services/chat-notifications.service'
     ChatNotificationsService
   ]
 })
-export class AppModule { }
+export class AppModule { 
+}

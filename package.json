@@ -34,13 +34,14 @@
     "apollo-link-context": "^1.0.20",
     "apollo-link-ws": "^1.0.20",
     "eva-icons": "^1.1.2",
+    "firebase": "^7.0 || ^8.0",
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
+    "ngx-howler": "^11.0.0",
     "rxjs": "~6.5.5",
     "subscriptions-transport-ws": "^0.9.18",
     "tslib": "^2.0.0",
-    "zone.js": "~0.10.3",
-    "firebase": "^7.0 || ^8.0"
+    "zone.js": "~0.10.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1100.3",
