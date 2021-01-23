@@ -4,8 +4,8 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule, 
-  NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
+import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule,
+  NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HttpClientModule } from '@angular/common/http';
@@ -15,9 +15,9 @@ import { HomePageModule } from './pages/home-page/home-page.module';
 import { HeaderComponent } from './components/header/header.component';
 import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment'
+import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
-//import { NgxHowlerService } from 'ngx-howler';
+// import { NgxHowlerService } from 'ngx-howler';
 
 @NgModule({
   declarations: [
@@ -60,5 +60,5 @@ import { ChatNotificationsService } from './services/chat-notifications.service'
     ChatNotificationsService
   ]
 })
-export class AppModule { 
+export class AppModule {
 }

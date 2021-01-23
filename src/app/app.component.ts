@@ -19,15 +19,13 @@ export class AppComponent {
 
   ngOnInit(){
 
-    
-
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
 
     this.auth.isAuthenticated$.subscribe(isAuth => {
       if (isAuth)
-        this.auth.idTokenClaims$.subscribe(t => { 
+        this.auth.idTokenClaims$.subscribe(t => {
           if (t){
             localStorage.setItem('isAuth', "true");
             localStorage.setItem('currentToken', t.__raw);
@@ -36,9 +34,9 @@ export class AppComponent {
           }
         });
     });
-    
+
   }
 
-  
+
 
 }
