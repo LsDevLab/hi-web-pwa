@@ -12,6 +12,7 @@ import { ChatPageRoutingModule } from './chat-page-routing.module';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import { ChatLoggerComponent } from '../../components/chat-logger/chat-logger.component';
 import { ChatUserInfoComponent } from '../../components/chat-user-info/chat-user-info.component';
+import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import { ChatUserInfoComponent } from '../../components/chat-user-info/chat-user
     ChatPageComponent
   ],
   providers: [
-    ChatCoreService
+    ChatCoreService,
   ]
 })
 export class ChatPageModule { }

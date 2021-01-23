@@ -41,10 +41,10 @@
 
 
   <!-- when screen is small-->
-  <div *ngIf="screenIsSmall" class="colored-column-basic" style="padding: 3%; height: 100%;">
+  <div *ngIf="screenIsSmall" class="colored-column-basic" style="height: 100%;">
     <nb-reveal-card [showToggleButton]="false" [revealed]="isChatOpened" style="height: 100%">
       <nb-card-front style="height: 100%;">
-        <nb-card style="margin-bottom: 0px; height: 100%">
+        <nb-card style="margin-bottom: 0px; height: 100%; border: 0">
           <nb-card-body style="padding: 0px; height: 100%;">
             <div style="background-color: #36f; width: 100%; height: 80px; padding: 15px;">
               <img src="assets/img/logo_gif.gif" style="height: 100%; padding: 5px; padding-right: 15px; float: left;">
@@ -52,7 +52,7 @@
             </div>
             <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
           </nb-card-body>
-          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; border: 0">
             <div style="float: left; padding: 0">
               <button *ngIf="isUserSelected" nbButton ghost status="control" (click)="openChat()"><nb-icon icon="arrow-ios-upward-outline"></nb-icon></button>
             </div> 
@@ -63,18 +63,18 @@
         </nb-card>
       </nb-card-front>
       <nb-card-back style="height: 100%;">
-        <nb-card style="margin-bottom: 0px; height: 100%"> 
+        <nb-card style="margin-bottom: 0px; height: 100%; border: 0"> 
           <nb-card-body style="padding: 0px; height: 100%" >
             <app-chat-form *ngIf="isUserSelected"></app-chat-form>
           </nb-card-body>
-          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
+          <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; border: 0">
             <div style="float: left; padding: 0; padding-right: 5px;">
               <button nbButton ghost status="control" (click)="closeChat()"><nb-icon icon="arrow-ios-downward-outline"></nb-icon></button>
             </div>
             <div class="chat-user-info-div">
               <app-chat-user-info></app-chat-user-info>
             </div>
-            <div style="float: right; padding: 0; padding-right: 5px;">
+            <div style="float: right; padding: 0; padding-right: 5px; border: 0">
               <button nbButton ghost status="control" (click)="toggleChatMenu()"><nb-icon icon="menu-2-outline"></nb-icon></button>
             </div>
           </nb-card-footer>

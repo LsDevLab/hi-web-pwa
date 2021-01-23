@@ -1,10 +1,7 @@
-import { JsonPipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
-import { time } from 'console';
-import { threadId } from 'worker_threads';
-import { throwServerError } from '@apollo/client/core';
+//import { NgxHowlerService } from 'ngx-howler';
 
 @Component({
   selector: 'app-chat-form',
@@ -25,6 +22,13 @@ export class ChatFormComponent {
   }
 
   ngOnInit() {
+    /*
+    this.howl.register('newMessageSound', {
+      src: ['assets/sounds/newMessageSound.mp3'],
+      html5: true
+    }).subscribe(status => {
+      // ok
+    });*/
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.otherUser = t;
@@ -88,6 +92,9 @@ export class ChatFormComponent {
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
+    let reproduceSound = true;
+    if (this.messages.length == 0)
+      reproduceSound = false;
     let justReadedMessagesId = [];
 
     // taking the messages loaded from CCS, but ordered from the older to the newer
@@ -127,6 +134,11 @@ export class ChatFormComponent {
           justReadedMessagesId.push(message.id);
         }
         let formattedMessage = this.formatMessage(message, false);
+        
+        /*
+        if (reproduceSound)
+          this.howl.get('newMessageSound').play();*/
+
         this.messages.push(formattedMessage);
       }
 
