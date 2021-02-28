@@ -14,7 +14,7 @@ export class ChatCoreService {
   private gqlAggregateMessage = gql`
     query aggregateMessage($USER: String!, $targetUser: String!) {
       aggregateMessage(
-          filter: {not: {readed: true}, 
+          filter: {not: {readed: true},
               and: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}
         ) {
         count
@@ -34,9 +34,9 @@ export class ChatCoreService {
   private gqlQueryMessage = gql`
     query queryMessage($USER: String!, $targetUser: String!) {
       queryMessage(
-          order: { desc: date }, 
+          order: { desc: date },
           first: 30,
-          filter: {senderUsername: {eq: $USER}, receiverUsername: {eq: $targetUser}, 
+          filter: {senderUsername: {eq: $USER}, receiverUsername: {eq: $targetUser},
               or: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}
         ) {
         id
@@ -54,9 +54,9 @@ export class ChatCoreService {
   private gqlSubMessage = gql`
     subscription queryMessage($USER: String!, $targetUser: String!) {
       queryMessage(
-          order: { desc: date }, 
+          order: { desc: date },
           first: 30,
-          filter: {senderUsername: {eq: $USER}, receiverUsername: {eq: $targetUser}, 
+          filter: {senderUsername: {eq: $USER}, receiverUsername: {eq: $targetUser},
               or: {receiverUsername: {eq: $USER}, senderUsername: {eq: $targetUser}}}
         ) {
         id
@@ -131,8 +131,8 @@ export class ChatCoreService {
   private gqlUpdateChat = gql`
    mutation updateChats($USER: String!, $otherUser: String!, $notify: String) {
     updateChats(input: {filter: {not: {notify: {eq: $otherUser}},
-                            and: {user1: {eq: $USER}, user2: {eq: $otherUser}, 
-                            or: {user1: {eq: $otherUser}, user2: {eq: $USER}}}}, 
+                            and: {user1: {eq: $USER}, user2: {eq: $otherUser},
+                            or: {user1: {eq: $otherUser}, user2: {eq: $USER}}}},
                             set: {notify: $notify}}) {
       numUids
     }
@@ -309,8 +309,8 @@ export class ChatCoreService {
     },(error) => {
       console.log('CCS: ERROR while sending message', error);
     });
-    
-  
+
+
   }
 
   sendMessagesReaded(messagesId: string[]) {
@@ -392,7 +392,7 @@ export class ChatCoreService {
     },(error) => {
       console.log('CCS: ERROR while updating last access of the current user', error);
     });
-    
+
   }
 
   clearNotifyForSelectedChat(){
@@ -425,9 +425,9 @@ export class ChatCoreService {
       var result = response.data["getUser"];
       if (!result){
         // if not, create a new user with the given username and name
-        console.log("CCS: user first login. Created profile."); 
-        this.addUser(currentUsername, currentName);  
-        window.location.reload(); 
+        console.log("CCS: user first login. Created profile.");
+        this.addUser(currentUsername, currentName);
+        window.location.reload();
       }else{
         // subscribing to chats of the current user
         this.subscribeToChats();
@@ -436,8 +436,8 @@ export class ChatCoreService {
         interval(10000).subscribe(() => this.updateCurrentUserLastAccess());
         console.log("CCS: setted current user (", this.currentUsername, ")");
       }
-    });      
-      
+    });
+
   }
 
   setChat(targetUsername: string){
@@ -459,7 +459,7 @@ export class ChatCoreService {
   }
 
   addChat(targetUsername: string) {
-    
+
     this.apollo.mutate({
       mutation: this.gqlAddChat,
       variables: {
@@ -481,7 +481,7 @@ export class ChatCoreService {
       if(chat.user1 == targetUsername || chat.user2 == targetUsername){
         founded = true;
       }
-        
+
     });
     return founded;
   }

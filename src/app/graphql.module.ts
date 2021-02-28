@@ -11,13 +11,15 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { setContext } from 'apollo-link-context';
 import { ChatCoreService } from './services/chat-core.service';
 
+const httpUri = 'https://hi-chat-backend.tk/graphql'; //https://aspiring-thing.us-west-2.aws.cloud.dgraph.io/graphql';//'http://localhost:8080/graphql';
+const wsUri ='wss://hi-chat-backend.tk/graphql'; // 'wss://aspiring-thing.us-west-2.aws.cloud.dgraph.io/graphql';//'ws://localhost:8080/graphql';
 
-const httpUri = 'https://aspiring-thing.us-west-2.aws.cloud.dgraph.io/graphql';//'http://localhost:8080/graphql'; 
-const wsUri = 'wss://aspiring-thing.us-west-2.aws.cloud.dgraph.io/graphql';//'ws://localhost:8080/graphql';
+//const httpUri = 'https://34.82.65.255/graphql';//'http://localhost:8080/graphql';
+//const wsUri = 'wss://34.82.65.255/graphql';//'ws://localhost:8080/graphql';
 
 console.log("GQLM: Apollo settings module loaded")
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
- 
+
  var token = localStorage.getItem('currentToken');
  //console.log("create apollo with token", token);
 
@@ -59,7 +61,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   },
   ws,
   http as any //need it
-  ); 
+  );
 
 
   return {
