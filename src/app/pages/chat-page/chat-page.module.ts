@@ -5,14 +5,15 @@ import { ChatFormComponent } from '../../components/chat-form/chat-form.componen
 import { ContactsListComponent } from '../../components/contacts-list/contacts-list.component';
 import { DialogAddChatComponent } from '../../components/dialog-add-chat/dialog-add-chat.component';
 import { GraphQLModule } from '../../graphql.module';
-import { NbThemeModule, NbLayoutModule, NbChatModule, NbCardModule, NbListModule, 
-  NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
+import { NbThemeModule, NbLayoutModule, NbChatModule, NbCardModule, NbListModule,
+  NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule, NbDialogModule} from '@nebular/theme';
 import { ChatPageRoutingModule } from './chat-page-routing.module';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import { ChatLoggerComponent } from '../../components/chat-logger/chat-logger.component';
 import { ChatUserInfoComponent } from '../../components/chat-user-info/chat-user-info.component';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
+import {DialogLoadingComponent} from '../../components/dialog-loading/dialog-loading.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ChatNotificationsService } from 'src/app/services/chat-notifications.se
     ChatFormComponent,
     ContactsListComponent,
     DialogAddChatComponent,
+    DialogLoadingComponent,
     ChatLoggerComponent,
     ChatUserInfoComponent,
   ],
@@ -32,7 +34,7 @@ import { ChatNotificationsService } from 'src/app/services/chat-notifications.se
     NbChatModule,
     NbListModule,
     NbCardModule,
-    NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule, 
+    NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
     NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule,
     NbDialogModule.forChild(),
   ],

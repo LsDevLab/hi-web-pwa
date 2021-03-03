@@ -1,11 +1,11 @@
-<nb-card size="small" style="min-width: 350px; height: auto;"> 
+<nb-card size="small" style="min-width: 350px; height: auto;">
   <nb-card-header>Add a new chat...</nb-card-header>
   <nb-card-body>
       <nb-form-field *ngIf="!userExists">
         <nb-icon nbPrefix icon="at-outline" pack="eva"></nb-icon>
         <input #usernameInput type="text" placeholder="Username" nbInput fullWidth>
         <button nbSuffix nbButton status="primary" ghost style="margin-right: 35px;" (click)="verifyAddChat(usernameInput.value, false)" *ngIf="!userExists" >Find</button>
-      </nb-form-field>   
+      </nb-form-field>
       <nb-user *ngIf="userExists" size="giant"
         [name]="username"
         [title]="name">
@@ -15,5 +15,6 @@
   <nb-card-footer style="clear: both;">
     <button nbButton style="float: left;" (click)="closeDialog()">Close</button>
     <button nbButton status="success" style="float: right;" (click)="verifyAddChat(null, true)" *ngIf="userExists">Add<nb-icon icon="plus-outline"></nb-icon></button>
+    <img src="assets/img/three_dots_loader.gif" class="loading-user-img" *ngIf="!userExists && loadingUserImg" style="float: right;" >
   </nb-card-footer>
 </nb-card>

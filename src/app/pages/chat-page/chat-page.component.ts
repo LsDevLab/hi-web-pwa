@@ -2,7 +2,8 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import {BreakpointObserver} from '@angular/cdk/layout';
-import { NbRevealCardComponent } from '@nebular/theme';
+import {NbDialogService, NbRevealCardComponent} from '@nebular/theme';
+import {DialogLoadingComponent} from '../../components/dialog-loading/dialog-loading.component';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class ChatPageComponent implements OnInit {
 
   //@ViewChild(NbRevealCardComponent, { static: false }) chatCard: NbRevealCardComponent;
 
-  constructor(private breakpointObserver: BreakpointObserver) { }
+  constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService,
+              private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -31,6 +33,10 @@ export class ChatPageComponent implements OnInit {
     //this.chatCoreService.targetUsernameObservable.subscribe(tu => this.targetUsername = tu);
     //this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     //this.auth.idTokenClaims$.subscribe(t => console.log(t));
+    this.chatCoreService.isLoadingObservable.subscribe(isL => {
+      if(isL)
+        this.dialogService.open(DialogLoadingComponent, { closeOnBackdropClick: false, closeOnEsc: false });
+    });
   }
 
   selectUser(){

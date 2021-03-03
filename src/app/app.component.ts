@@ -3,6 +3,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ChatCoreService } from './services/chat-core.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import {NbDialogService} from '@nebular/theme';
 
 
 @Component({
@@ -34,6 +35,8 @@ export class AppComponent {
           }
         });
     });
+
+
 
   }
 
