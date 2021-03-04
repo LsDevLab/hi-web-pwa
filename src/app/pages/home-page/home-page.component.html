@@ -1,1 +1,35 @@
-<p>home-page works!</p>
+<div class="home-page-main-div">
+  <div class="top-banner">
+    <div class="top-banner-top">
+      <div class="title-div">
+        <img class="hi-top-banner-title" src="assets/img/logo_gif.gif">
+        <h1 class="top-banner-title">Chat</h1>
+      </div>
+      <p class="top-banner-subtitle">
+        Con Hi Chat, inviare <strong>messaggi</strong> è <strong>semplice</strong>, <strong>veloce</strong>,
+        <strong>sicuro</strong>, <strong>gratuito</strong>, e disponibile sui dispositivi di tutto il mondo.</p>
+      <div class="top-banner-action-div">
+        <nb-card class="action-div-card">
+          <nb-card-body class="action-card-body">
+            <p class="action-div-card-text" *ngIf="!screenIsSmall">
+              <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
+            </p>
+            <button nbButton status="primary" class="login-button"
+                    (click)="auth.loginWithRedirect()">Login</button>
+            <button nbButton status="success" class="signing-button"
+                    (click)="auth.loginWithRedirect({initialScreen: 'signUp'})">Signup</button>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+    <img class="top-banner-bottom" src="assets/img/header-bottom.svg">
+  </div>
+  <div class="middle-body">
+    <nb-card class="example-div-card">
+      <nb-card-body class="example-card-body">
+        <img src="assets/img/img1.png">
+        <img src="assets/img/img2.png">
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>

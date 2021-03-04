@@ -1,0 +1,106 @@
+
+.home-page-main-div{
+  height: fit-content;
+}
+
+.top-banner{
+  height: 623px;
+  width: 100%;
+  background-color: #3366ff;
+  background-image: url("src/assets/img/home_back_top.svg");
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.top-banner-action-div{
+  margin: 50px 0px 30px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: fit-content;
+}
+
+.top-banner-title{
+  color: white;
+  font-size: 50pt;
+  margin: 20px 0px 20px 0px;
+}
+
+.top-banner-subtitle{
+  color: white;
+  font-size: 15pt;
+  max-width: 800px;
+  line-height: 30px;
+}
+
+.action-div-card{
+  width: fit-content;
+}
+
+.title-div{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.hi-top-banner-title{
+  margin: 15px 10px 15px 0px;
+  height: 80px;
+}
+
+.login-button{
+  margin: 2px 16px 2px 0px;
+  width: 100px;
+  height: 45px;
+}
+
+.signing-button{
+  margin: 2px 0px 2px 0px;
+  width: 100px;
+  height: 45px;
+}
+
+.action-div-card-text{
+  width: 50%;
+  margin: 5px 20px 5px 0px;
+  font-size: 90%;
+}
+
+.action-card-body{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.top-banner-bottom{
+  width: inherit;
+}
+
+.top-banner-top{
+  padding: 50px 10% 0% 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: self-start;
+  width: inherit;
+}
+
+.example-div-card{
+  width: 70%;
+  height: 400px;
+  margin: 3%;
+  border-radius: 10px;
+}
+
+.middle-body{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

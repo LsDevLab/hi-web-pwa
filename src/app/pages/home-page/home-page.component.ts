@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {BreakpointObserver} from '@angular/cdk/layout';
+import {AuthService} from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-home-page',
@@ -7,7 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomePageComponent implements OnInit {
 
-  constructor() { }
+  screenIsSmall = false;
+
+  constructor(private breakpointObserver: BreakpointObserver, public auth: AuthService) {
+    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+      this.screenIsSmall = r.matches;
+    });
+  }
 
   ngOnInit(): void {
   }

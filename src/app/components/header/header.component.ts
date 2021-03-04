@@ -9,7 +9,7 @@ import { AuthService } from '@auth0/auth0-angular';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  
+
   constructor(public auth: AuthService) { }
 
   ngOnInit(): void {

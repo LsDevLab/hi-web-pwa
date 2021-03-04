@@ -12,7 +12,7 @@ import {NbDialogService} from '@nebular/theme';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'project-hi';
+
   screenIsSmall: boolean;
 
   constructor(public auth: AuthService, private router: Router, private breakpointObserver: BreakpointObserver,
