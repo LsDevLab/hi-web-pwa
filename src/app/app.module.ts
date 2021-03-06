@@ -19,6 +19,7 @@ import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
 // import { NgxHowlerService } from 'ngx-howler';
 import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
+import {NgxHowlerService} from 'ngx-howler';
 
 
 @NgModule({
@@ -60,8 +61,14 @@ import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
   ],
   bootstrap: [AppComponent],
   providers: [
-    ChatNotificationsService
+    ChatNotificationsService,
+    NgxHowlerService
   ]
 })
 export class AppModule {
+  constructor(
+    ngxHowlerService: NgxHowlerService
+  ) {
+    ngxHowlerService.loadScript('https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.0/howler.min.js');
+  }
 }
