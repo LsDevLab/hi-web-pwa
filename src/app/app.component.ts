@@ -15,7 +15,7 @@ export class AppComponent {
 
   screenIsSmall: boolean;
 
-  constructor(public auth: AuthService, private router: Router, private breakpointObserver: BreakpointObserver,
+  constructor(public auth: AuthService, public router: Router, private breakpointObserver: BreakpointObserver,
               ) { }
 
   ngOnInit(){
@@ -31,7 +31,7 @@ export class AppComponent {
             localStorage.setItem('isAuth', "true");
             localStorage.setItem('currentToken', t.__raw);
             console.log("AC: Session authenticated with token", [localStorage.getItem('currentToken')]);
-            this.router.navigateByUrl('/chat');
+            //this.router.navigateByUrl('/chat');
           }
         });
     });

@@ -10,7 +10,7 @@
         <strong>sicuro</strong>, <strong>gratuito</strong>, e disponibile sui dispositivi di tutto il mondo.</p>
       <div class="top-banner-action-div">
         <nb-card class="action-div-card">
-          <nb-card-body class="action-card-body">
+          <nb-card-body class="action-card-body" *ngIf="!(auth.isAuthenticated$ | async)">
             <p class="action-div-card-text" *ngIf="!screenIsSmall">
               <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
             </p>
@@ -18,6 +18,13 @@
                     (click)="auth.loginWithRedirect()">Login</button>
             <button nbButton status="success" class="signing-button"
                     (click)="auth.loginWithRedirect({initialScreen: 'signUp'})">Signup</button>
+          </nb-card-body>
+          <nb-card-body class="action-card-body" *ngIf="(auth.isAuthenticated$ | async)">
+            <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
+              Ciao <strong>{{nameOfUser}}</strong>!
+            </p>
+            <button nbButton status="primary" class="gotochat-button"
+                    (click)="this.router.navigateByUrl('/chat');">Vai alla chat</button>
           </nb-card-body>
         </nb-card>
       </div>

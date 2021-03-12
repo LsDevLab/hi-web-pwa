@@ -1,8 +1,8 @@
 <div class="user-info-div" *ngIf="auth.user$ | async as user">
   <nb-user style="width: fit-content;"
-    size="medium" 
-    color="white" 
-    onlyPicture=true 
+    size="medium"
+    color="white"
+    onlyPicture=true
     [name]="user.email"
     [title]="user.name">
   </nb-user>
@@ -11,4 +11,4 @@
     <div style="font-size: 8pt;">{{user.email}}</div>
   </div>
 </div>
-<button nbButton ghost class="log-out-btn" status="control" (click)="logOut()">Logout<nb-icon icon="log-out-outline"></nb-icon></button>
+<button nbButton ghost class="log-out-btn" status="control" (click)="logOut()">{{screenIsSmall ? '' : 'Logout'}}<nb-icon icon="log-out-outline"></nb-icon></button>
