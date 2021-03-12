@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
-//import { NgxHowlerService } from 'ngx-howler';
+import { NgxHowlerService } from 'ngx-howler';
 
 @Component({
   selector: 'app-chat-form',
@@ -18,23 +18,23 @@ export class ChatFormComponent {
   thisUser: string;
   otherUser: string;
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService) {
+  constructor(private chatCoreService: ChatCoreService, public auth: AuthService, public howl: NgxHowlerService) {
   }
 
   ngOnInit() {
-    /*
     this.howl.register('newMessageSound', {
       src: ['assets/sounds/newMessageSound.mp3'],
       html5: true
     }).subscribe(status => {
-      // ok
-    });*/
+      //ok
+    });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.otherUser = t;
       this.messages = [];
     });
     this.chatCoreService.loadedMessagesObservable.subscribe(msgs => this.formatUpdateMessages(msgs));
+    //this.howl.get('newMessageSound').play();
   }
 
   sendMessage(formattedMessage: any) {
@@ -47,7 +47,7 @@ export class ChatFormComponent {
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
 
-  // Makes a Message from a FormattedMessage 
+  // Makes a Message from a FormattedMessage
   makeMessage(formattedMessage) {
     const files = !formattedMessage.files ? [] : formattedMessage.files.map((file) => {
       return {
@@ -93,8 +93,6 @@ export class ChatFormComponent {
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
     let reproduceSound = true;
-    if (this.messages.length == 0)
-      reproduceSound = false;
     let justReadedMessagesId = [];
 
     // taking the messages loaded from CCS, but ordered from the older to the newer
@@ -111,7 +109,7 @@ export class ChatFormComponent {
           this.messages[indexOfMessage].user.name = "";
         else
           this.messages[indexOfMessage].user.name = "✔";
-        
+
       }
       // else if the message is already displayed, do nothing
       else if (indexOfMessage != -1){
@@ -124,7 +122,7 @@ export class ChatFormComponent {
             this.messages[indexOfMessage].user.name = "✔";
           }
         }
-        
+
         return;
       }
       // else add the message to the displayed messages
@@ -134,10 +132,6 @@ export class ChatFormComponent {
           justReadedMessagesId.push(message.id);
         }
         let formattedMessage = this.formatMessage(message, false);
-        
-        /*
-        if (reproduceSound)
-          this.howl.get('newMessageSound').play();*/
 
         this.messages.push(formattedMessage);
       }
@@ -156,8 +150,6 @@ export class ChatFormComponent {
         return d1 - d2;
       });
 
-      
-      
     });
 
     // removing messages if too much
@@ -168,8 +160,11 @@ export class ChatFormComponent {
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
     if(justReadedMessagesId.length > 0){
       this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
+      this.howl.get('newMessageSound').play();
     }
     this.chatCoreService.clearNotifyForSelectedChat();
+
+
 
   }
 
@@ -190,7 +185,7 @@ export class ChatFormComponent {
       else
         user = "✔";
     }
-    
+
     if (toConfirm){
       date = null;
       confirmDate = unformattedMessage.date.toISOString();

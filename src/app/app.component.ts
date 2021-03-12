@@ -3,6 +3,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ChatCoreService } from './services/chat-core.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import {NbDialogService} from '@nebular/theme';
 
 
 @Component({
@@ -11,10 +12,10 @@ import { BreakpointObserver } from '@angular/cdk/layout';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'project-hi';
+
   screenIsSmall: boolean;
 
-  constructor(public auth: AuthService, private router: Router, private breakpointObserver: BreakpointObserver,
+  constructor(public auth: AuthService, public router: Router, private breakpointObserver: BreakpointObserver,
               ) { }
 
   ngOnInit(){
@@ -30,10 +31,12 @@ export class AppComponent {
             localStorage.setItem('isAuth', "true");
             localStorage.setItem('currentToken', t.__raw);
             console.log("AC: Session authenticated with token", [localStorage.getItem('currentToken')]);
-            this.router.navigateByUrl('/chat');
+            //this.router.navigateByUrl('/chat');
           }
         });
     });
+
+
 
   }
 

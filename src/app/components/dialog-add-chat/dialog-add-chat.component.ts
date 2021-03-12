@@ -14,13 +14,14 @@ export class DialogAddChatComponent implements OnInit {
   username: string;
   name: string;
 
+  loadingUserImg: boolean = false;
 
   constructor(protected dialogRef: NbDialogRef<DialogAddChatComponent>, private chatCoreService: ChatCoreService,
               private toastrService: NbToastrService) {
   }
 
   ngOnInit(): void {
-    
+
   }
 
   closeDialog(){
@@ -28,6 +29,8 @@ export class DialogAddChatComponent implements OnInit {
   }
 
   verifyAddChat(username, alsoAdd){
+    this.loadingUserImg = true;
+
     if (username === null){
       username = this.username;
     }
@@ -36,6 +39,7 @@ export class DialogAddChatComponent implements OnInit {
       console.log("DACC: this is your username")
       this.toastrService.show("Can't create a chat with your username", "Error", new NbToastrConfig({status:"danger"}));
       this.userExists = false;
+      this.loadingUserImg = false;
       return;
     }
 
@@ -44,6 +48,7 @@ export class DialogAddChatComponent implements OnInit {
       console.log("DACC: a chat with this user already exists.")
       this.toastrService.show("Chat already exists", "Error", new NbToastrConfig({status:"danger"}));
       this.userExists = false;
+      this.loadingUserImg = false;
       return;
     }
 
@@ -66,8 +71,9 @@ export class DialogAddChatComponent implements OnInit {
         this.toastrService.show("User not exists", "Error", new NbToastrConfig({status:"danger"}));
         this.userExists = false;
       }
+      this.loadingUserImg = false;
     });
-    
+
   }
 
 }

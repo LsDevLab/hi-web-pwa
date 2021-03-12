@@ -18,6 +18,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
 // import { NgxHowlerService } from 'ngx-howler';
+import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
+import {NgxHowlerService} from 'ngx-howler';
+
 
 @NgModule({
   declarations: [
@@ -54,11 +57,18 @@ import { ChatNotificationsService } from './services/chat-notifications.service'
     NbDialogModule.forRoot(),
     NbToastrModule.forRoot(),
     ServiceWorkerModule.register('custom-service-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' }),
+    BackButtonDisableModule.forRoot(),
   ],
   bootstrap: [AppComponent],
   providers: [
-    ChatNotificationsService
+    ChatNotificationsService,
+    NgxHowlerService
   ]
 })
 export class AppModule {
+  constructor(
+    ngxHowlerService: NgxHowlerService
+  ) {
+    ngxHowlerService.loadScript('https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.0/howler.min.js');
+  }
 }

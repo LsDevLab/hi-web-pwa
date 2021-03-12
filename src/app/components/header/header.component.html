@@ -1,5 +1,7 @@
 <div class="row" style="height: inherit;">
-  <img src="assets/img/logo_gif.gif" style="height: 100%; float: left;">
+  <a href='/home' >
+    <img src="assets/img/logo_gif.gif" style="height: 100%; float: left;">
+  </a>
   <div style="float: right;">
     <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
       <app-chat-logger-large></app-chat-logger-large>

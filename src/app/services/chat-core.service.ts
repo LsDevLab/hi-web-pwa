@@ -190,6 +190,10 @@ export class ChatCoreService {
   private chatMessagesSubscription: Subscription = null;
   private targetUserLastAccessSubscription: Subscription = null;
 
+  private isLoadingSource = new BehaviorSubject<boolean>(null);
+  isLoadingObservable = this.isLoadingSource.asObservable();
+  isLoading: boolean;
+
   private intervalID = null;
 
   constructor(private apollo: Apollo, private chatNotificationsService: ChatNotificationsService) {
@@ -197,6 +201,7 @@ export class ChatCoreService {
     this.targetUsernameObservable.subscribe(t => this.targetUsername = t);
     this.loadedMessagesObservable.subscribe(msgs => this.loadedMessages = msgs);
     this.chatsObservable.subscribe(c => this.chats = c);
+    this.isLoadingObservable.subscribe(isL => this.isLoading = isL);
     this.targetUserlastAccessObservable.subscribe(tula => this.targetUserlastAccess = tula);
     console.log("CCS: service loaded");
   }
@@ -235,6 +240,8 @@ export class ChatCoreService {
   private subscribeToChats() {
     // Subscribes to the chats of the current user
 
+    this.isLoadingSource.next(true);
+
     let chatQuery = this.apollo
       .watchQuery<any[]>({
         query: this.gqlQueryChats,
@@ -255,6 +262,7 @@ export class ChatCoreService {
 
     chatQuery.valueChanges.subscribe(
       response =>{
+        this.isLoadingSource.next(false);
         this.chatsSource.next(response.data["queryChats"]);
         console.log("CCS: chats received", {'chats': response.data["queryChats"]});
       }
@@ -278,7 +286,7 @@ export class ChatCoreService {
         USER: this.targetUsername
       },
       updateQuery: (prev, {subscriptionData}) => {
-        return subscriptionData.data
+        return subscriptionData.data;
       }
     });
 
@@ -362,6 +370,8 @@ export class ChatCoreService {
   addUser(username, name){
     // Adds an user with the given username and name
 
+    this.isLoadingSource.next(true);
+
     this.apollo.mutate({
       mutation: this.gqlAddUser,
       variables: {
@@ -370,8 +380,10 @@ export class ChatCoreService {
         lastAccess: new Date().toISOString()
       }
     }).subscribe(({ data }) => {
+      this.isLoadingSource.next(false);
       console.log("CCS: user added");
     },(error) => {
+      this.isLoadingSource.next(false);
       console.log('CCS: ERROR while adding user', error);
     });
   }
@@ -418,11 +430,14 @@ export class ChatCoreService {
     if(currentUsername == this.currentUsername)
       return;
 
+    this.isLoadingSource.next(true);
+
     this.currentUsernameSource.next(currentUsername);
 
     // checking if the current user exists.
     this.userExists(currentUsername).subscribe(response => {
       var result = response.data["getUser"];
+      this.isLoadingSource.next(false);
       if (!result){
         // if not, create a new user with the given username and name
         console.log("CCS: user first login. Created profile.");
@@ -481,7 +496,6 @@ export class ChatCoreService {
       if(chat.user1 == targetUsername || chat.user2 == targetUsername){
         founded = true;
       }
-
     });
     return founded;
   }

@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {BreakpointObserver} from '@angular/cdk/layout';
+import {AuthService} from '@auth0/auth0-angular';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -7,7 +10,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomePageComponent implements OnInit {
 
-  constructor() { }
+  screenIsSmall = false;
+
+  nameOfUser: string = '';
+
+  constructor(private breakpointObserver: BreakpointObserver, public auth: AuthService, public router: Router,) {
+    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+      this.screenIsSmall = r.matches;
+    });
+    auth.user$.subscribe(usr => {
+      if(usr)
+        this.nameOfUser = usr.given_name;
+    });
+  }
 
   ngOnInit(): void {
   }

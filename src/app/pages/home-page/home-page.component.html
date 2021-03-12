@@ -1,1 +1,90 @@
-<p>home-page works!</p>
+<div class="home-page-main-div">
+  <div class="top-banner">
+    <div class="top-banner-top">
+      <div class="title-div">
+        <img class="hi-top-banner-title" src="assets/img/logo_gif.gif">
+        <h1 class="top-banner-title">Chat</h1>
+      </div>
+      <p class="top-banner-subtitle">
+        Con Hi Chat, inviare <strong>messaggi</strong> è <strong>semplice</strong>, <strong>veloce</strong>,
+        <strong>sicuro</strong>, <strong>gratuito</strong>, e disponibile sui dispositivi di tutto il mondo.</p>
+      <div class="top-banner-action-div">
+        <nb-card class="action-div-card">
+          <nb-card-body class="action-card-body" *ngIf="!(auth.isAuthenticated$ | async)">
+            <p class="action-div-card-text" *ngIf="!screenIsSmall">
+              <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
+            </p>
+            <button nbButton status="primary" class="login-button"
+                    (click)="auth.loginWithRedirect()">Login</button>
+            <button nbButton status="success" class="signing-button"
+                    (click)="auth.loginWithRedirect({initialScreen: 'signUp'})">Signup</button>
+          </nb-card-body>
+          <nb-card-body class="action-card-body" *ngIf="(auth.isAuthenticated$ | async)">
+            <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
+              Ciao <strong>{{nameOfUser}}</strong>!
+            </p>
+            <button nbButton status="primary" class="gotochat-button"
+                    (click)="this.router.navigateByUrl('/chat');">Vai alla chat</button>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+    <img class="top-banner-bottom" src="assets/img/header-bottom.svg">
+  </div>
+  <div class="middle-body">
+    <div class="center-text-block">
+      <h1 class="center-text-title">Scopri Hi Chat</h1>
+      <p class="center-text-subtitle">Invia messaggi ai tuoi amici da qualsiasi dispositivo: Hi è una semplice applicazione
+      WEB accessibile da qualsiasi browser.</p>
+    </div>
+    <div class="card-container">
+      <div class="detail-card-1">
+        <h2>Spunte di lettura</h2>
+        <img class="detail-card-1-img" src="assets/img/message.svg">
+        <p style="text-align: center; line-height: 20px;">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+      </div>
+      <div class="detail-card-2">
+        <h2>Sicurezza</h2>
+        <img class="detail-card-2-img" src="assets/img/security.svg">
+        <p style="text-align: center; line-height: 20px;">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer-outer">
+    <img class="footer-img-top" src="assets/img/middle_body_top.svg">
+    <div class="footer">
+      <div class="footer-row1" [ngStyle]="{'flex-direction': screenIsSmall ? 'column' : 'row', 'align-items': screenIsSmall ? 'center' : 'flex-start'}">
+        <img class="footer-logo" src="assets/img/logo_with_back.png">
+        <div class="footer-hi-chat" [ngStyle]="{'align-items': screenIsSmall ? 'center' : 'flex-start'}">
+          <h4 class="footer-hi-chat-title">Hi Chat</h4>
+          <a href='/chat' class="go-to-chat-link">Vai alla chat</a>
+        </div>
+        <div class="footer-follow-me" [ngStyle]="{'align-items': screenIsSmall ? 'center' : 'flex-start'}">
+          <h4 class="footer-hi-chat-title">Follow me</h4>
+          <div class="social-icons">
+            <a href='https://github.com/LsDevLab'>
+              <img class="social-img" src="assets/img/github.svg">
+            </a>
+            <a href='https://www.instagram.com/luigisc22/'>
+              <img class="social-img" src="assets/img/instagram.svg">
+            </a>
+            <a href='https://twitter.com/SchiavoneLuigi'>
+              <img class="social-img" src="assets/img/twitter.svg">
+            </a>
+          </div>
+        </div>
+        <div class="footer-contact-me" [ngStyle]="{'align-items': screenIsSmall ? 'center' : 'flex-start'}">
+          <h4 class="footer-hi-chat-title">Contact me</h4>
+          <a href='mailto:ls.devlab@gmail.com' class="go-to-chat-link">ls.devlab@gmail.com</a>
+        </div>
+      </div>
+      <div class="footer-row2">
+        <p>2020 - <strong>LSDevLab</strong> by <i>Luigi Schiavone</i></p>
+      </div>
+      <div class="footer-row3">
+        <p class="disclaimer-text">*Tutti i contenuti presenti sul sito sono temporanei. Il sito non ha alcuno scopo commerciale.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
