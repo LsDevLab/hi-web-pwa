@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 import {BreakpointObserver} from '@angular/cdk/layout';
+import {NB_WINDOW, NbMenuService} from '@nebular/theme';
+import {filter, map} from 'rxjs/operators';
+import {ChatCoreService} from '../../services/chat-core.service';
+import {ProfileDataService} from '../../services/profile-data.service';
 
 
 @Component({
@@ -12,10 +16,44 @@ import {BreakpointObserver} from '@angular/cdk/layout';
 export class ChatLoggerLargeComponent implements OnInit {
 
   screenIsSmall: boolean;
+  userContextMenuItems = [
+    {
+      title: 'Home',
+      icon: 'home-outline',
+      link: '/home'
+    },
+    {
+      title: 'Chat',
+      icon: 'message-square-outline',
+      link: '/chat',
+      badge: null,
+    },
+    {
+      title: 'Edit profile',
+      icon: 'person-outline',
+    },
+    {
+      title: 'About...',
+      icon: 'info-outline'
+    },
+  ];
 
-  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,  private breakpointObserver: BreakpointObserver) {
+  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,
+              private breakpointObserver: BreakpointObserver, private nbMenuService: NbMenuService,
+              private profileDataService: ProfileDataService) {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
+    });
+    this.nbMenuService.onItemClick().subscribe(menu => {
+
+
+    });
+    this.profileDataService.isAtLeastOneToNotifyObservable.subscribe(notify => {
+      this.userContextMenuItems[1].badge = notify ? {
+        dotMode: true,
+        status: 'success',
+      } : null;
+      console.log("LoggerComponent: notify setted to", notify);
     });
   }
 
@@ -32,5 +70,6 @@ export class ChatLoggerLargeComponent implements OnInit {
     this.auth.logout({ returnTo: document.location.origin });
 
   }
+
 
 }

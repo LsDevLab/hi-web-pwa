@@ -4,7 +4,11 @@
     color="white"
     onlyPicture=true
     [name]="user.email"
-    [title]="user.name">
+    [title]="user.name"
+    [nbContextMenu]="userContextMenuItems"
+    nbContextMenuTag="user-context-menu"
+    nbContextMenuTrigger="hover"
+    nbContextMenuPlacement="left">
   </nb-user>
   <div style="color: white; width: fit-content">
     <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{user.name}}</div>

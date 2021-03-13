@@ -7,7 +7,10 @@
       <app-chat-logger-large></app-chat-logger-large>
     </ng-container>
     <ng-template #loggedOut>
-      <button nbButton ghost status="control" (click)="auth.loginWithRedirect()">Login<nb-icon icon="log-in-outline"></nb-icon></button>
+      <button nbButton ghost status="control" (click)="auth.loginWithRedirect({ appState: { target: '/chat' }})">
+        Login
+        <nb-icon icon="log-in-outline"></nb-icon>
+      </button>
     </ng-template>
   </div>
 </div>

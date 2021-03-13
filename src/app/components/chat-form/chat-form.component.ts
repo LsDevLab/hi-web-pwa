@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { NgxHowlerService } from 'ngx-howler';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-chat-form',
@@ -18,7 +19,8 @@ export class ChatFormComponent {
   thisUser: string;
   otherUser: string;
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService, public howl: NgxHowlerService) {
+  constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
+              public howl: NgxHowlerService, private router: Router) {
   }
 
   ngOnInit() {
@@ -158,11 +160,18 @@ export class ChatFormComponent {
     }
     //console.log("FINE");
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
-    if(justReadedMessagesId.length > 0){
-      this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
-      this.howl.get('newMessageSound').play();
+
+    if(this.router.url === '/chat'){
+
+      if(justReadedMessagesId.length > 0){
+        this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
+        this.howl.get('newMessageSound').play();
+      }
+
+      console.log("CLEARING NOTIFYY");
+      this.chatCoreService.clearNotifyForSelectedChat();
     }
-    this.chatCoreService.clearNotifyForSelectedChat();
+
 
 
 

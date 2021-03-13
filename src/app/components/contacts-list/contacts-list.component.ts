@@ -7,6 +7,7 @@ import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.compo
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
+import {ProfileDataService} from '../../services/profile-data.service';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { ChatNotificationsService } from 'src/app/services/chat-notifications.se
   styleUrls: ['./contacts-list.component.css']
 })
 export class ContactsListComponent implements OnInit {
-  
+
 
   //@Output() userSelectedEvent = new EventEmitter<any>();
 
@@ -32,9 +33,9 @@ export class ContactsListComponent implements OnInit {
   @Output()
   selectedUser: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService, 
+  constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
-              private chatNotificationsService: ChatNotificationsService) {
+              private chatNotificationsService: ChatNotificationsService, private profileDataService: ProfileDataService) {
    }
 
   ngOnInit(): void {
@@ -69,22 +70,27 @@ export class ContactsListComponent implements OnInit {
     let chats = [];
     let chatUsername;
     let notify;
+    let isAtLeastOneToNotify = false;
+    this.profileDataService.setNotify(false);
     unformattedChats.forEach(chat => {
       if (chat.user1 === this.thisUser)
         chatUsername = chat.user2;
       else
         chatUsername = chat.user1;
-      
+
       //console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
 
-      if (chat.notify == this.thisUser)
+      if (chat.notify == this.thisUser) {
         notify = "⋯";
+        isAtLeastOneToNotify = true;
+      }
       else
         notify = "";
 
       chats.push([chatUsername, notify])
-      
+
     });
+    this.profileDataService.setNotify(isAtLeastOneToNotify);
     return chats;
   }
 

@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
+import { filter, map } from 'rxjs/operators';
+import { NB_WINDOW, NbMenuService } from '@nebular/theme';
 
 
 @Component({
@@ -10,7 +12,7 @@ import { ChatNotificationsService } from 'src/app/services/chat-notifications.se
 })
 export class ChatLoggerComponent implements OnInit {
 
-  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService) { }
+  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,) { }
 
   ngOnInit(): void {
   }
@@ -20,7 +22,7 @@ export class ChatLoggerComponent implements OnInit {
     this.chatNotificationsService.unsubscribeToMessagesPushNotifications();
 
     localStorage.setItem('isAuth', "false");
-    localStorage.removeItem('currentToken'); 
+    localStorage.removeItem('currentToken');
     //console.log(localStorage.getItem('currentToken'));
     this.auth.logout({ returnTo: document.location.origin });
   }
