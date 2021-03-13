@@ -13,9 +13,9 @@
     [threshold]="500">
     <nb-list-item *ngFor="let chat of chats" (click)="selectChat(chat[0])" [style.background-color]="chat[0]===otherUser ? '#c7e2ff' : ''" style="cursor: pointer;">
       <nb-user [name]="chat[0]"
-               [title]="chat[0]" 
+               [title]="chat[0]"
                [badgeText]="chat[1]"
-               badgeStatus="success"
+               badgeStatus="primary"
                badgePosition="top left"
                dotMode=true
                color="white">

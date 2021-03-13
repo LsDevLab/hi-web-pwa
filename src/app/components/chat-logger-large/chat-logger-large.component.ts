@@ -26,7 +26,6 @@ export class ChatLoggerLargeComponent implements OnInit {
       title: 'Chat',
       icon: 'message-square-outline',
       link: '/chat',
-      badge: null,
     },
     {
       title: 'Edit profile',
@@ -44,20 +43,23 @@ export class ChatLoggerLargeComponent implements OnInit {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-    this.nbMenuService.onItemClick().subscribe(menu => {
 
 
-    });
-    this.profileDataService.isAtLeastOneToNotifyObservable.subscribe(notify => {
-      this.userContextMenuItems[1].badge = notify ? {
-        dotMode: true,
-        status: 'success',
-      } : null;
-      console.log("LoggerComponent: notify setted to", notify);
-    });
   }
 
   ngOnInit(): void {
+    this.nbMenuService.onItemClick().subscribe(menu => {
+      if(menu.tag === 'user-context-menu') {
+        switch (menu.item.title) {
+          case 'Edit profile':
+            console.log("EDIT PROFILE");
+            break;
+          case 'About...':
+            console.log("ABOUT");
+            break;
+        }
+      }
+    });
   }
 
   logOut(){

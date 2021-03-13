@@ -15,16 +15,16 @@ export class HomePageComponent implements OnInit {
   nameOfUser: string = '';
 
   constructor(private breakpointObserver: BreakpointObserver, public auth: AuthService, public router: Router,) {
-    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
-      this.screenIsSmall = r.matches;
-    });
-    auth.user$.subscribe(usr => {
-      if(usr)
-        this.nameOfUser = usr.given_name;
-    });
   }
 
   ngOnInit(): void {
+    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+      this.screenIsSmall = r.matches;
+    });
+    this.auth.user$.subscribe(usr => {
+      if(usr)
+        this.nameOfUser = usr.given_name;
+    });
   }
 
 }

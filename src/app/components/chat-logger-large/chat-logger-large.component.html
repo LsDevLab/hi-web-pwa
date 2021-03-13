@@ -15,4 +15,9 @@
     <div style="font-size: 8pt;">{{user.email}}</div>
   </div>
 </div>
-<button nbButton ghost class="log-out-btn" status="control" (click)="logOut()">{{screenIsSmall ? '' : 'Logout'}}<nb-icon icon="log-out-outline"></nb-icon></button>
+<button nbButton ghost class="log-out-btn"
+        status="control"
+        (click)="logOut()">
+  {{screenIsSmall ? '' : 'Logout'}}
+  <nb-icon icon="log-out-outline"></nb-icon>
+</button>
