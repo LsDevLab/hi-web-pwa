@@ -71,10 +71,12 @@ export class ContactsListComponent implements OnInit {
     let notify;
     let isAtLeastOneToNotify = false;
     unformattedChats.forEach(chat => {
-      if (chat.user1 === this.thisUser)
+      if (chat.user1 === this.thisUser) {
         chatUsername = chat.user2;
-      else
+      }else{
         chatUsername = chat.user1;
+      }
+
 
       //console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
 
