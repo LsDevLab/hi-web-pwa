@@ -12,22 +12,20 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
-import { HeaderComponent } from './components/header/header.component';
-import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
 import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
 import {NgxHowlerService} from 'ngx-howler';
 import { AuthHttpInterceptor } from '@auth0/auth0-angular';
-import {ProfileDataService} from './services/profile-data.service';
+import {ChatLoggerComponent} from './components/chat-logger/chat-logger.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
-    ChatLoggerLargeComponent
+    //HeaderComponent,
+    //ChatLoggerLargeComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,8 +63,7 @@ import {ProfileDataService} from './services/profile-data.service';
   bootstrap: [AppComponent],
   providers: [
     ChatNotificationsService,
-    NgxHowlerService,
-    ProfileDataService
+    NgxHowlerService
   ]
 })
 export class AppModule {

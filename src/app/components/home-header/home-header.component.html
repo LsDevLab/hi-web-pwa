@@ -4,7 +4,14 @@
   </a>
   <div style="float: right;">
     <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
-      <app-chat-logger-large></app-chat-logger-large>
+      <button nbButton ghost status="control" (click)="router.navigateByUrl('/chat')">
+        Vai alla chat
+        <nb-icon icon="message-square-outline"></nb-icon>
+      </button>
+      <button nbButton ghost status="control" (click)="logOut()">
+        Logout
+        <nb-icon icon="log-out-outline"></nb-icon>
+      </button>
     </ng-container>
     <ng-template #loggedOut>
       <button nbButton ghost status="control" (click)="auth.loginWithRedirect({ appState: { target: '/chat' }})">

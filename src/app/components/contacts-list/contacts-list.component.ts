@@ -7,7 +7,6 @@ import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.compo
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
-import {ProfileDataService} from '../../services/profile-data.service';
 
 
 @Component({
@@ -35,7 +34,7 @@ export class ContactsListComponent implements OnInit {
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
-              private chatNotificationsService: ChatNotificationsService, private profileDataService: ProfileDataService) {
+              private chatNotificationsService: ChatNotificationsService) {
    }
 
   ngOnInit(): void {
@@ -71,7 +70,6 @@ export class ContactsListComponent implements OnInit {
     let chatUsername;
     let notify;
     let isAtLeastOneToNotify = false;
-    this.profileDataService.setNotify(false);
     unformattedChats.forEach(chat => {
       if (chat.user1 === this.thisUser)
         chatUsername = chat.user2;
@@ -90,7 +88,6 @@ export class ContactsListComponent implements OnInit {
       chats.push([chatUsername, notify])
 
     });
-    this.profileDataService.setNotify(isAtLeastOneToNotify);
     return chats;
   }
 

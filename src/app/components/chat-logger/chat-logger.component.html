@@ -1,16 +1,25 @@
-<div *ngIf="auth.isAuthenticated$ | async" style="padding: 5px;">
+<div style="float: right;">
   <div class="user-info-div" *ngIf="auth.user$ | async as user">
     <nb-user style="width: fit-content;"
-      size="medium"
-      color="white"
-      onlyPicture=true
-      [name]="user.email"
-      [title]="user.name">
+             size="medium"
+             color="white"
+             onlyPicture=true
+             [name]="user.email"
+             [title]="user.name"
+             [nbContextMenu]="!screenIsSmall ? userContextMenuItems : null"
+             nbContextMenuTag="user-context-menu"
+             nbContextMenuTrigger="hover"
+             nbContextMenuPlacement="left">
     </nb-user>
-    <div style="color: white; width: fit-content; height: 100%;">
+    <div style="color: white; width: fit-content">
       <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{user.name}}</div>
       <div style="font-size: 8pt;">{{user.email}}</div>
     </div>
   </div>
-  <button nbButton ghost class="log-out-btn" status="control" (click)="logOut()"><nb-icon icon="log-out-outline"></nb-icon></button>
+  <button nbButton ghost class="log-out-btn"
+          status="control"
+          (click)="logOut()">
+    {{screenIsSmall ? '' : 'Logout'}}
+    <nb-icon icon="log-out-outline"></nb-icon>
+  </button>
 </div>
