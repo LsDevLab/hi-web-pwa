@@ -5,10 +5,10 @@ import { ChatCoreService } from 'src/app/services/chat-core.service';
 
 @Component({
   selector: 'app-dialog-add-chat',
-  templateUrl: './dialog-add-chat.component.html',
-  styleUrls: ['./dialog-add-chat.component.css']
+  templateUrl: './dialog-edit-profile.component.html',
+  styleUrls: ['./dialog-edit-profile.component.css']
 })
-export class DialogAddChatComponent implements OnInit {
+export class DialogEditProfileComponent implements OnInit {
 
   userExists: boolean = false;
   username: string;
@@ -16,7 +16,7 @@ export class DialogAddChatComponent implements OnInit {
 
   loadingUserImg: boolean = false;
 
-  constructor(protected dialogRef: NbDialogRef<DialogAddChatComponent>, private chatCoreService: ChatCoreService,
+  constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
               private toastrService: NbToastrService) {
   }
 

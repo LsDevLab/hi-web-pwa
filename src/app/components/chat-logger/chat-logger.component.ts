@@ -2,8 +2,11 @@ import {Component, Inject, OnInit} from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 import { filter, map } from 'rxjs/operators';
-import { NB_WINDOW, NbMenuService } from '@nebular/theme';
+import {NB_WINDOW, NbDialogService, NbMenuService} from '@nebular/theme';
 import {BreakpointObserver} from '@angular/cdk/layout';
+import {Subscription} from 'apollo-client/util/Observable';
+import {DialogAddChatComponent} from '../dialog-add-chat/dialog-add-chat.component';
+import {DialogEditProfileComponent} from '../dialog-edit-profile/dialog-edit-profile.component';
 
 
 @Component({
@@ -34,19 +37,22 @@ export class ChatLoggerComponent implements OnInit {
       icon: 'info-outline'
     },
   ];
+  menuSub: Subscription;
 
   constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,
-              private breakpointObserver: BreakpointObserver, private nbMenuService: NbMenuService) { }
+              private breakpointObserver: BreakpointObserver, private nbMenuService: NbMenuService,
+              private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-    this.nbMenuService.onItemClick().subscribe(menu => {
+    this.menuSub = this.nbMenuService.onItemClick().subscribe(menu => {
       if(menu.tag === 'user-context-menu') {
         switch (menu.item.title) {
           case 'Edit profile':
             console.log("EDIT PROFILE");
+            this.dialogService.open(DialogEditProfileComponent);
             break;
           case 'About...':
             console.log("ABOUT");
@@ -65,6 +71,10 @@ export class ChatLoggerComponent implements OnInit {
     localStorage.removeItem('currentToken');
     this.auth.logout({ returnTo: document.location.origin });
 
+  }
+
+  ngOnDestroy(){
+    this.menuSub.unsubscribe();
   }
 
 

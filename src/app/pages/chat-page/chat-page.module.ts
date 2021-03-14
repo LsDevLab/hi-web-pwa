@@ -15,6 +15,7 @@ import { ChatUserInfoComponent } from '../../components/chat-user-info/chat-user
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 import {DialogLoadingComponent} from '../../components/dialog-loading/dialog-loading.component';
 import {ChatHeaderComponent} from '../../components/chat-header/chat-header.component';
+import {DialogEditProfileComponent} from '../../components/dialog-edit-profile/dialog-edit-profile.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {ChatHeaderComponent} from '../../components/chat-header/chat-header.comp
     ChatUserInfoComponent,
     ChatHeaderComponent,
     //ChatLoggerLargeComponent,
-    ChatLoggerComponent
+    ChatLoggerComponent,
+    DialogEditProfileComponent
   ],
   imports: [
     ChatPageRoutingModule,

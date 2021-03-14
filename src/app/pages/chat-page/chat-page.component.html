@@ -60,7 +60,11 @@
                 <button *ngIf="isUserSelected" nbButton ghost status="control" (click)="openChat()"><nb-icon icon="arrow-ios-upward-outline"></nb-icon></button>
               </div>
               <div style="float: right; padding: 0; padding-right: 5px;">
-                <button nbButton ghost status="control" (click)="toggleGeneralMenu()"><nb-icon icon="menu-outline"></nb-icon></button>
+                <button nbButton ghost status="control"
+                        [nbContextMenu]="userContextMenuItems"
+                        nbContextMenuTag="user-context-menu-small"
+                        nbContextMenuPlacement="top"
+                        nbContextMenuTrigger="click"><nb-icon icon="menu-outline"></nb-icon></button>
               </div>
             </nb-card-footer>
           </nb-card>
@@ -72,13 +76,13 @@
             </nb-card-body>
             <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; border: 0">
               <div style="float: left; padding: 0; padding-right: 5px;">
-                <button nbButton ghost status="control" (click)="closeChat()"><nb-icon icon="arrow-ios-downward-outline"></nb-icon></button>
+                <button nbButton ghost status="control" (click)="closeChat($event)"><nb-icon icon="arrow-ios-downward-outline"></nb-icon></button>
               </div>
               <div class="chat-user-info-div">
                 <app-chat-user-info></app-chat-user-info>
               </div>
               <div style="float: right; padding: 0; padding-right: 5px; border: 0">
-                <button nbButton ghost status="control" (click)="toggleChatMenu()"><nb-icon icon="menu-2-outline"></nb-icon></button>
+                <button nbButton ghost status="control"><nb-icon icon="menu-2-outline"></nb-icon></button>
               </div>
             </nb-card-footer>
           </nb-card>
