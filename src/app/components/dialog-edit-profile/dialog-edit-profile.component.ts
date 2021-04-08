@@ -24,6 +24,6 @@ export class DialogEditProfileComponent implements OnInit {
   }
 
   saveEdits(newName){
-    this.chatCoreService.modifyName(newName).subscribe(result)
+    //this.chatCoreService.modifyName(newName).subscribe(result)
   }
 }
