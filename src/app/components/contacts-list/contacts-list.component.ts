@@ -49,6 +49,7 @@ export class ContactsListComponent implements OnInit {
       }
     });
     this.chatCoreService.chatsUsersInfoObservable.subscribe(cui => {
+      this.chatsUsersInfo = cui;
       this.chats.forEach(chat => {
         const user = cui.find(user => user.username === chat.targetUsername);
         chat.bio = user.bio;
@@ -57,11 +58,22 @@ export class ContactsListComponent implements OnInit {
         chat.age = user.age;
         chat.sex = user.sex;
         chat.online = user.online;
-      })
+      });
     });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.otherUser = t);
-    this.chatCoreService.chatsObservable.subscribe(c => this.chats = this.formatChats(c))
+    this.chatCoreService.chatsObservable.subscribe(c => {
+      this.chats = this.formatChats(c);
+      this.chats.forEach(chat => {
+        const user = this.chatsUsersInfo.find(user => user.username === chat.targetUsername);
+        chat.bio = user.bio;
+        chat.name = user.name;
+        chat.surname = user.surname;
+        chat.age = user.age;
+        chat.sex = user.sex;
+        chat.online = user.online;
+      });
+    })
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
       this.chatCoreService.init(u.email);

@@ -163,7 +163,6 @@ const GQL_QUERY_USER_CHATSINFO = gql`
       age
       sex
       online
-      lastAccess
     }
   }
 `;
@@ -177,7 +176,6 @@ const GQL_SUB_USER_CHATSINFO = gql`
       age
       sex
       online
-      lastAccess
     }
   }
 `;
