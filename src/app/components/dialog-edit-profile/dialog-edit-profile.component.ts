@@ -31,11 +31,12 @@ export class DialogEditProfileComponent implements OnInit {
   }
 
   saveEdits(newUserData){
-    this.chatCoreService.updateCurrentUserData(newUserData).subscribe(({ data }) => {
+    this.chatCoreService.updateCurrentUserData(newUserData).subscribe(response => {
       console.log("USER UPDATED");
+      console.log("DEPC: current user data updated", response);
       this.closeDialog();
     },(error) => {
-      console.log('ERROR UPDATING', error);
+      console.log('DEPC: ERROR while updating current user data', error);
       this.toastrService.show("Error while updating user data", "Error", new NbToastrConfig({status:"danger"}));
     });
   }
