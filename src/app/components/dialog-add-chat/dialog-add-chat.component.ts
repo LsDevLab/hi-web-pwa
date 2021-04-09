@@ -52,7 +52,7 @@ export class DialogAddChatComponent implements OnInit {
       return;
     }
 
-    this.chatCoreService.userExists(username).subscribe(r => {
+    this.chatCoreService.getUserData(username).subscribe(r => {
       var result = r.data["getUser"];
       // verifying if the given user exists
       if (result){

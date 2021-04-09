@@ -7,6 +7,7 @@ import {BreakpointObserver} from '@angular/cdk/layout';
 import {Subscription} from 'apollo-client/util/Observable';
 import {DialogAddChatComponent} from '../dialog-add-chat/dialog-add-chat.component';
 import {DialogEditProfileComponent} from '../dialog-edit-profile/dialog-edit-profile.component';
+import {ChatCoreService} from '../../services/chat-core.service';
 
 
 @Component({
@@ -38,10 +39,15 @@ export class ChatLoggerComponent implements OnInit {
     },
   ];
   menuSub: Subscription;
+  currentUserData: any = {
+    name: 'name',
+    surname: 'surname',
+    username: 'username'
+  };
 
   constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,
               private breakpointObserver: BreakpointObserver, private nbMenuService: NbMenuService,
-              private dialogService: NbDialogService) { }
+              private dialogService: NbDialogService, private chatCoreService: ChatCoreService) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -60,6 +66,7 @@ export class ChatLoggerComponent implements OnInit {
         }
       }
     });
+    this.chatCoreService.currentUserDataObservable.subscribe(userData => this.currentUserData = userData ? userData : this.currentUserData);
   }
 
   logOut(){

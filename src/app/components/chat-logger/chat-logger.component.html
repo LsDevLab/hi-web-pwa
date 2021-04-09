@@ -4,16 +4,16 @@
              size="medium"
              color="white"
              onlyPicture=true
-             [name]="user.email"
-             [title]="user.name"
+             [name]="currentUserData.username"
+             [title]="currentUserData.name + currentUserData.surname"
              [nbContextMenu]="!screenIsSmall ? userContextMenuItems : null"
              nbContextMenuTag="user-context-menu"
              nbContextMenuTrigger="hover"
              nbContextMenuPlacement="left">
     </nb-user>
     <div style="color: white; width: fit-content">
-      <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{user.name}}</div>
-      <div style="font-size: 8pt;">{{user.email}}</div>
+      <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{currentUserData.name}} {{currentUserData.surname}}</div>
+      <div style="font-size: 8pt;">{{currentUserData.username}}</div>
     </div>
   </div>
   <button nbButton ghost class="log-out-btn"

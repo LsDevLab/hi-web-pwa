@@ -90,6 +90,11 @@ export class ChatCoreService {
     getUser(username: $USER) {
       username
       name
+      surname
+      bio
+      age
+      sex
+      online
     }
   }
   `;
@@ -143,6 +148,11 @@ export class ChatCoreService {
     queryUser(filter: {username: {eq: $USER}}) {
       username
       name
+      surname
+      bio
+      age
+      sex
+      online
       lastAccess
     }
   }
@@ -152,20 +162,30 @@ export class ChatCoreService {
       queryUser(filter: {username: {eq: $USER}}) {
         username
         name
+        surname
+        bio
+        age
+        sex
+        online
         lastAccess
       }
     }
   `;
   private gqlAddUser = gql`
-    mutation addUser($USER: String!, $name: String!, $lastAccess: DateTime!) {
-        addUser(input: {username: $USER, name: $name, lastAccess: $lastAccess}) {
+    mutation addUser($USER: String!, $name: String!, $lastAccess: DateTime!, $online: Boolean,
+                     $surname: String!, $bio: String, $sex: String, $age: Int) {
+        addUser(input: {username: $USER, name: $name, lastAccess: $lastAccess, online: $online,
+                        surname: $surname, bio: $bio, sex: $sex, age: $age}) {
           numUids
         }
       }
   `;
   private gqlUpdateUser = gql`
-    mutation updateUser($USER: String!, $lastAccess: DateTime!) {
-        updateUser(input: {filter: {username: {eq: $USER}}, set: {lastAccess: $lastAccess}}) {
+    mutation updateUser($USER: String!, $name: String, $lastAccess: DateTime, $online: Boolean,
+                        $surname: String, $bio: String, $sex: String, $age: Int) {
+        updateUser(input: {filter: {username: {eq: $USER}}, set: {
+                                name: $name, lastAccess: $lastAccess, online: $online,
+                                surname: $surname, bio: $bio, sex: $sex, age: $age}}) {
           numUids
         }
       }
@@ -186,6 +206,9 @@ export class ChatCoreService {
   private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
   targetUserlastAccessObservable = this.targetUserlastAccessSource.asObservable();
   targetUserlastAccess: Date;
+  private currentUserDataSource = new BehaviorSubject<any>(null);
+  currentUserDataObservable = this.currentUserDataSource.asObservable();
+  currentUserData: any;
 
   private chatMessagesSubscription: Subscription = null;
   private targetUserLastAccessSubscription: Subscription = null;
@@ -356,7 +379,7 @@ export class ChatCoreService {
 
   }
 
-  userExists(username){
+  getUserData(username){
     // Returns an observable saying if a user with the given username already exists.
 
     return this.apollo.watchQuery<any[]>({
@@ -365,6 +388,33 @@ export class ChatCoreService {
         USER: username
       }
     }).valueChanges;
+  }
+
+  subscribeToCurrentUserData(){
+    let userQuery = this.apollo
+      .watchQuery<any[]>({
+        query: this.gqlQueryUser,
+        variables: {
+          USER: this.currentUsername
+        }
+      });
+
+    userQuery.subscribeToMore({
+      document: this.gqlSubUser,
+      variables: {
+        USER: this.currentUsername,
+      },
+      updateQuery: (prev, {subscriptionData}) => {
+        return subscriptionData.data
+      }
+    });
+
+    return userQuery.valueChanges.subscribe(
+      response =>{
+        this.currentUserDataSource.next(response.data["queryUser"][0]);
+        console.log("CCS: current user data received", {'current user': response.data["queryUser"][0]});
+      }
+    )
   }
 
   addUser(username, name){
@@ -377,7 +427,12 @@ export class ChatCoreService {
       variables: {
         USER: username,
         name: name,
-        lastAccess: new Date().toISOString()
+        lastAccess: new Date().toISOString(),
+        online: false,
+        bio: '',
+        surname: '',
+        age: 25,
+        sex: 'M'
       }
     }).subscribe(({ data }) => {
       this.isLoadingSource.next(false);
@@ -435,7 +490,7 @@ export class ChatCoreService {
     this.currentUsernameSource.next(currentUsername);
 
     // checking if the current user exists.
-    this.userExists(currentUsername).subscribe(response => {
+    this.getUserData(currentUsername).subscribe(response => {
       var result = response.data["getUser"];
       this.isLoadingSource.next(false);
       if (!result){
@@ -447,6 +502,7 @@ export class ChatCoreService {
         // subscribing to chats of the current user
         this.subscribeToChats();
         this.updateCurrentUserLastAccess();
+        this.subscribeToCurrentUserData();
         // updating last access of current user once every 10s
         interval(10000).subscribe(() => this.updateCurrentUserLastAccess());
         console.log("CCS: setted current user (", this.currentUsername, ")");
@@ -499,5 +555,20 @@ export class ChatCoreService {
     });
     return founded;
   }
+
+  updateCurrentUserData(newUserData){
+    return this.apollo.mutate({
+      mutation: this.gqlUpdateUser,
+      variables: {
+        USER: this.currentUsername,
+        name: newUserData.name,
+        surname: newUserData.surname,
+        age: newUserData.age,
+        sex: newUserData.sex,
+        bio: newUserData.bio,
+      }
+    });
+  }
+
 
 }

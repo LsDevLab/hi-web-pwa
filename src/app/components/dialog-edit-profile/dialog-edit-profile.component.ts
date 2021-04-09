@@ -12,18 +12,31 @@ export class DialogEditProfileComponent implements OnInit {
 
   loadingUserImg: boolean = false;
   currentName: string;
+  userData: any;
 
-  constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,) {
+  constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
+              private toastrService: NbToastrService) {
   }
 
   ngOnInit(): void {
+    this.chatCoreService.currentUserDataObservable.subscribe(
+      userData => {
+        this.userData = userData;
+      }
+    );
   }
 
   closeDialog(){
     this.dialogRef.close();
   }
 
-  saveEdits(newName){
-    //this.chatCoreService.modifyName(newName).subscribe(result)
+  saveEdits(newUserData){
+    this.chatCoreService.updateCurrentUserData(newUserData).subscribe(({ data }) => {
+      console.log("USER UPDATED");
+      this.closeDialog();
+    },(error) => {
+      console.log('ERROR UPDATING', error);
+      this.toastrService.show("Error while updating user data", "Error", new NbToastrConfig({status:"danger"}));
+    });
   }
 }
