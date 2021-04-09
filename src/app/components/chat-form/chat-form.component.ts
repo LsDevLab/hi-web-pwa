@@ -48,10 +48,10 @@ export class ChatFormComponent {
     this.chatCoreService.sendMessage(message).subscribe(response => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.thisUser, this.otherUser);
       console.log("CFC: message sent to", this.otherUser);
-      this.chatCoreService.notifyMessagesToRead().subscribe(response => {
-        console.log('CFC:', this.otherUser, 'notified');
+      this.chatCoreService.setCurrentChatNotifyToTarget().subscribe(response => {
+        console.log('CFC: setted notify flag to', this.otherUser);
       },(error) => {
-        console.log('CFC: ERROR while notifying ', this.otherUser, error);
+        console.log('CFC: ERROR while setting chat notify flag to ', this.otherUser, error);
       });
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
@@ -182,8 +182,8 @@ export class ChatFormComponent {
         this.howl.get('newMessageSound').play();
       }
 
-      this.chatCoreService.clearNotifyForSelectedChat().subscribe(response => {
-        console.log("CFC: current chat notify cleared");
+      this.chatCoreService.clearCurrentChatNotify().subscribe(response => {
+        console.log("CFC: current chat notify flag cleared");
       },(error) => {
         console.log('CFC: ERROR while clearing notify for current chat', error);
       });

@@ -34,6 +34,7 @@ export class DialogEditProfileComponent implements OnInit {
     this.chatCoreService.updateCurrentUserData(newUserData).subscribe(response => {
       console.log("USER UPDATED");
       console.log("DEPC: current user data updated", response);
+      this.toastrService.show("User profile updated", "Done", new NbToastrConfig({status:"success"}));
       this.closeDialog();
     },(error) => {
       console.log('DEPC: ERROR while updating current user data', error);

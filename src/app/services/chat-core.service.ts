@@ -113,9 +113,49 @@ const GQL_GET_USER = gql`
     }
   }
 `;
-const GQL_QUERY_USER = gql`
+const GQL_QUERY_USER_CURRENTUSER = gql`
   query queryUser($USER: String!) {
     queryUser(filter: {username: {eq: $USER}}) {
+      username
+      name
+      surname
+      bio
+      age
+      sex
+      online
+    }
+  }
+`;
+const GQL_SUB_USER_CURRENTUSER = gql`
+  subscription queryUser($USER: String!) {
+    queryUser(filter: {username: {eq: $USER}}) {
+      username
+      name
+      surname
+      bio
+      age
+      sex
+      online
+    }
+  }
+`;
+const GQL_QUERY_USER_TARGETLASTACCESS = gql`
+  query queryUser($USER: String!) {
+    queryUser(filter: {username: {eq: $USER}}) {
+      lastAccess
+    }
+  }
+`;
+const GQL_SUB_USER_TARGETLASTACCESS = gql`
+  subscription queryUser($USER: String!) {
+    queryUser(filter: {username: {eq: $USER}}) {
+      lastAccess
+    }
+  }
+`;
+const GQL_QUERY_USER_CHATSINFO = gql`
+  query queryUser($usernames: [String!]) {
+    queryUser(filter: {username: {in: $usernames}}) {
       username
       name
       surname
@@ -127,9 +167,9 @@ const GQL_QUERY_USER = gql`
     }
   }
 `;
-const GQL_SUB_USER = gql`
-  subscription queryUser($USER: String!) {
-    queryUser(filter: {username: {eq: $USER}}) {
+const GQL_SUB_USER_CHATSINFO = gql`
+  subscription queryUser($usernames: [String!]) {
+    queryUser(filter: {username: {in: $usernames}}) {
       username
       name
       surname
@@ -171,6 +211,7 @@ export class ChatCoreService {
   private targetUsernameSource = new BehaviorSubject<string>("No user selected");
   private loadedMessagesSource = new BehaviorSubject<any[]>([]);
   private chatsSource = new BehaviorSubject<any[]>([]);
+  private chatsUsersInfoSource = new BehaviorSubject<any[]>([]);
   private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
   private currentUserDataSource = new BehaviorSubject<any>(null);
   private isLoadingSource = new BehaviorSubject<boolean>(null);
@@ -179,10 +220,12 @@ export class ChatCoreService {
   private _targetUsername: string;
   private _loadedMessages: any[];
   private _chats: any[];
+  private _chatsUsersInfo: any[];
   private _targetUserlastAccess: Date;
   private _currentUserData: any;
   private _isLoading: boolean;
 
+  private chatUsersInfoSubscription: Subscription = null;
   private chatMessagesSubscription: Subscription = null;
   private targetUserLastAccessSubscription: Subscription = null;
 
@@ -192,6 +235,7 @@ export class ChatCoreService {
   public targetUsernameObservable = this.targetUsernameSource.asObservable();
   public loadedMessagesObservable = this.loadedMessagesSource.asObservable();
   public chatsObservable = this.chatsSource.asObservable();
+  public chatsUsersInfoObservable = this.chatsUsersInfoSource.asObservable();
   public targetUserlastAccessObservable = this.targetUserlastAccessSource.asObservable();
   public currentUserDataObservable = this.currentUserDataSource.asObservable();
   public isLoadingObservable = this.isLoadingSource.asObservable();
@@ -201,6 +245,7 @@ export class ChatCoreService {
     this.targetUsernameObservable.subscribe(t => this._targetUsername = t);
     this.loadedMessagesObservable.subscribe(msgs => this._loadedMessages = msgs);
     this.chatsObservable.subscribe(c => this._chats = c);
+    this.chatsUsersInfoObservable.subscribe(cui => this._chatsUsersInfo = cui);
     this.isLoadingObservable.subscribe(isL => this._isLoading = isL);
     this.currentUserDataObservable.subscribe(userData => this._currentUserData = userData);
     this.targetUserlastAccessObservable.subscribe(tula => this._targetUserlastAccess = tula);
@@ -209,6 +254,35 @@ export class ChatCoreService {
 
 
   //////////////////////////// PRIVATE METHODS ////////////////////////////
+
+  private subscribeToCurrentChatUsersInfo(chatTargetUsernames: string[]): Subscription {
+    // Subscribes to the some info of the target users of the current list of chats
+
+    let usersQuery = this.apollo
+      .watchQuery<any[]>({
+        query: GQL_QUERY_USER_CHATSINFO,
+        variables: {
+          usernames: chatTargetUsernames
+        }
+      });
+
+    usersQuery.subscribeToMore({
+      document: GQL_SUB_USER_CHATSINFO,
+      variables: {
+        usernames: chatTargetUsernames
+      },
+      updateQuery: (prev, {subscriptionData}) => {
+        return subscriptionData.data
+      }
+    });
+
+    return usersQuery.valueChanges.subscribe(
+      response =>{
+        this.chatsUsersInfoSource.next(response.data["queryUser"]);
+        console.log("CCS: chats users info received", {'usersInfo': response.data["queryUser"]});
+      }
+    );
+  }
 
   private subscribeToChatMessages(): Subscription {
     // Subscribes to the messages of the current chat
@@ -270,6 +344,19 @@ export class ChatCoreService {
         this.isLoadingSource.next(false);
         this.chatsSource.next(response.data["queryChats"]);
         console.log("CCS: chats received", {'chats': response.data["queryChats"]});
+        if(this.chatUsersInfoSubscription)
+          this.chatUsersInfoSubscription.unsubscribe();
+        let chatsList = response.data["queryChats"] ? response.data["queryChats"] : null;
+        if (chatsList) {
+          chatsList = chatsList.map(chatData => {
+            if (chatData.user1 === this._currentUsername)
+              return chatData.user2;
+            else
+              return chatData.user1;
+          });
+          console.log('CCS: chats of which subscribe to their data', chatsList)
+          this.chatUsersInfoSubscription = this.subscribeToCurrentChatUsersInfo(chatsList);
+        }
       }
     );
 
@@ -280,14 +367,14 @@ export class ChatCoreService {
 
     let targetLastAccessQuery = this.apollo
       .watchQuery<any[]>({
-        query: GQL_QUERY_USER,
+        query: GQL_QUERY_USER_TARGETLASTACCESS,
         variables: {
           USER: this._targetUsername
         }
       });
 
       targetLastAccessQuery.subscribeToMore({
-      document: GQL_SUB_USER,
+      document: GQL_SUB_USER_TARGETLASTACCESS,
       variables: {
         USER: this._targetUsername
       },
@@ -310,14 +397,14 @@ export class ChatCoreService {
 
     let userQuery = this.apollo
       .watchQuery<any[]>({
-        query: GQL_QUERY_USER,
+        query: GQL_QUERY_USER_CURRENTUSER,
         variables: {
           USER: this._currentUsername
         }
       });
 
     userQuery.subscribeToMore({
-      document: GQL_SUB_USER,
+      document: GQL_SUB_USER_CURRENTUSER,
       variables: {
         USER: this._currentUsername,
       },
@@ -374,7 +461,7 @@ export class ChatCoreService {
 
   //////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  public notifyMessagesToRead(): Observable<any> {
+  public setCurrentChatNotifyToTarget(): Observable<any> {
     // Set the notify field of a chat to the target user. N.B. Used when the current user sends a message
 
     return this.apollo.mutate({
@@ -386,6 +473,19 @@ export class ChatCoreService {
       }
     }).pipe(map(response => response.data["updateChat"]));
 
+  }
+
+  public clearCurrentChatNotify(): Observable<any>{
+    // Set the notify field of a chat to 'none'
+
+    return this.apollo.mutate({
+      mutation: GQL_UPDATE_CHAT,
+      variables: {
+        USER: this._currentUsername,
+        otherUser: this._targetUsername,
+        notify: "none"
+      }
+    }).pipe(map(response => response.data["updateChat"]));
   }
 
   public sendMessage(message: any): Observable<any> {
@@ -429,34 +529,20 @@ export class ChatCoreService {
 
   }
 
-  public clearNotifyForSelectedChat(): Observable<any>{
-    // Updates to now the last access of the current user
+  public updateCurrentUserData(newUserData): Observable<any>{
+    // Updates the current user data
 
     return this.apollo.mutate({
-      mutation: GQL_UPDATE_CHAT,
+      mutation: GQL_UPDATE_USER,
       variables: {
         USER: this._currentUsername,
-        otherUser: this._targetUsername,
-        notify: "none"
+        name: newUserData.name,
+        surname: newUserData.surname,
+        age: newUserData.age,
+        sex: newUserData.sex,
+        bio: newUserData.bio,
       }
-    }).pipe(map(response => response.data["updateChat"]));
-  }
-
-  public setChat(targetUsername: string){
-    // Sets as current chat the one with the user with the given username
-
-    this.targetUsernameSource.next(targetUsername);
-
-    // subscribing to the messages of the current chat and to the target user last access
-    if (this.chatMessagesSubscription){
-      this.chatMessagesSubscription.unsubscribe();
-    }
-    if (this.targetUserLastAccessSubscription){
-      this.targetUserLastAccessSubscription.unsubscribe();
-    }
-    this.chatMessagesSubscription = this.subscribeToChatMessages();
-    this.targetUserLastAccessSubscription = this.subscribeToTargetUserLastAccess();
-    console.log("CCS: setted current chat (", this._currentUsername, "->", this._targetUsername, ")");
+    }).pipe(map(response => response.data["updateUser"]));;
 
   }
 
@@ -485,20 +571,21 @@ export class ChatCoreService {
     return founded;
   }
 
-  public updateCurrentUserData(newUserData){
-    // Updates the current user data
+  public setChat(targetUsername: string){
+    // Sets as current chat the one with the user with the given username
 
-    return this.apollo.mutate({
-      mutation: GQL_UPDATE_USER,
-      variables: {
-        USER: this._currentUsername,
-        name: newUserData.name,
-        surname: newUserData.surname,
-        age: newUserData.age,
-        sex: newUserData.sex,
-        bio: newUserData.bio,
-      }
-    }).pipe(map(response => response.data["updateUser"]));;
+    this.targetUsernameSource.next(targetUsername);
+
+    // subscribing to the messages of the current chat and to the target user last access
+    if (this.chatMessagesSubscription){
+      this.chatMessagesSubscription.unsubscribe();
+    }
+    if (this.targetUserLastAccessSubscription){
+      this.targetUserLastAccessSubscription.unsubscribe();
+    }
+    this.chatMessagesSubscription = this.subscribeToChatMessages();
+    this.targetUserLastAccessSubscription = this.subscribeToTargetUserLastAccess();
+    console.log("CCS: setted current chat (", this._currentUsername, "->", this._targetUsername, ")");
 
   }
 

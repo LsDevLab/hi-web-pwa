@@ -21,6 +21,7 @@ export class ContactsListComponent implements OnInit {
 
 
   chats: any = [];
+  chatsUsersInfo: any[] = [];
   thisUser: string;
   thisName: string;
   otherUser: string;
@@ -47,13 +48,23 @@ export class ContactsListComponent implements OnInit {
         this.size = "medium";
       }
     });
-
+    this.chatCoreService.chatsUsersInfoObservable.subscribe(cui => {
+      this.chats.forEach(chat => {
+        const user = cui.find(user => user.username === chat.targetUsername);
+        chat.bio = user.bio;
+        chat.name = user.name;
+        chat.surname = user.surname;
+        chat.age = user.age;
+        chat.sex = user.sex;
+        chat.online = user.online;
+      })
+    });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.otherUser = t);
     this.chatCoreService.chatsObservable.subscribe(c => this.chats = this.formatChats(c))
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
-      this.chatCoreService.init(u.email, u.name);
+      this.chatCoreService.init(u.email);
       this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
     });
     //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
@@ -87,7 +98,17 @@ export class ContactsListComponent implements OnInit {
       else
         notify = "";
 
-      chats.push([chatUsername, notify])
+
+      chats.push({
+        targetUsername: chatUsername,
+        notify: notify,
+        bio: '',
+        name: '',
+        surname: '',
+        age: '',
+        sex: '',
+        online: ''
+    })
 
     });
     return chats;
