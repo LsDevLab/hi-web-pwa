@@ -1,13 +1,8 @@
-<nb-layout withScroll=false>
+<nb-layout>
 
-  <!-- Header component -->
-  <nb-layout-header *ngIf="router.url === '/home' || !screenIsSmall || !(auth.isAuthenticated$ | async)" style="min-height: 10px; background-color: #36f;">
-    <app-header style="height: 100%; width: 100%;"></app-header>
-  </nb-layout-header>
-
-  <!-- Body component -->
-  <nb-layout-column style="padding: 0px; overflow-x: hidden;">
+  <nb-layout-column style="padding: 0px">
     <router-outlet></router-outlet>
   </nb-layout-column>
 
 </nb-layout>
+

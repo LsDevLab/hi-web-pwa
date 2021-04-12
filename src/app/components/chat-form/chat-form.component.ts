@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { NgxHowlerService } from 'ngx-howler';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-chat-form',
@@ -18,7 +19,8 @@ export class ChatFormComponent {
   thisUser: string;
   otherUser: string;
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService, public howl: NgxHowlerService) {
+  constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
+              public howl: NgxHowlerService, private router: Router) {
   }
 
   ngOnInit() {
@@ -43,7 +45,17 @@ export class ChatFormComponent {
     // adding the message to the list of the displayed messages, marking it as to be confirmed ("...")
     this.messages.push(this.formatMessage(message, true));
     // sending messages with CCS
-    this.chatCoreService.sendMessage(message);
+    this.chatCoreService.sendMessage(message).subscribe(response => {
+      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.thisUser, this.otherUser);
+      console.log("CFC: message sent to", this.otherUser);
+      this.chatCoreService.setCurrentChatNotifyToTarget().subscribe(response => {
+        console.log('CFC: setted notify flag to', this.otherUser);
+      },(error) => {
+        console.log('CFC: ERROR while setting chat notify flag to ', this.otherUser, error);
+      });
+    },(error) => {
+      console.log('CFC: ERROR while sending message', error);
+    });
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
 
@@ -158,11 +170,25 @@ export class ChatFormComponent {
     }
     //console.log("FINE");
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
-    if(justReadedMessagesId.length > 0){
-      this.chatCoreService.sendMessagesReaded(justReadedMessagesId);
-      this.howl.get('newMessageSound').play();
+
+    if(this.router.url === '/chat'){
+
+      if(justReadedMessagesId.length > 0){
+        this.chatCoreService.setMessagesAsReaded(justReadedMessagesId).subscribe(response => {
+          console.log("CFC: messages confirmed as readed", {'messages': justReadedMessagesId});
+        },(error) => {
+          console.log('CFC: ERROR while confirming messages as readed', error);
+        });
+        this.howl.get('newMessageSound').play();
+      }
+
+      this.chatCoreService.clearCurrentChatNotify().subscribe(response => {
+        console.log("CFC: current chat notify flag cleared");
+      },(error) => {
+        console.log('CFC: ERROR while clearing notify for current chat', error);
+      });
     }
-    this.chatCoreService.clearNotifyForSelectedChat();
+
 
 
 

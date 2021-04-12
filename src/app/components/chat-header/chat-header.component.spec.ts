@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChatLoggerLargeComponent } from './chat-logger-large.component';
+import { ChatHeaderComponent } from './chat-header.component';
 
-describe('ChatLoggerLargeComponent', () => {
-  let component: ChatLoggerLargeComponent;
-  let fixture: ComponentFixture<ChatLoggerLargeComponent>;
+describe('HeaderComponent', () => {
+  let component: ChatHeaderComponent;
+  let fixture: ComponentFixture<ChatHeaderComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChatLoggerLargeComponent ]
+      declarations: [ ChatHeaderComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ChatLoggerLargeComponent);
+    fixture = TestBed.createComponent(ChatHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

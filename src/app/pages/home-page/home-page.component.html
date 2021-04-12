@@ -1,3 +1,8 @@
+<!-- Header component -->
+<nb-layout-header style="min-height: 10px; background-color: #36f;">
+  <unlogged-app-header style="height: 100%; width: 100%;"></unlogged-app-header>
+</nb-layout-header>
+
 <div class="home-page-main-div">
   <div class="top-banner">
     <div class="top-banner-top">
@@ -21,10 +26,13 @@
           </nb-card-body>
           <nb-card-body class="action-card-body" *ngIf="(auth.isAuthenticated$ | async)">
             <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
-              Ciao <strong>{{nameOfUser}}</strong>!
+              <strong>Ciao!</strong>
             </p>
             <button nbButton status="primary" class="gotochat-button"
-                    (click)="this.router.navigateByUrl('/chat');">Vai alla chat</button>
+                    (click)="this.router.navigateByUrl('/chat');">
+              Vai alla chat
+              <nb-icon icon="message-square-outline"></nb-icon>
+            </button>
           </nb-card-body>
         </nb-card>
       </div>

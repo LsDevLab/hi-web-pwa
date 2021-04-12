@@ -4,8 +4,6 @@ import { AuthService } from '@auth0/auth0-angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NbDialogService } from '@nebular/theme';
 import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.component';
-import { SwPush } from '@angular/service-worker';
-import { HttpClient } from '@angular/common/http';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 
 
@@ -15,12 +13,13 @@ import { ChatNotificationsService } from 'src/app/services/chat-notifications.se
   styleUrls: ['./contacts-list.component.css']
 })
 export class ContactsListComponent implements OnInit {
-  
+
 
   //@Output() userSelectedEvent = new EventEmitter<any>();
 
 
   chats: any = [];
+  chatsUsersInfo: any[] = [];
   thisUser: string;
   thisName: string;
   otherUser: string;
@@ -32,7 +31,7 @@ export class ContactsListComponent implements OnInit {
   @Output()
   selectedUser: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService, 
+  constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
               private chatNotificationsService: ChatNotificationsService) {
    }
@@ -47,13 +46,24 @@ export class ContactsListComponent implements OnInit {
         this.size = "medium";
       }
     });
-
+    this.chatCoreService.chatsUsersInfoObservable.subscribe(cui => {
+      this.chatsUsersInfo = cui;
+      this.chats.forEach(chat => {
+        const user = cui.find(user => user.username === chat.targetUsername);
+        chat.bio = user.bio;
+        chat.name = user.name;
+        chat.surname = user.surname;
+        chat.age = user.age;
+        chat.sex = user.sex;
+        chat.online = user.online;
+      });
+    });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.otherUser = t);
-    this.chatCoreService.chatsObservable.subscribe(c => this.chats = this.formatChats(c))
+    this.chatCoreService.chatsObservable.subscribe(c => this.chats = this.formatChats(c));
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
-      this.chatCoreService.init(u.email, u.name);
+      this.chatCoreService.init(u.email);
       this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
     });
     //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
@@ -69,21 +79,37 @@ export class ContactsListComponent implements OnInit {
     let chats = [];
     let chatUsername;
     let notify;
+    let isAtLeastOneToNotify = false;
     unformattedChats.forEach(chat => {
-      if (chat.user1 === this.thisUser)
+      if (chat.user1 === this.thisUser) {
         chatUsername = chat.user2;
-      else
+      }else{
         chatUsername = chat.user1;
-      
+      }
+
+
       //console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
 
-      if (chat.notify == this.thisUser)
+      if (chat.notify == this.thisUser) {
         notify = "⋯";
+        isAtLeastOneToNotify = true;
+      }
       else
         notify = "";
 
-      chats.push([chatUsername, notify])
-      
+      const user = this.chatsUsersInfo.find(user => user.username === chatUsername);
+
+      chats.push({
+        targetUsername: chatUsername,
+        notify: notify,
+        bio: user ? user.bio : '',
+        name: user ? user.name : '',
+        surname: user ? user.surname : '',
+        age: user ? user.age : '',
+        sex: user ? user.sex : '',
+        online: user ? user.online : ''
+    })
+
     });
     return chats;
   }

@@ -28,3 +28,11 @@ nb-list-item:hover{
   text-align: right;
   width: 50%;
 }
+
+.item-div{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}

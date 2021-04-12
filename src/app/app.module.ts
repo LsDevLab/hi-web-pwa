@@ -8,25 +8,24 @@ import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule,
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
-import { HeaderComponent } from './components/header/header.component';
-import { ChatLoggerLargeComponent } from './components/chat-logger-large/chat-logger-large.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
-// import { NgxHowlerService } from 'ngx-howler';
 import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
 import {NgxHowlerService} from 'ngx-howler';
+import { AuthHttpInterceptor } from '@auth0/auth0-angular';
+import {ChatLoggerComponent} from './components/chat-logger/chat-logger.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
-    ChatLoggerLargeComponent
+    //HeaderComponent,
+    //ChatLoggerLargeComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,7 +49,7 @@ import {NgxHowlerService} from 'ngx-howler';
     AuthModule.forRoot({
       domain: 'lslab.us.auth0.com',
       clientId: 'q4xpoVk12GYpGbr9k2ZwncBUl8P9jsuV',
-      cacheLocation: 'localstorage'
+      cacheLocation: 'localstorage',
     }),
     ChatPageModule,
     HomePageModule,
@@ -58,6 +57,8 @@ import {NgxHowlerService} from 'ngx-howler';
     NbToastrModule.forRoot(),
     ServiceWorkerModule.register('custom-service-worker.js', { enabled: environment.production, registrationStrategy: 'registerImmediately' }),
     BackButtonDisableModule.forRoot(),
+    NbContextMenuModule,
+    NbMenuModule.forRoot(),
   ],
   bootstrap: [AppComponent],
   providers: [

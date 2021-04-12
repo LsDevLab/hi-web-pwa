@@ -1,0 +1,42 @@
+
+.loading-user-img{
+  height: 40px;
+}
+
+.body-div{
+  display: flex;
+  flex-direction: column;
+
+}
+
+.profile-img-div{
+  background-color: #3366ff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-inputs-div{
+  padding: 10px 24px 24px 24px;
+}
+
+.profile-input-field{
+  padding-top: 14px;
+}
+
+.profile-img{
+  border-radius: 50%;
+  height: 25vh;
+  width: 25vh;
+}
+
+.name-surname-label{
+  margin: 15px;
+  color: white;
+}
+
+.username-label{
+  color: white;
+}
+
