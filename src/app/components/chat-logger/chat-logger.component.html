@@ -1,15 +1,24 @@
 <div style="float: right;">
   <div class="user-info-div" *ngIf="auth.user$ | async as user">
-    <nb-user style="width: fit-content;"
+    <nb-user *ngIf="!screenIsSmall"
+             style="width: fit-content;"
              size="medium"
              color="white"
              onlyPicture=true
              [name]="currentUserData.username"
              [title]="currentUserData.name + currentUserData.surname"
-             [nbContextMenu]="!screenIsSmall ? userContextMenuItems : null"
+             [nbContextMenu]="userContextMenuItems"
              nbContextMenuTag="user-context-menu"
              nbContextMenuTrigger="hover"
              nbContextMenuPlacement="left">
+    </nb-user>
+    <nb-user *ngIf="screenIsSmall"
+             style="width: fit-content;"
+             size="medium"
+             color="white"
+             onlyPicture=true
+             [name]="currentUserData.username"
+             [title]="currentUserData.name + currentUserData.surname">
     </nb-user>
     <div style="color: white; width: fit-content">
       <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{currentUserData.name}} {{currentUserData.surname}}</div>
