@@ -4,8 +4,6 @@ import { AuthService } from '@auth0/auth0-angular';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NbDialogService } from '@nebular/theme';
 import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.component';
-import { SwPush } from '@angular/service-worker';
-import { HttpClient } from '@angular/common/http';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 
 
@@ -62,18 +60,7 @@ export class ContactsListComponent implements OnInit {
     });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.otherUser = t);
-    this.chatCoreService.chatsObservable.subscribe(c => {
-      this.chats = this.formatChats(c);
-      this.chats.forEach(chat => {
-        const user = this.chatsUsersInfo.find(user => user.username === chat.targetUsername);
-        chat.bio = user.bio;
-        chat.name = user.name;
-        chat.surname = user.surname;
-        chat.age = user.age;
-        chat.sex = user.sex;
-        chat.online = user.online;
-      });
-    })
+    this.chatCoreService.chatsObservable.subscribe(c => this.chats = this.formatChats(c));
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
       this.chatCoreService.init(u.email);
@@ -110,16 +97,17 @@ export class ContactsListComponent implements OnInit {
       else
         notify = "";
 
+      const user = this.chatsUsersInfo.find(user => user.username === chatUsername);
 
       chats.push({
         targetUsername: chatUsername,
         notify: notify,
-        bio: '',
-        name: '',
-        surname: '',
-        age: '',
-        sex: '',
-        online: ''
+        bio: user ? user.bio : '',
+        name: user ? user.name : '',
+        surname: user ? user.surname : '',
+        age: user ? user.age : '',
+        sex: user ? user.sex : '',
+        online: user ? user.online : ''
     })
 
     });
