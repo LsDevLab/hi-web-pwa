@@ -1,13 +1,12 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
 import { Apollo } from 'apollo-angular';
-import { parse } from 'graphql';
 import gql from 'graphql-tag';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { ChatNotificationsService } from './chat-notifications.service';
-import { map } from 'rxjs/operators';
+import { last, map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { AngularFireStorage } from '@angular/fire/storage';
+import { concatMap } from 'rxjs/operators';
 
 const GQL_QUERY_MESSAGE = gql`
   query queryMessage($USER: String!, $targetUser: String!) {
@@ -110,6 +109,7 @@ const GQL_GET_USER = gql`
       age
       sex
       online
+      profile_img
     }
   }
 `;
@@ -123,6 +123,7 @@ const GQL_QUERY_USER_CURRENTUSER = gql`
       age
       sex
       online
+      profile_img
     }
   }
 `;
@@ -136,6 +137,7 @@ const GQL_SUB_USER_CURRENTUSER = gql`
       age
       sex
       online
+      profile_img
     }
   }
 `;
@@ -163,6 +165,7 @@ const GQL_QUERY_USER_CHATSINFO = gql`
       age
       sex
       online
+      profile_img
     }
   }
 `;
@@ -176,24 +179,25 @@ const GQL_SUB_USER_CHATSINFO = gql`
       age
       sex
       online
+      profile_img
     }
   }
 `;
 const GQL_ADD_USER = gql`
   mutation addUser($USER: String!, $name: String!, $lastAccess: DateTime!, $online: Boolean,
-    $surname: String!, $bio: String, $sex: String, $age: Int) {
+    $surname: String!, $bio: String, $sex: String, $age: Int, $profile_img: String) {
     addUser(input: {username: $USER, name: $name, lastAccess: $lastAccess, online: $online,
-      surname: $surname, bio: $bio, sex: $sex, age: $age}) {
+      surname: $surname, bio: $bio, sex: $sex, age: $age, profile_img: $profile_img}) {
       numUids
     }
   }
 `;
 const GQL_UPDATE_USER = gql`
   mutation updateUser($USER: String!, $name: String, $lastAccess: DateTime, $online: Boolean,
-    $surname: String, $bio: String, $sex: String, $age: Int) {
+    $surname: String, $bio: String, $sex: String, $age: Int, $profile_img: String) {
     updateUser(input: {filter: {username: {eq: $USER}}, set: {
       name: $name, lastAccess: $lastAccess, online: $online,
-      surname: $surname, bio: $bio, sex: $sex, age: $age}}) {
+      surname: $surname, bio: $bio, sex: $sex, age: $age, profile_img: $profile_img}}) {
       numUids
     }
   }
@@ -207,6 +211,7 @@ export class ChatCoreService {
 
   private currentUsernameSource = new BehaviorSubject<string>("No user selected");
   private targetUsernameSource = new BehaviorSubject<string>("No user selected");
+  private targetUserDataSource = new BehaviorSubject<any>(null);
   private loadedMessagesSource = new BehaviorSubject<any[]>([]);
   private chatsSource = new BehaviorSubject<any[]>([]);
   private chatsUsersInfoSource = new BehaviorSubject<any[]>([]);
@@ -222,6 +227,7 @@ export class ChatCoreService {
   private _targetUserlastAccess: Date;
   private _currentUserData: any;
   private _isLoading: boolean;
+  private _targetUserData: any;
 
   private chatUsersInfoSubscription: Subscription = null;
   private chatMessagesSubscription: Subscription = null;
@@ -231,6 +237,7 @@ export class ChatCoreService {
 
   public currentUsernameObservable = this.currentUsernameSource.asObservable();
   public targetUsernameObservable = this.targetUsernameSource.asObservable();
+  public targetUserDataObservable = this.targetUserDataSource.asObservable();
   public loadedMessagesObservable = this.loadedMessagesSource.asObservable();
   public chatsObservable = this.chatsSource.asObservable();
   public chatsUsersInfoObservable = this.chatsUsersInfoSource.asObservable();
@@ -238,7 +245,8 @@ export class ChatCoreService {
   public currentUserDataObservable = this.currentUserDataSource.asObservable();
   public isLoadingObservable = this.isLoadingSource.asObservable();
 
-  constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService) {
+  constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService,
+              private afStorage: AngularFireStorage) {
     this.currentUsernameObservable.subscribe(c => this._currentUsername = c);
     this.targetUsernameObservable.subscribe(t => this._targetUsername = t);
     this.loadedMessagesObservable.subscribe(msgs => this._loadedMessages = msgs);
@@ -277,6 +285,9 @@ export class ChatCoreService {
     return usersQuery.valueChanges.subscribe(
       response =>{
         this.chatsUsersInfoSource.next(response.data["queryUser"]);
+        const newTargetUserData = response.data["queryUser"].find(user => user.username === this._targetUsername);
+        if (newTargetUserData != this._targetUserData)
+          this.targetUserDataSource.next(newTargetUserData);
         console.log("CCS: chats users info received", {'usersInfo': response.data["queryUser"]});
       }
     );
@@ -540,7 +551,28 @@ export class ChatCoreService {
         sex: newUserData.sex,
         bio: newUserData.bio,
       }
-    }).pipe(map(response => response.data["updateUser"]));;
+    }).pipe(map(response => response.data["updateUser"]));
+
+  }
+
+  public updateCurrentUserProfileImage(newUserProfileImage: any): Observable<any> {
+    let ref = this.afStorage.ref(this._currentUsername);
+    let task = ref.put(newUserProfileImage);
+
+    return task.snapshotChanges().pipe(
+      last(),  // emit the last element after task.snapshotChanges() completed
+      switchMap(() => ref.getDownloadURL())
+    ).pipe(concatMap(uploadedURL => {
+          console.log('CCS: Profile image stored. Linking URL... (', uploadedURL, ')')
+          return this.apollo.mutate({
+            mutation: GQL_UPDATE_USER,
+            variables: {
+              USER: this._currentUsername,
+              profile_img: uploadedURL,
+            }
+          }).pipe(map(response => response.data["updateUser"]));
+        }
+      ));
 
   }
 
@@ -574,6 +606,9 @@ export class ChatCoreService {
 
     this.targetUsernameSource.next(targetUsername);
 
+    const newTargetUserData = this._chatsUsersInfo.find(user => user.username === targetUsername);
+    this.targetUserDataSource.next(newTargetUserData);
+
     // subscribing to the messages of the current chat and to the target user last access
     if (this.chatMessagesSubscription){
       this.chatMessagesSubscription.unsubscribe();
@@ -606,11 +641,12 @@ export class ChatCoreService {
         this.addUser(currentUsername).subscribe(response => {
           this.isLoadingSource.next(false);
           console.log("CCS: user added");
+          window.location.reload();
         },(error) => {
           this.isLoadingSource.next(false);
           console.log('CCS: ERROR while adding user', error);
+          window.location.reload();
         });
-        window.location.reload();
       }else{
         // subscribing to chats of the current user
         this.subscribeToChats();

@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
-import { NbDialogRef, NbFormFieldModule, NbGlobalPhysicalPosition, NbInputDirective, NbToastrConfig, NbToastrService } from '@nebular/theme';
+import { Component, OnInit } from '@angular/core';
+import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 
 @Component({
@@ -13,6 +12,8 @@ export class DialogAddChatComponent implements OnInit {
   userExists: boolean = false;
   username: string;
   name: string;
+  surname: string;
+  profileImg: string;
   currentUsername: string;
   loadingUserImg: boolean = false;
 
@@ -60,7 +61,9 @@ export class DialogAddChatComponent implements OnInit {
         console.log("DACC: user exists and chat not yet")
         this.userExists = true;
         this.username = result.username;
-        this.name =result.name;
+        this.name = result.name;
+        this.surname = result.surname;
+        this.profileImg = result.profile_img;
         // if alsoAdd is true, addding the chat
         if (alsoAdd){
           console.log("DACC: adding chat with", this.username);

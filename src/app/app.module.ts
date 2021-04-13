@@ -8,7 +8,7 @@ import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule,
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { HttpClientModule} from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
@@ -17,9 +17,8 @@ import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
 import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
 import {NgxHowlerService} from 'ngx-howler';
-import { AuthHttpInterceptor } from '@auth0/auth0-angular';
-import {ChatLoggerComponent} from './components/chat-logger/chat-logger.component';
-
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFireModule } from '@angular/fire';
 
 @NgModule({
   declarations: [
@@ -59,6 +58,17 @@ import {ChatLoggerComponent} from './components/chat-logger/chat-logger.componen
     BackButtonDisableModule.forRoot(),
     NbContextMenuModule,
     NbMenuModule.forRoot(),
+    AngularFireModule.initializeApp({
+      apiKey: "AIzaSyAA87TyI0UwyTGlcfB4QHnp9OaLcHVL9js",
+      authDomain: "hi-chat-bec8f.firebaseapp.com",
+      databaseURL: "https://hi-chat-bec8f-default-rtdb.firebaseio.com",
+      projectId: "hi-chat-bec8f",
+      storageBucket: "hi-chat-bec8f.appspot.com",
+      messagingSenderId: "813116576758",
+      appId: "1:813116576758:web:2a8f3eb8b874e9dc7badd7",
+      measurementId: "G-F5YKMYKXCG"
+    }),
+    AngularFireStorageModule
   ],
   bootstrap: [AppComponent],
   providers: [

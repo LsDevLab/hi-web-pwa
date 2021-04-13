@@ -8,7 +8,8 @@
       </nb-form-field>
       <nb-user *ngIf="userExists" size="giant"
         [name]="username"
-        [title]="name">
+        [title]="name + ' ' + surname"
+        [picture]="profileImg ? profileImg : 'assets/img/default_profile_img.png'">
       </nb-user>
 
   </nb-card-body>

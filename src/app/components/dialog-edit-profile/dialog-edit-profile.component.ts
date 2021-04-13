@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
-import { NbDialogRef, NbFormFieldModule, NbGlobalPhysicalPosition, NbInputDirective, NbToastrConfig, NbToastrService } from '@nebular/theme';
+import { Component, OnInit } from '@angular/core';
+import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 
 @Component({
@@ -11,6 +10,7 @@ import { ChatCoreService } from 'src/app/services/chat-core.service';
 export class DialogEditProfileComponent implements OnInit {
 
   loadingUserImg: boolean = false;
+  loadingUserData: boolean = false;
   currentName: string;
   userData: any;
 
@@ -31,14 +31,30 @@ export class DialogEditProfileComponent implements OnInit {
   }
 
   saveEdits(newUserData){
+    this.loadingUserData = true;
     this.chatCoreService.updateCurrentUserData(newUserData).subscribe(response => {
       console.log("USER UPDATED");
       console.log("DEPC: current user data updated", response);
       this.toastrService.show("User profile updated", "Done", new NbToastrConfig({status:"success"}));
+      this.loadingUserData = false;
       this.closeDialog();
     },(error) => {
       console.log('DEPC: ERROR while updating current user data', error);
       this.toastrService.show("Error while updating user data", "Error", new NbToastrConfig({status:"danger"}));
+      this.loadingUserData = false;
+    });
+  }
+
+  editProfileImage(event){
+    this.loadingUserImg = true;
+    this.chatCoreService.updateCurrentUserProfileImage(event.target.files[0]).subscribe(result => {
+      console.log('DEPC: Profile image correctly updated');
+      this.toastrService.show("User profile image updated", "Done", new NbToastrConfig({status:"success"}));
+      this.loadingUserImg = false;
+    }, error => {
+      console.log('DEPC: ERROR while updating profile image', error);
+      this.toastrService.show("Error while updating profile image", "Error", new NbToastrConfig({status:"danger"}));
+      this.loadingUserImg = false;
     });
   }
 }

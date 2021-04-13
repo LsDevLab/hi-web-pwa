@@ -56,6 +56,7 @@ export class ContactsListComponent implements OnInit {
         chat.age = user.age;
         chat.sex = user.sex;
         chat.online = user.online;
+        chat.profile_img = user.profile_img;
       });
     });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
@@ -107,7 +108,8 @@ export class ContactsListComponent implements OnInit {
         surname: user ? user.surname : '',
         age: user ? user.age : '',
         sex: user ? user.sex : '',
-        online: user ? user.online : ''
+        online: user ? user.online : '',
+        profile_img: user ? user.profile_img : null
     })
 
     });

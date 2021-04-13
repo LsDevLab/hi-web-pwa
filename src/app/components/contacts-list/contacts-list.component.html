@@ -15,6 +15,7 @@
       <div class="item-div">
         <nb-user [name]="chat.name + ' ' + chat.surname"
                  [title]="chat.targetUsername"
+                 [picture]="chat.profile_img ? chat.profile_img : 'assets/img/default_profile_img.png'"
                  color="white">
         </nb-user>
         <svg height="10" width="10" *ngIf="chat.notify" >
