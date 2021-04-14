@@ -95,6 +95,7 @@
       line-height: 2.5rem;
       font-size: 0.875rem;
       color: white;
+      display: none;
     }
 
     nb-chat-message-text {
@@ -200,7 +201,7 @@
         @include nb-rtl(margin-left, 3rem);
       }
 
-      
+
 
       nb-chat-message-text {
         align-items: flex-start;

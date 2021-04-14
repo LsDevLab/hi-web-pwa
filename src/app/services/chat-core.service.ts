@@ -556,7 +556,7 @@ export class ChatCoreService {
   }
 
   public updateCurrentUserProfileImage(newUserProfileImage: any): Observable<any> {
-    let ref = this.afStorage.ref(this._currentUsername);
+    let ref = this.afStorage.ref('profile_images/' + this._currentUsername);
     let task = ref.put(newUserProfileImage);
 
     return task.snapshotChanges().pipe(
