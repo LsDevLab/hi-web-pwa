@@ -7,6 +7,7 @@
              onlyPicture=true
              [name]="currentUserData.username"
              [title]="currentUserData.name + currentUserData.surname"
+             [picture]="currentUserData.profile_img ? currentUserData.profile_img : ''"
              [nbContextMenu]="userContextMenuItems"
              nbContextMenuTag="user-context-menu"
              nbContextMenuTrigger="hover"
@@ -18,7 +19,8 @@
              color="white"
              onlyPicture=true
              [name]="currentUserData.username"
-             [title]="currentUserData.name + currentUserData.surname">
+             [title]="currentUserData.name + currentUserData.surname"
+             [picture]="currentUserData.profile_img ? currentUserData.profile_img : ''">
     </nb-user>
     <div style="color: white; width: fit-content">
       <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{currentUserData.name}} {{currentUserData.surname}}</div>

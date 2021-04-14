@@ -16,8 +16,8 @@ export class ChatFormComponent {
   // displayed messages
   messages = [];
 
-  thisUser: string;
-  otherUser: string;
+  currentUser: string;
+  targetUser: string;
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
               public howl: NgxHowlerService, private router: Router) {
@@ -30,9 +30,9 @@ export class ChatFormComponent {
     }).subscribe(status => {
       //ok
     });
-    this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
+    this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
-      this.otherUser = t;
+      this.targetUser = t;
       this.messages = [];
     });
     this.chatCoreService.loadedMessagesObservable.subscribe(msgs => this.formatUpdateMessages(msgs));
@@ -46,12 +46,12 @@ export class ChatFormComponent {
     this.messages.push(this.formatMessage(message, true));
     // sending messages with CCS
     this.chatCoreService.sendMessage(message).subscribe(response => {
-      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.thisUser, this.otherUser);
-      console.log("CFC: message sent to", this.otherUser);
+      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
+      console.log("CFC: message sent to", this.targetUser);
       this.chatCoreService.setCurrentChatNotifyToTarget().subscribe(response => {
-        console.log('CFC: setted notify flag to', this.otherUser);
+        console.log('CFC: setted notify flag to', this.targetUser);
       },(error) => {
-        console.log('CFC: ERROR while setting chat notify flag to ', this.otherUser, error);
+        console.log('CFC: ERROR while setting chat notify flag to ', this.targetUser, error);
       });
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
@@ -75,7 +75,7 @@ export class ChatFormComponent {
       type: files.length ? 'file' : 'text',
       files: files,
       user: { // the sender of the message in this application
-        name: this.thisUser,
+        name: this.currentUser,
         avatar: this.thisUserAvatar,
       },
     };
@@ -140,7 +140,7 @@ export class ChatFormComponent {
       // else add the message to the displayed messages
       else{
         // marking as to send the readed notify the messages just readed
-        if(message.senderUsername === this.otherUser && message.readed == null){
+        if(message.senderUsername === this.targetUser && message.readed == null){
           justReadedMessagesId.push(message.id);
         }
         let formattedMessage = this.formatMessage(message, false);
@@ -203,7 +203,7 @@ export class ChatFormComponent {
     let date = unformattedMessage.date;
     let confirmDate = null;
 
-    if (unformattedMessage.senderUsername === this.otherUser){
+    if (unformattedMessage.senderUsername === this.targetUser){
       reply = false;
     }else{
       if(!unformattedMessage.readed)
@@ -237,4 +237,3 @@ export class ChatFormComponent {
   }
 
 }
-

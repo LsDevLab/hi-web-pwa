@@ -1,10 +1,10 @@
 <nb-user style="width: fit-content; float: left;"
-  size="medium" 
-  color="white" 
-  onlyPicture=true 
-  [name]="targetUsername">
+  size="medium"
+  color="white"
+  onlyPicture=true
+  [picture]="targetUserData.profile_img ? targetUserData.profile_img : 'assets/img/default_profile_img.png'">
 </nb-user>
 <div style="color: white; width: fit-content; float: right;">
-  <div class="user-name" style="font-weight: bold;">{{targetUsername}}</div>
+  <div class="user-name" style="font-weight: bold;">{{targetUserData ? targetUserData.name + ' ' + targetUserData.surname : ''}}</div>
   <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
 </div>

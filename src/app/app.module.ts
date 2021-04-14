@@ -8,7 +8,7 @@ import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule,
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { HttpClientModule} from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
@@ -17,9 +17,9 @@ import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
 import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
 import {NgxHowlerService} from 'ngx-howler';
-import { AuthHttpInterceptor } from '@auth0/auth0-angular';
-import {ChatLoggerComponent} from './components/chat-logger/chat-logger.component';
-
+import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFireModule } from '@angular/fire';
+import { angularFireModuleData } from '../../firebaseData';
 
 @NgModule({
   declarations: [
@@ -59,6 +59,8 @@ import {ChatLoggerComponent} from './components/chat-logger/chat-logger.componen
     BackButtonDisableModule.forRoot(),
     NbContextMenuModule,
     NbMenuModule.forRoot(),
+    AngularFireModule.initializeApp(angularFireModuleData),
+    AngularFireStorageModule
   ],
   bootstrap: [AppComponent],
   providers: [

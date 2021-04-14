@@ -1,15 +1,14 @@
-<nb-chat [title]="otherUser" style="height: 100%" scrollBottom="true" status="primary">
+<nb-chat [title]="targetUser" style="height: 100%" scrollBottom="true" status="primary">
   <nb-chat-message  *ngFor="let msg of messages"
                     [type]="msg.type"
                     [message]="msg.text"
                     [reply]="msg.reply"
-                    [sender]="msg.user.name" 
+                    [sender]="msg.user.name"
                     [date]="msg.date"
                     [files]="msg.files"
                     [quote]="msg.quote"
                     [latitude]="msg.latitude"
                     [longitude]="msg.longitude"
-                    [avatar]="msg.user.avatar"
                     dateFormat="short"
                     >
   </nb-chat-message>
