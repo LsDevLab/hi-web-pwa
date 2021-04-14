@@ -9,7 +9,6 @@ import { ChatCoreService } from 'src/app/services/chat-core.service';
 })
 export class DialogEditProfileComponent implements OnInit {
 
-  loadingUserImg: boolean = false;
   loadingUserData: boolean = false;
   currentName: string;
   userData: any;
@@ -46,15 +45,15 @@ export class DialogEditProfileComponent implements OnInit {
   }
 
   editProfileImage(event){
-    this.loadingUserImg = true;
+    this.loadingUserData = true;
     this.chatCoreService.updateCurrentUserProfileImage(event.target.files[0]).subscribe(result => {
       console.log('DEPC: Profile image correctly updated');
       this.toastrService.show("User profile image updated", "Done", new NbToastrConfig({status:"success"}));
-      this.loadingUserImg = false;
+      this.loadingUserData = false;
     }, error => {
       console.log('DEPC: ERROR while updating profile image', error);
       this.toastrService.show("Error while updating profile image", "Error", new NbToastrConfig({status:"danger"}));
-      this.loadingUserImg = false;
+      this.loadingUserData = false;
     });
   }
 }

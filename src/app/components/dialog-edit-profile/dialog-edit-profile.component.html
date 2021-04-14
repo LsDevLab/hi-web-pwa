@@ -7,9 +7,17 @@
     <div class="body-div">
       <div class="profile-img-div">
         <h5 class="name-surname-label">{{userData.name}} {{userData.surname}}</h5>
-        <img class="profile-img" [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'">
-        <input type="file" (change)="editProfileImage($event)" accept=".png,.jpg" />
         <p class="username-label">{{userData.username}}</p>
+        <div class="profile-img-container">
+          <img class="profile-img"
+               [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'"
+               (click)="imageFileInput.click()">
+        </div>
+        <div class="profile-img-info-div">
+          <p class="profile-img-loading-info">Premi sull'immagine per caricare</p>
+          <img class="profile-img-loading-icon" src="assets/img/upload.png">
+        </div>
+        <input #imageFileInput type="file" (change)="editProfileImage($event)" accept=".png,.jpg" style="display: none"/>
       </div>
       <div class="profile-inputs-div">
         <nb-form-field class="profile-input-field">
