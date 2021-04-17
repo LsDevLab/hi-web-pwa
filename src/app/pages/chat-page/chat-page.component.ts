@@ -65,11 +65,9 @@ export class ChatPageComponent implements OnInit {
       if(menu.tag === 'user-context-menu-small') {
         switch (menu.item.title) {
           case 'Edit profile':
-            console.log("EDIT PROFILE");
             this.dialogService.open(DialogEditProfileComponent);
             break;
           case 'About...':
-            console.log("ABOUT");
             break;
         }
       }

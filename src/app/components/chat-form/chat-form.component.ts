@@ -3,6 +3,7 @@ import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { NgxHowlerService } from 'ngx-howler';
 import {Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-chat-form',
@@ -20,7 +21,7 @@ export class ChatFormComponent {
   targetUser: string;
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
-              public howl: NgxHowlerService, private router: Router) {
+              public howl: NgxHowlerService, private router: Router, private http: HttpClient) {
   }
 
   ngOnInit() {
@@ -59,21 +60,15 @@ export class ChatFormComponent {
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
 
-  // Makes a Message from a FormattedMessage
+  // Makes a Message to send from a FormattedMessage
   makeMessage(formattedMessage) {
-    const files = !formattedMessage.files ? [] : formattedMessage.files.map((file) => {
-      return {
-        url: file.src,
-        type: file.type,
-        icon: 'file-text-outline',
-      };
-    });
+
     let message = {
       text: formattedMessage.message,
       date: new Date(),
       reply: true,  // if reply then you are the sender
-      type: files.length ? 'file' : 'text',
-      files: files,
+      type: formattedMessage.files.length ? 'file' : 'text',
+      files: formattedMessage.files,
       user: { // the sender of the message in this application
         name: this.currentUser,
         avatar: this.thisUserAvatar,
@@ -144,7 +139,6 @@ export class ChatFormComponent {
           justReadedMessagesId.push(message.id);
         }
         let formattedMessage = this.formatMessage(message, false);
-
         this.messages.push(formattedMessage);
       }
 
@@ -218,6 +212,23 @@ export class ChatFormComponent {
       user += "...";
     }
 
+    const files = !unformattedMessage.files ? [] : unformattedMessage.files.map((file) => {
+      if(typeof file === 'string'){
+        return {
+          url: file.split(' ')[0],
+          type:  file.split(' ')[1],
+          icon: 'file-text-outline',
+        };
+      } else {
+        return {
+          url: file.src,
+          type:  file.type,
+          icon: 'file-text-outline',
+        };
+      }
+
+    });
+
     let formattedMessage = {
       confirmDate: confirmDate,
       date: date,
@@ -230,10 +241,36 @@ export class ChatFormComponent {
         name: user,
         avatar: null
       },
-      files: null,
+      files: files,
       quote: null
     };
     return formattedMessage;
+  }
+
+  loadFilesOfMessage(date, filesURLSArray: string[]){
+    const messageIndex = this.indexOfMessageWithDate(date);
+    if (messageIndex != -1){
+      this.messages[messageIndex].files = [];
+      filesURLSArray.forEach(fileURL => {
+        console.log('CFC: Downloading file', fileURL, ' of message with date', date);
+        this.http.get(fileURL, { responseType: 'blob' }).subscribe(result => {
+          console.log('CFC: File ', fileURL, 'downloaded', result);
+          const messageIndex = this.indexOfMessageWithDate(date);
+          if (messageIndex != -1){
+            //const file = new File([result], fileURL, {type:result.type});
+            this.messages[messageIndex].files.push({
+              url: fileURL,
+              type: result.type,
+              icon: 'file-text-outline',
+            });
+            console.log('messages', this.messages);
+            console.log('CFC: File ', fileURL, 'added to message with date', date);
+          }
+        }, error => {
+          console.log('CFC: Error downloading file ', fileURL, error);
+        });
+      });
+    }
   }
 
 }

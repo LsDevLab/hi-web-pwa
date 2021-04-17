@@ -40,9 +40,9 @@ export class ChatLoggerComponent implements OnInit {
   ];
   menuSub: Subscription;
   currentUserData: any = {
-    name: 'name',
-    surname: 'surname',
-    username: 'username'
+    name: '',
+    surname: '',
+    username: ''
   };
 
   constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,

@@ -57,6 +57,7 @@ type DeleteUserPayload {
 
 type Message {
   date: DateTime
+  files: [String]
   id: ID!
   latitude: String
   longitude: String
@@ -225,6 +226,7 @@ enum HTTPMethod {
 
 enum MessageHasFilter {
   date
+  files
   latitude
   longitude
   readed
@@ -280,6 +282,7 @@ input AddChatsInput {
 
 input AddMessageInput {
   date: DateTime
+  files: [String]
   latitude: String
   longitude: String
   readed: Boolean
@@ -447,6 +450,7 @@ input MessageOrder {
 
 input MessagePatch {
   date: DateTime
+  files: [String]
   latitude: String
   longitude: String
   readed: Boolean
@@ -458,6 +462,7 @@ input MessagePatch {
 
 input MessageRef {
   date: DateTime
+  files: [String]
   id: ID
   latitude: String
   longitude: String
@@ -597,13 +602,13 @@ input WithinFilter {
 
 
 """
-The DateTime scalar type represents date and time as a string in RFC3339 format.
-For example: "1985-04-12T23:20:50.52Z" represents 20 minutes and 50.52 seconds after the 23rd hour of April 12th, 1985 in UTC.
-"""
-scalar DateTime
-
-"""
 The Int64 scalar type represents a signed 64‐bit numeric non‐fractional value.
 Int64 can represent values in range [-(2^63),(2^63 - 1)].
 """
 scalar Int64
+
+"""
+The DateTime scalar type represents date and time as a string in RFC3339 format.
+For example: "1985-04-12T23:20:50.52Z" represents 20 minutes and 50.52 seconds after the 23rd hour of April 12th, 1985 in UTC.
+"""
+scalar DateTime

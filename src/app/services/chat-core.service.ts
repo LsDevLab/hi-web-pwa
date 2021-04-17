@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
+import {BehaviorSubject, forkJoin, interval, Subscription} from 'rxjs';
 import { ChatNotificationsService } from './chat-notifications.service';
 import { last, map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { concatMap } from 'rxjs/operators';
+import {jsGlobalObjectValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator/src/known_declaration';
 
 const GQL_QUERY_MESSAGE = gql`
   query queryMessage($USER: String!, $targetUser: String!) {
@@ -22,6 +23,7 @@ const GQL_QUERY_MESSAGE = gql`
       longitude
       latitude
       date
+      files
       senderUsername
       receiverUsername
       readed
@@ -42,6 +44,7 @@ const GQL_SUB_MESSAGE = gql`
       longitude
       latitude
       date
+      files
       senderUsername
       receiverUsername
       readed
@@ -49,8 +52,9 @@ const GQL_SUB_MESSAGE = gql`
   }
 `;
 const GQL_ADD_MESSAGE = gql`
-  mutation addMessage($date: DateTime!, $type: String!, $text: String! $USER: String!, $targetUser: String!) {
-    addMessage(input: {type: $type, date: $date, receiverUsername: $targetUser, text: $text, senderUsername: $USER}) {
+  mutation addMessage($date: DateTime!, $type: String!, $text: String! $USER: String!, $targetUser: String!, $files: [String]) {
+    addMessage(input: {type: $type, date: $date, receiverUsername: $targetUser, text: $text, senderUsername: $USER,
+                        files: $files}) {
       numUids
     }
   }
@@ -497,19 +501,58 @@ export class ChatCoreService {
     }).pipe(map(response => response.data["updateChat"]));
   }
 
+  private getFileStoringObs(file){
+    const fileId = Math.trunc(Math.random()*1000000);
+    let ref = this.afStorage.ref('chats_files/' + this._currentUsername + '/' + this._targetUsername + '/' + fileId);
+    let task = ref.put(file);
+    return task.snapshotChanges().pipe(
+      last(),  // emit the last element after task.snapshotChanges() completed
+      switchMap(() => ref.getDownloadURL())
+    ).pipe(map(url => {
+      return url + ' ' + file.type
+    }));
+  }
+
   public sendMessage(message: any): Observable<any> {
     // Sends a message to the current target user
 
-    return this.apollo.mutate({
-      mutation: GQL_ADD_MESSAGE,
-      variables: {
-        date: message.date,
-        type: message.type,
-        text: message.text,
-        USER: this._currentUsername,
-        targetUser: this._targetUsername
-      }
-    }).pipe(map(response => response.data["addMessage"]));
+    if(message.files.length) {
+      let filesURLSArray: String[] = [];
+      let storingFilesObsArray: Observable<any>[];
+      storingFilesObsArray = message.files.map(file => this.getFileStoringObs(file));
+      return forkJoin(storingFilesObsArray).pipe(map(obsResults => {
+        obsResults.forEach(obsResult => {
+          filesURLSArray.push(obsResult);
+          console.log('CCS: File stored at URL with type', obsResult);
+        });
+      })).pipe(concatMap(() => {
+          console.log('CCS: All files stored. Linking URLs... (', filesURLSArray, ')')
+          return this.apollo.mutate({
+            mutation: GQL_ADD_MESSAGE,
+            variables: {
+              date: message.date,
+              type: message.type,
+              text: message.text,
+              USER: this._currentUsername,
+              targetUser: this._targetUsername,
+              files: filesURLSArray
+            }
+          }).pipe(map(response => response.data["addMessage"]));
+        }
+      ));
+    } else {
+      return this.apollo.mutate({
+        mutation: GQL_ADD_MESSAGE,
+        variables: {
+          date: message.date,
+          type: message.type,
+          text: message.text,
+          USER: this._currentUsername,
+          targetUser: this._targetUsername,
+        }
+      }).pipe(map(response => response.data["addMessage"]));
+    }
+
 
   }
 
