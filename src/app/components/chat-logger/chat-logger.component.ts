@@ -57,16 +57,19 @@ export class ChatLoggerComponent implements OnInit {
       if(menu.tag === 'user-context-menu') {
         switch (menu.item.title) {
           case 'Edit profile':
-            console.log("EDIT PROFILE");
             this.dialogService.open(DialogEditProfileComponent);
             break;
           case 'About...':
-            console.log("ABOUT");
             break;
         }
       }
     });
-    this.chatCoreService.currentUserDataObservable.subscribe(userData => this.currentUserData = userData ? userData : this.currentUserData);
+    this.chatCoreService.currentUserDataObservable.subscribe(userData => {
+      this.currentUserData = userData ? userData : this.currentUserData;
+      if (userData && this.currentUserData.name === ''){
+        this.dialogService.open(DialogEditProfileComponent);
+      }
+    });
   }
 
   logOut(){

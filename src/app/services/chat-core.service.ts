@@ -112,7 +112,6 @@ const GQL_GET_USER = gql`
       bio
       age
       sex
-      online
       profile_img
     }
   }
@@ -126,7 +125,6 @@ const GQL_QUERY_USER_CURRENTUSER = gql`
       bio
       age
       sex
-      online
       profile_img
     }
   }
@@ -140,7 +138,6 @@ const GQL_SUB_USER_CURRENTUSER = gql`
       bio
       age
       sex
-      online
       profile_img
     }
   }
@@ -168,7 +165,6 @@ const GQL_QUERY_USER_CHATSINFO = gql`
       bio
       age
       sex
-      online
       profile_img
     }
   }
@@ -182,25 +178,24 @@ const GQL_SUB_USER_CHATSINFO = gql`
       bio
       age
       sex
-      online
       profile_img
     }
   }
 `;
 const GQL_ADD_USER = gql`
-  mutation addUser($USER: String!, $name: String!, $lastAccess: DateTime!, $online: Boolean,
+  mutation addUser($USER: String!, $name: String!, $lastAccess: DateTime!,
     $surname: String!, $bio: String, $sex: String, $age: Int, $profile_img: String) {
-    addUser(input: {username: $USER, name: $name, lastAccess: $lastAccess, online: $online,
+    addUser(input: {username: $USER, name: $name, lastAccess: $lastAccess,
       surname: $surname, bio: $bio, sex: $sex, age: $age, profile_img: $profile_img}) {
       numUids
     }
   }
 `;
 const GQL_UPDATE_USER = gql`
-  mutation updateUser($USER: String!, $name: String, $lastAccess: DateTime, $online: Boolean,
+  mutation updateUser($USER: String!, $name: String, $lastAccess: DateTime,
     $surname: String, $bio: String, $sex: String, $age: Int, $profile_img: String) {
     updateUser(input: {filter: {username: {eq: $USER}}, set: {
-      name: $name, lastAccess: $lastAccess, online: $online,
+      name: $name, lastAccess: $lastAccess,
       surname: $surname, bio: $bio, sex: $sex, age: $age, profile_img: $profile_img}}) {
       numUids
     }
@@ -367,8 +362,10 @@ export class ChatCoreService {
             else
               return chatData.user1;
           });
-          console.log('CCS: chats of which subscribe to their data', chatsList)
-          this.chatUsersInfoSubscription = this.subscribeToCurrentChatUsersInfo(chatsList);
+          if(chatsList.length){
+            this.chatUsersInfoSubscription = this.subscribeToCurrentChatUsersInfo(chatsList);
+            console.log('CCS: subscribed to data of target users', chatsList);
+          }
         }
       }
     );
@@ -446,7 +443,6 @@ export class ChatCoreService {
         USER: username,
         name: '',
         lastAccess: new Date().toISOString(),
-        online: false,
         bio: '',
         surname: '',
         age: 25,
@@ -526,7 +522,7 @@ export class ChatCoreService {
           console.log('CCS: File stored at URL with type', obsResult);
         });
       })).pipe(concatMap(() => {
-          console.log('CCS: All files stored. Linking URLs... (', filesURLSArray, ')')
+          console.log('CCS: All files stored. Linking URLs and types...');
           return this.apollo.mutate({
             mutation: GQL_ADD_MESSAGE,
             variables: {
