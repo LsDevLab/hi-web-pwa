@@ -54,7 +54,7 @@
                   name: nameInput.value,
                   surname: surnameInput.value,
                   sex: sexSelect.selected,
-                  age: ageInput.value
+                  age: +ageInput.value
                 }
       )" status="primary">Save</button>
     <img src="assets/img/three_dots_loader.gif" class="loading-user-data" *ngIf="loadingUserData" style="float: right; padding-right: 10px" >

@@ -11,7 +11,10 @@ export class DialogEditProfileComponent implements OnInit {
 
   loadingUserData: boolean = false;
   currentName: string;
-  userData: any;
+  userData: any = {
+    name: '',
+    surname: '',
+  };
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
               private toastrService: NbToastrService) {
@@ -20,7 +23,7 @@ export class DialogEditProfileComponent implements OnInit {
   ngOnInit(): void {
     this.chatCoreService.currentUserDataObservable.subscribe(
       userData => {
-        this.userData = userData;
+        this.userData = userData ? userData : this.userData;
       }
     );
   }
@@ -32,7 +35,6 @@ export class DialogEditProfileComponent implements OnInit {
   saveEdits(newUserData){
     this.loadingUserData = true;
     this.chatCoreService.updateCurrentUserData(newUserData).subscribe(response => {
-      console.log("USER UPDATED");
       console.log("DEPC: current user data updated", response);
       this.toastrService.show("User profile updated", "Done", new NbToastrConfig({status:"success"}));
       this.loadingUserData = false;
@@ -47,7 +49,7 @@ export class DialogEditProfileComponent implements OnInit {
   editProfileImage(event){
     this.loadingUserData = true;
     this.chatCoreService.updateCurrentUserProfileImage(event.target.files[0]).subscribe(result => {
-      console.log('DEPC: Profile image correctly updated');
+      console.log('DEPC: Profile image updated', result);
       this.toastrService.show("User profile image updated", "Done", new NbToastrConfig({status:"success"}));
       this.loadingUserData = false;
     }, error => {
