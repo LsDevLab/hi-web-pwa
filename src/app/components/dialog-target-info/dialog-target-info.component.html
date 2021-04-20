@@ -1,0 +1,25 @@
+<nb-card size="medium" style="max-width: 600px; min-width: 300px; width: 25vw; height: auto; max-height: 90vh; border: none" >
+  <nb-card-header>
+    Profile details
+    <nb-icon icon="person-outline"></nb-icon>
+  </nb-card-header>
+  <nb-card-body style="padding: 0px">
+    <div class="body-div">
+      <div class="profile-img-div">
+        <h5 class="name-surname-label">{{userData.name}} {{userData.surname}}</h5>
+        <p class="username-label">{{userData.username}}</p>
+        <div class="profile-img-container">
+          <img class="profile-img"
+               [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'">
+        </div>
+        <p class="sex-age-p"><strong>{{this.userData.sex}}</strong>, <strong>{{this.userData.age}}</strong> years old </p>
+      </div>
+      <div class="bio-div">
+        <p class="bio-p">{{this.userData.bio}}</p>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer style="clear: both;">
+    <button nbButton style="float: left;" (click)="closeDialog()">Close</button>
+  </nb-card-footer>
+</nb-card>
