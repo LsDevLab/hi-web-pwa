@@ -6,6 +6,7 @@ import {NbDialogService, NbMenuService, NbRevealCardComponent} from '@nebular/th
 import {DialogLoadingComponent} from '../../components/dialog-loading/dialog-loading.component';
 import {Subscription} from 'apollo-client/util/Observable';
 import {DialogEditProfileComponent} from '../../components/dialog-edit-profile/dialog-edit-profile.component';
+import {DialogAboutComponent} from '../../components/dialog-about/dialog-about.component';
 
 
 @Component({
@@ -68,6 +69,7 @@ export class ChatPageComponent implements OnInit {
             this.dialogService.open(DialogEditProfileComponent);
             break;
           case 'About...':
+            this.dialogService.open(DialogAboutComponent);
             break;
         }
       }

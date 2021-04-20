@@ -17,6 +17,7 @@ import {DialogLoadingComponent} from '../../components/dialog-loading/dialog-loa
 import {ChatHeaderComponent} from '../../components/chat-header/chat-header.component';
 import {DialogEditProfileComponent} from '../../components/dialog-edit-profile/dialog-edit-profile.component';
 import { DialogTargetInfoComponent } from '../../components/dialog-target-info/dialog-target-info.component';
+import { DialogAboutComponent } from '../../components/dialog-about/dialog-about.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { DialogTargetInfoComponent } from '../../components/dialog-target-info/d
     //ChatLoggerLargeComponent,
     ChatLoggerComponent,
     DialogEditProfileComponent,
-    DialogTargetInfoComponent
+    DialogTargetInfoComponent,
+    DialogAboutComponent
   ],
   imports: [
     ChatPageRoutingModule,

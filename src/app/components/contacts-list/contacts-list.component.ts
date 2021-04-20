@@ -61,7 +61,12 @@ export class ContactsListComponent implements OnInit {
     });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.otherUser = t);
-    this.chatCoreService.chatsObservable.subscribe(c => this.chats = this.formatChats(c));
+    this.chatCoreService.chatsObservable.subscribe(c => {
+      const precLen = this.chats.length;
+      this.chats = this.formatChats(c);
+      if(!this.screenIsSmall && !precLen && this.chats.length >= 1)
+        this.selectChat(this.chats[0].targetUsername);
+    });
     this.auth.user$.subscribe(u => {
       this.thisName = u.name;
       this.chatCoreService.init(u.email);

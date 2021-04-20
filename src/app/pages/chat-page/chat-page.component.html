@@ -1,11 +1,11 @@
 <nb-layout withScroll=false>
 
-  <!-- Header component -->
-  <nb-layout-header *ngIf="!screenIsSmall" style="min-height: 10px; background-color: #36f;">
+  <!-- Header component when screen is large -->
+  <nb-layout-header class="chat-page-header" *ngIf="!screenIsSmall" style="min-height: 10px;">
     <logged-app-header *ngIf="!screenIsSmall" style="height: 100%; width: 100%;"></logged-app-header>
   </nb-layout-header>
 
-  <nb-layout-column style="padding: 0px; overflow-x: hidden;">
+  <nb-layout-column class="chat-page-body" style="padding: 0px; overflow-x: hidden;">
 
     <!-- when screen is large-->
     <div *ngIf="!screenIsSmall" class="contact-col" style="height: 100%;">
@@ -49,7 +49,7 @@
         <nb-card-front style="height: 100%;">
           <nb-card style="margin-bottom: 0px; height: 100%; border: 0">
             <nb-card-body style="padding: 0px; height: 100%;">
-              <div style="background-color: #3366ff; width: 100%; height: 80px; padding: 15px; display: flex; align-items: center; flex-direction: row; justify-content: space-between">
+              <div class="chat-page-header-small" style="width: 100%; height: 80px; padding: 15px; display: flex; align-items: center; flex-direction: row; justify-content: space-between">
                 <img src="assets/img/logo_gif.gif" style="height: 70%; float: left; padding: 5px">
                 <app-chat-logger></app-chat-logger>
               </div>
