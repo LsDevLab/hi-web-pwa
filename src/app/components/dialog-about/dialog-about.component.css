@@ -1,0 +1,52 @@
+
+.body-div-top{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #3366ff;
+  padding: 20px;
+  background-image: url("src/assets/img/home_back_top.svg");
+  background-size: cover;
+}
+
+.body-div-bottom{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.app-version{
+  font-family: Raleway;
+  color: white;
+  font-size: 13px;
+  margin: 10px 10px 10px 10px;
+}
+
+.app-logo{
+  height: 55%;
+  width: 55%;
+  margin: 10px 10px 10px 10px;
+}
+
+.app-created-by{
+  font-family: Raleway;
+  color: #4f4f4f;
+  font-size: 14px;
+  margin: 10px;
+}
+
+.social-icons{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 10px;
+}
+
+.social-img{
+  height: 35px;
+  margin: 0px 10px 0px 10px;
+}
