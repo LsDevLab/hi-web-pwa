@@ -2,11 +2,13 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import {BreakpointObserver} from '@angular/cdk/layout';
-import {NbDialogService, NbMenuService, NbRevealCardComponent} from '@nebular/theme';
+import {NbDialogService, NbMenuService, NbRevealCardComponent, NbToastrConfig, NbToastrService} from '@nebular/theme';
 import {DialogLoadingComponent} from '../../components/dialog-loading/dialog-loading.component';
 import {Subscription} from 'apollo-client/util/Observable';
 import {DialogEditProfileComponent} from '../../components/dialog-edit-profile/dialog-edit-profile.component';
 import {DialogAboutComponent} from '../../components/dialog-about/dialog-about.component';
+import { JwtHelperService } from "@auth0/angular-jwt";
+import {DialogTokenExpiredComponent} from '../../components/dialog-token-expired/dialog-token-expired.component';
 
 
 @Component({
@@ -15,7 +17,6 @@ import {DialogAboutComponent} from '../../components/dialog-about/dialog-about.c
   styleUrls: ['./chat-page.component.css']
 })
 export class ChatPageComponent implements OnInit {
-
   isFlipped: boolean = false;
   screenIsSmall = false;
   isChatOpened = false;
@@ -48,7 +49,8 @@ export class ChatPageComponent implements OnInit {
   //@ViewChild(NbRevealCardComponent, { static: false }) chatCard: NbRevealCardComponent;
 
   constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService,
-              private dialogService: NbDialogService, private nbMenuService: NbMenuService) { }
+              private dialogService: NbDialogService, private nbMenuService: NbMenuService,
+              private auth: AuthService, private toastrService: NbToastrService ) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -74,6 +76,16 @@ export class ChatPageComponent implements OnInit {
         }
       }
     });
+    const helper = new JwtHelperService();
+    const tokenExpiredInterval = setInterval(() => {
+      const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
+      if (!isTokenExpired) {
+        this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
+        this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
+        setTimeout(() => this.auth.logout(), 4000);
+        clearInterval(tokenExpiredInterval);
+      }
+    }, 2000);
   }
 
   selectUser(){
