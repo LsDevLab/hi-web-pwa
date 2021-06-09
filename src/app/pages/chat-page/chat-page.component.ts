@@ -79,10 +79,10 @@ export class ChatPageComponent implements OnInit {
     const helper = new JwtHelperService();
     const tokenExpiredInterval = setInterval(() => {
       const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
-      if (!isTokenExpired) {
+      if (isTokenExpired) {
         this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
         this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
-        setTimeout(() => this.auth.logout(), 4000);
+        setTimeout(() => this.auth.logout({ returnTo: document.location.origin }), 4000);
         clearInterval(tokenExpiredInterval);
       }
     }, 2000);
