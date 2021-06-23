@@ -1,6 +1,6 @@
 // import Nebular Theme System and the default theme
-@import '~@nebular/theme/styles/theming';
-@import '~@nebular/theme/styles/themes/default';
+@import 'src/app/framework/theme/styles/theming';
+@import 'src/app/framework/theme/styles/themes/default';
 
 $nb-themes: nb-register-theme((
     badge-border-radius : 1rem,

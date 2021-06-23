@@ -5,7 +5,15 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine"
-    ]
+    ],
+    "paths": {
+      "@nebular/*": [
+        "./src/app/framework/*/public_api.ts"
+      ],
+      "@nebular/theme/*": [
+        "./src/app/framework/theme/*"
+      ]
+    }
   },
   "files": [
     "src/test.ts",
