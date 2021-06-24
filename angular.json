@@ -26,7 +26,7 @@
               "src/custom-service-worker.js"
             ],
             "styles": [
-              "./node_modules/@nebular/theme/styles/prebuilt/default.css",
+              "src/app/framework/theme/styles/prebuilt/default.scss",
               "src/styles.scss"
             ],
             "scripts": []

@@ -8,6 +8,7 @@ import {Subscription} from 'apollo-client/util/Observable';
 import {DialogAddChatComponent} from '../dialog-add-chat/dialog-add-chat.component';
 import {DialogEditProfileComponent} from '../dialog-edit-profile/dialog-edit-profile.component';
 import {ChatCoreService} from '../../services/chat-core.service';
+import {DialogAboutComponent} from '../dialog-about/dialog-about.component';
 
 
 @Component({
@@ -60,6 +61,7 @@ export class ChatLoggerComponent implements OnInit {
             this.dialogService.open(DialogEditProfileComponent);
             break;
           case 'About...':
+            this.dialogService.open(DialogAboutComponent);
             break;
         }
       }

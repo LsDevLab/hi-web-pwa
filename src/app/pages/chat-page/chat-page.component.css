@@ -37,3 +37,18 @@ nb-layout-column:last-child {
   float: left;
   display: flex;
 }
+
+.chat-page-header{
+  background-color: #3366ff;
+  background-image: url("src/assets/img/home_back_top.svg");
+  background-size: cover;
+}
+
+.chat-page-header-small{
+  background-color: #3366ff;
+  background-image: url("src/assets/img/home_back_top.svg");
+}
+
+.chat-page-body{
+
+}

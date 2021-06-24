@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
+import { NbDialogService } from '@nebular/theme';
+import { DialogTargetInfoComponent } from '../dialog-target-info/dialog-target-info.component';
 
 @Component({
   selector: 'app-chat-user-info',
@@ -12,7 +14,7 @@ export class ChatUserInfoComponent implements OnInit {
   targetUsername: string;
   targetUserData: any;
 
-  constructor(private chatCoreService: ChatCoreService) { }
+  constructor(private chatCoreService: ChatCoreService, private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
     this.chatCoreService.targetUserlastAccessObservable.subscribe(tula => this.targetUserLastAccess = tula);
@@ -22,6 +24,10 @@ export class ChatUserInfoComponent implements OnInit {
     this.chatCoreService.targetUserDataObservable.subscribe(tud => {
       this.targetUserData = tud;
     });
+  }
+
+  openUserInfoDialog(){
+    this.dialogService.open(DialogTargetInfoComponent);
   }
 
 }

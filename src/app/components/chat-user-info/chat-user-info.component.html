@@ -1,8 +1,9 @@
-<nb-user style="width: fit-content; float: left;"
+<nb-user class="user-avatar" style="width: fit-content; float: left;"
   size="medium"
   color="white"
   onlyPicture=true
-  [picture]="(targetUserData && targetUserData.profile_img) ? targetUserData.profile_img : 'assets/img/default_profile_img.png'">
+  [picture]="(targetUserData && targetUserData.profile_img) ? targetUserData.profile_img : 'assets/img/default_profile_img.png'"
+  (click)="openUserInfoDialog()" >
 </nb-user>
 <div style="color: white; width: fit-content; float: right;">
   <div class="user-name" style="font-weight: bold;">{{targetUserData ? targetUserData.name + ' ' + targetUserData.surname : ''}}</div>
