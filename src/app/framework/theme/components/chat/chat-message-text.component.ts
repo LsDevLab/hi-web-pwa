@@ -18,10 +18,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         <p class="sender" *ngIf="sender">{{ sender }}</p>
         <time class="time">{{ date | date: 'shortTime' }}</time>
       </div>
-      <p class="text" *ngIf="message">
+      <div class="message-body">
         <ng-content></ng-content>
-        {{ message }}
-      </p>
+        <p class="text" *ngIf="message">{{ message }}</p>
+      </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

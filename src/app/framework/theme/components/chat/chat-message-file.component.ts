@@ -23,25 +23,32 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
 @Component({
   selector: 'nb-chat-message-file',
   template: `
-    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat" [message]="message">
-      {{ message }}
+    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat">
+      <ng-container>
+        <div class="files-div">
+          <a *ngFor="let file of readyFiles" [href]="file.url" target="_blank">
+            <div class="not-img-file" *ngIf="!file.urlStyle && file.icon">
+              <nb-icon class="file-icon" [icon]="file.icon"></nb-icon>
+              <!--<p class="file-name">Nome file</p>-->
+              <!--<p class="file-type">Tipo file</p>-->
+            </div>
+            <div class="img-file" *ngIf="file.urlStyle">
+              <img class="file-img" [src]="file.urlStyle">
+            </div>
+          </a>
+          <p class="text" *ngIf="message">{{ message }}</p>
+        </div>
+      </ng-container>
     </nb-chat-message-text>
 
-    <ng-container *ngIf="readyFiles?.length > 1">
-      <div class="message-content-group">
-        <a *ngFor="let file of readyFiles" [href]="file.url" target="_blank">
-          <nb-icon [icon]="file.icon" *ngIf="!file.urlStyle && file.icon"></nb-icon>
-          <div *ngIf="file.urlStyle" [style.background-image]="file.urlStyle"></div>
-        </a>
-      </div>
-    </ng-container>
 
-    <ng-container *ngIf="readyFiles?.length === 1">
+
+    <!--<ng-container *ngIf="readyFiles?.length === 1">
       <a [href]="readyFiles[0].url" target="_blank">
         <nb-icon [icon]="readyFiles[0].icon" *ngIf="!readyFiles[0].urlStyle && readyFiles[0].icon"></nb-icon>
         <div *ngIf="readyFiles[0].urlStyle" [style.background-image]="readyFiles[0].urlStyle"></div>
       </a>
-    </ng-container>
+    </ng-container>-->
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -83,7 +90,7 @@ export class NbChatMessageFileComponent {
       const isImage = this.isImage(file);
       return {
         ...file,
-        urlStyle: isImage && this.domSanitizer.bypassSecurityTrustStyle(`url(${file.url})`),
+        urlStyle: isImage && file.url,
         isImage: isImage,
       };
     });
