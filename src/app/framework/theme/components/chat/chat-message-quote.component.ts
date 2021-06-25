@@ -19,7 +19,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       </div>-->
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
-          <p class="sender" *ngIf="sender">{{ sender }}</p>
           <time class="time">{{ date | date: 'shortTime' }}</time>
         </div>
         <p class="text-quote" *ngIf="quote">

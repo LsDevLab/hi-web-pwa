@@ -137,6 +137,8 @@
       }
 
       .message-body {
+        display: flex;
+        flex-direction: column;
         padding: 0.3rem;
         border-radius: 0.5rem;
 
@@ -309,6 +311,7 @@
         }
 
         .message-body {
+          align-items: flex-start;
           margin-bottom: 0;
           margin-top: 0;
           @include nb-ltr(border-top-left-radius, 0);
@@ -352,6 +355,7 @@
         align-items: flex-start;
 
         .status-time-div {
+          width: fit-content;
           align-items: flex-start;
           margin: 0px 0px 0px 7px;
           order: 1;
@@ -409,6 +413,7 @@
         }
 
         .message-body {
+          align-items: flex-end;
           margin-bottom: 0;
           margin-top: 0;
           @include nb-ltr(border-top-right-radius, 0);
@@ -460,6 +465,7 @@
         }
 
         .status-time-div {
+          width: fit-content;
           align-items: flex-end;
           margin: 0px 7px 0px 0px;
         }
