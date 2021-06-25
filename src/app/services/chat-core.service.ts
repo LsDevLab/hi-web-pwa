@@ -24,6 +24,7 @@ const GQL_QUERY_MESSAGE = gql`
       latitude
       date
       files
+      quoteMessageId
       senderUsername
       receiverUsername
       readed
@@ -45,6 +46,7 @@ const GQL_SUB_MESSAGE = gql`
       latitude
       date
       files
+      quoteMessageId
       senderUsername
       receiverUsername
       readed
@@ -52,9 +54,9 @@ const GQL_SUB_MESSAGE = gql`
   }
 `;
 const GQL_ADD_MESSAGE = gql`
-  mutation addMessage($date: DateTime!, $type: String!, $text: String! $USER: String!, $targetUser: String!, $files: [String]) {
+  mutation addMessage($date: DateTime!, $type: String!, $text: String! $USER: String!, $targetUser: String!, $files: [String], $quoteMessageId: String) {
     addMessage(input: {type: $type, date: $date, receiverUsername: $targetUser, text: $text, senderUsername: $USER,
-                        files: $files}) {
+                        files: $files, quoteMessageId: $quoteMessageId}) {
       numUids
     }
   }

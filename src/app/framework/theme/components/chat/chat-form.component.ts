@@ -60,6 +60,18 @@ import { NbComponentOrCustomStatus } from '../component-status';
         </div>
       </ng-container>
     </div>
+    <div class="quoted-message-div" *ngIf="messageQuoted">
+      <nb-chat-message  [type]="'text'"
+                        [message]="messageQuoted.message ? messageQuoted.message : 'No text for the quoted message'"
+                        [reply]="false"
+                        [sender]=""
+                        [date]="messageQuoted.date"
+                        [isAQuote]="true"
+                        dateFormat="short"
+      >
+      </nb-chat-message>
+      <nb-icon class="cancel-quote-icon" icon="close-outline" status="primary" (click)="cancelQuotedMessage()"></nb-icon>
+    </div>
     <div class="message-row">
       <button nbButton
               status="basic"
@@ -103,6 +115,12 @@ export class NbChatFormComponent {
 
   droppedFiles: any[] = [];
   imgDropTypes = ['image/png', 'image/jpeg', 'image/gif'];
+
+  /**
+   * messageQuoted event
+   * @type {string}
+   */
+  @Input() messageQuoted: any;
 
   /**
    * Predefined message text
@@ -208,6 +226,9 @@ export class NbChatFormComponent {
     }
   }
 
+  cancelQuotedMessage() {
+    this.messageQuoted = null;
+  }
 
   removeFile(file) {
     const index = this.droppedFiles.indexOf(file);

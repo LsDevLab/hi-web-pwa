@@ -20,6 +20,8 @@ export class ChatFormComponent {
   currentUser: string;
   targetUser: string;
 
+  messageQuoted: any;
+
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
               public howl: NgxHowlerService, private router: Router, private http: HttpClient) {
   }
@@ -242,7 +244,7 @@ export class ChatFormComponent {
         avatar: null
       },
       files: files,
-      quote: null
+      quote: unformattedMessage.quote
     };
     return formattedMessage;
   }
@@ -271,6 +273,11 @@ export class ChatFormComponent {
         });
       });
     }
+  }
+
+  assignMessageQuoted(msgText, msgDate) {
+    console.log('ADDED A QUOTE');
+    this.messageQuoted = { message: msgText, date: msgDate }
   }
 
 }

@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 export interface NbChatMessageFileIconPreview {
@@ -23,7 +23,8 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
 @Component({
   selector: 'nb-chat-message-file',
   template: `
-    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat">
+    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat" [reply]="reply"
+                          (messageQuoted)="messageQuoted.emit()">
       <ng-container>
         <div class="files-div">
           <a *ngFor="let file of readyFiles" [href]="file.url" target="_blank">
@@ -54,7 +55,19 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
 })
 export class NbChatMessageFileComponent {
 
+  /**
+   * messageQuoted event
+   * @type {EventEmitter}
+   */
+  @Output() messageQuoted = new EventEmitter<any>();
+
   readyFiles: any[];
+
+  /**
+   * Message reply
+   * @type {string}
+   */
+  @Input() reply: string;
 
   /**
    * Message sender

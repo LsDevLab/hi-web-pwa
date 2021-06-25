@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, Input, Output, EventEmitter} from '@angular/core';
 import { convertToBoolProperty, NbBooleanInput } from '../helpers';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -74,22 +74,26 @@ import { NbChatMessageFile } from './chat-message-file.component';
 
         <nb-chat-message-file *ngSwitchCase="'file'"
                               [sender]="sender" [date]="date" [dateFormat]="dateFormat"
-                              [message]="message" [files]="files">
+                              [message]="message" [files]="files" [reply]="reply"
+                              (messageQuoted)="messageQuoted.emit()">
         </nb-chat-message-file>
 
         <nb-chat-message-quote *ngSwitchCase="'quote'"
                               [sender]="sender" [date]="date" [dateFormat]="dateFormat"
-                              [message]="message" [quote]="quote">
+                              [message]="message" [quote]="quote" [reply]="reply"
+                               (messageQuoted)="messageQuoted.emit()">
         </nb-chat-message-quote>
 
         <nb-chat-message-map *ngSwitchCase="'map'"
-                              [sender]="sender" [date]="date"
-                              [message]="message" [latitude]="latitude" [longitude]="longitude">
+                              [sender]="sender" [date]="date" [reply]="reply"
+                              [message]="message" [latitude]="latitude" [longitude]="longitude"
+                              (messageQuoted)="messageQuoted.emit()">
         </nb-chat-message-map>
 
         <nb-chat-message-text *ngSwitchDefault
                               [sender]="sender" [date]="date" [dateFormat]="dateFormat"
-                              [message]="message">
+                              [message]="message" [reply]="reply"
+                              (messageQuoted)="messageQuoted.emit()" [isAQuote]="isAQuote">
         </nb-chat-message-text>
       </ng-container>
     </div>
@@ -157,6 +161,12 @@ export class NbChatMessageComponent {
   static ngAcceptInputType_lastOfAGroup: NbBooleanInput;
 
   /**
+   * messageQuoted event
+   * @type {EventEmitter}
+   */
+  @Output() messageQuoted = new EventEmitter<any>();
+
+  /**
    * Determines if a message is a the first of the day
    */
   @Input() firstOfTheDay: boolean;
@@ -207,6 +217,12 @@ export class NbChatMessageComponent {
    * @type {number}
    */
   @Input() longitude: number;
+
+  /**
+   * Message isAQuote
+   * @type {string}
+   */
+  @Input() isAQuote: boolean;
 
   /**
    * Message send avatar
