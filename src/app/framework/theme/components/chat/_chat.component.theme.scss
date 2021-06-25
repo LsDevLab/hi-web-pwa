@@ -503,7 +503,7 @@
   nb-chat-form {
     display: flex;
     flex-direction: column;
-    padding: nb-theme(chat-padding);
+    padding: 0.8rem;
     border-top: nb-theme(chat-divider-width) nb-theme(chat-divider-style) nb-theme(chat-divider-color);
 
     .message-row {
@@ -513,7 +513,7 @@
 
     .quoted-message-div {
       opacity: 0.7;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
       display: flex;
       flex-direction: row;
       justify-content: space-between;

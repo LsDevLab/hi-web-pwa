@@ -37,6 +37,7 @@ export class ChatFormComponent {
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.targetUser = t;
       this.messages = [];
+      this.messageQuoted = null;
     });
     this.chatCoreService.loadedMessagesObservable.subscribe(msgs => this.formatUpdateMessages(msgs));
     //this.howl.get('newMessageSound').play();
@@ -47,6 +48,7 @@ export class ChatFormComponent {
     let message = this.makeMessage(formattedMessage);
     // adding the message to the list of the displayed messages, marking it as to be confirmed ("...")
     this.messages.push(this.formatMessage(message, true));
+    this.messageQuoted = null;
     // sending messages with CCS
     this.chatCoreService.sendMessage(message).subscribe(response => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
