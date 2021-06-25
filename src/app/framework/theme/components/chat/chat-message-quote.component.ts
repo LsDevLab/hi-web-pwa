@@ -23,7 +23,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
           <time class="time">{{ date | date: 'shortTime' }}</time>
         </div>
         <p class="text-quote" *ngIf="quote">
-          <ng-content></ng-content>
           {{ quote }}
         </p>
       </div>
