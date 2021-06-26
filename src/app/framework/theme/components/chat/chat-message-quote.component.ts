@@ -20,10 +20,10 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
       </div>-->
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
-          <time class="time">{{ date | date: 'shortTime' }}</time>
+          <time class="time">{{ quote.date | date: 'shortTime' }}</time>
         </div>
         <p class="text-quote" *ngIf="quote">
-          {{ quote }}
+          {{ quote.text ? quote.text : ('This is a ' + quote.type + ' message') }}
         </p>
       </div>
     </nb-chat-message-text>
@@ -70,8 +70,8 @@ export class NbChatMessageQuoteComponent {
 
   /**
    * Quoted message
-   * @type {Date}
+   * @type {any}
    */
-  @Input() quote: string;
+  @Input() quote: any;
 
 }

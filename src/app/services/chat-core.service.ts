@@ -533,7 +533,8 @@ export class ChatCoreService {
               text: message.text,
               USER: this._currentUsername,
               targetUser: this._targetUsername,
-              files: filesURLSArray
+              files: filesURLSArray,
+              quoteMessageId: message.quote ? message.quote.id : null,
             }
           }).pipe(map(response => response.data["addMessage"]));
         }
@@ -547,6 +548,7 @@ export class ChatCoreService {
           text: message.text,
           USER: this._currentUsername,
           targetUser: this._targetUsername,
+          quoteMessageId: message.quote ? message.quote.id : null,
         }
       }).pipe(map(response => response.data["addMessage"]));
     }

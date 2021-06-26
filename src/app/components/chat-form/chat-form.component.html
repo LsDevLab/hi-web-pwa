@@ -10,7 +10,7 @@
                     [latitude]="msg.latitude"
                     [longitude]="msg.longitude"
                     dateFormat="short"
-                    (messageQuoted)="assignMessageQuoted(msg.text, msg.date)"
+                    (messageQuoted)="assignMessageQuoted(msg)"
                     >
   </nb-chat-message>
   <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true" [messageQuoted]="messageQuoted">

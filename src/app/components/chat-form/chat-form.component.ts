@@ -48,7 +48,6 @@ export class ChatFormComponent {
     let message = this.makeMessage(formattedMessage);
     // adding the message to the list of the displayed messages, marking it as to be confirmed ("...")
     this.messages.push(this.formatMessage(message, true));
-    this.messageQuoted = null;
     // sending messages with CCS
     this.chatCoreService.sendMessage(message).subscribe(response => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
@@ -61,22 +60,28 @@ export class ChatFormComponent {
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
     });
+    this.messageQuoted = null;
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
 
   // Makes a Message to send from a FormattedMessage
   makeMessage(formattedMessage) {
 
+    let type = formattedMessage.files.length ? 'file' : 'text';
+    if (this.messageQuoted)
+      type = 'quote';
+
     let message = {
       text: formattedMessage.message,
       date: new Date(),
       reply: true,  // if reply then you are the sender
-      type: formattedMessage.files.length ? 'file' : 'text',
+      type: type,
       files: formattedMessage.files,
       user: { // the sender of the message in this application
         name: this.currentUser,
         avatar: this.thisUserAvatar,
       },
+      quote: this.messageQuoted
     };
     return message;
   }
@@ -120,7 +125,7 @@ export class ChatFormComponent {
           this.messages[indexOfMessage].user.name = "";
         else
           this.messages[indexOfMessage].user.name = "✔";
-
+        this.messages[indexOfMessage].id = message.id;
       }
       // else if the message is already displayed, do nothing
       else if (indexOfMessage != -1){
@@ -133,7 +138,6 @@ export class ChatFormComponent {
             this.messages[indexOfMessage].user.name = "✔";
           }
         }
-
         return;
       }
       // else add the message to the displayed messages
@@ -145,6 +149,7 @@ export class ChatFormComponent {
         let formattedMessage = this.formatMessage(message, false);
         this.messages.push(formattedMessage);
       }
+
 
       this.messages.sort((a, b) => {
         let d1;
@@ -246,7 +251,9 @@ export class ChatFormComponent {
         avatar: null
       },
       files: files,
-      quote: unformattedMessage.quote
+      quote: unformattedMessage.quote ? unformattedMessage.quote : this.messages.find(message => message.id === unformattedMessage.quoteMessageId),
+      //quoteMessageId: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
+      id: unformattedMessage.id
     };
     return formattedMessage;
   }
@@ -277,9 +284,9 @@ export class ChatFormComponent {
     }
   }
 
-  assignMessageQuoted(msgText, msgDate) {
-    console.log('ADDED A QUOTE');
-    this.messageQuoted = { message: msgText, date: msgDate }
+  assignMessageQuoted(message) {
+    console.log('Quoted message with id', message.id);
+    this.messageQuoted = message;
   }
 
 }

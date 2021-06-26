@@ -63,7 +63,7 @@ import { NbComponentOrCustomStatus } from '../component-status';
     <div class="quoted-message-div" *ngIf="messageQuoted">
       <nb-chat-message class="form-message-quoted"
                         [type]="'text'"
-                        [message]="messageQuoted.message ? messageQuoted.message : 'No text for the quoted message'"
+                        [message]="messageQuoted.text ? messageQuoted.text : ('This is a ' + messageQuoted.type + ' message')"
                         [reply]="false"
                         [sender]=""
                         [date]="messageQuoted.date"
