@@ -13,6 +13,6 @@
                     (messageQuoted)="assignMessageQuoted(msg)"
                     >
   </nb-chat-message>
-  <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true" [messageQuoted]="messageQuoted">
+  <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="messageQuoted">
   </nb-chat-form>
 </nb-chat>

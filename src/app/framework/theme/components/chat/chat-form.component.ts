@@ -123,6 +123,8 @@ export class NbChatFormComponent {
    */
   @Input() messageQuoted: any;
 
+  @Output() messageQuotedChange = new EventEmitter<any>();
+
   /**
    * Predefined message text
    * @type {string}
@@ -229,6 +231,7 @@ export class NbChatFormComponent {
 
   cancelQuotedMessage() {
     this.messageQuoted = null;
+    this.messageQuotedChange.emit(null);
   }
 
   removeFile(file) {
