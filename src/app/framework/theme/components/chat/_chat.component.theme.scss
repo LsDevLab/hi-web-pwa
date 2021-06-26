@@ -513,11 +513,16 @@
 
     .quoted-message-div {
       opacity: 0.7;
-      margin-bottom: 0.8rem;
+      margin-left: -0.4rem;
+      margin-bottom: 0.6rem;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
+
+      .form-message-quoted {
+        width: 90%;
+      }
 
       .cancel-quote-icon {
         height: 1.3rem;
