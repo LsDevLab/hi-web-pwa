@@ -48,7 +48,12 @@ export class ChatFormComponent {
     // making a message from the formatted one
     let message = this.makeMessage(formattedMessage);
     // adding the message to the list of the displayed messages, marking it as to be confirmed ("...")
-    this.messages.push(this.formatMessage(message, true));
+    const finalMessage = this.formatMessage(message, true);
+    const prevReply = this.messages[this.messages.length - 1].reply;
+    if (prevReply !== finalMessage.reply && this.messages.length >= 1){
+      this.messages[this.messages.length - 1].lastOfAGroup = true;
+    }
+    this.messages.push(finalMessage);
     // sending messages with CCS
     this.chatCoreService.sendMessage(message).subscribe(response => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
@@ -160,17 +165,11 @@ export class ChatFormComponent {
         if (!moment(message.date).isSame(prevDate, 'day')) {
           formattedMessage.firstOfTheDay = true;
         }
-        console.log('prev message.sender', prevSender);
-        console.log('message.send', message.senderUsername);
-        /*if (index < orderedUnformattedMessages.length - 1 && orderedUnformattedMessages[index + 1].senderUsername !== message.senderUsername) {
-          formattedMessage.lastOfAGroup = true;
-        }*/
         if (prevSender !== message.senderUsername && this.messages.length >= 1){
           this.messages[index - 1].lastOfAGroup = true;
         }
         prevSender = message.senderUsername;
         prevDate = message.date;
-
         this.messages.push(formattedMessage);
       }
 
