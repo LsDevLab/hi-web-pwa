@@ -10,6 +10,7 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 import { NbChatMessageFile } from './chat-message-file.component';
+import moment from 'moment';
 
 /**
  * Chat message component.
@@ -68,7 +69,7 @@ import { NbChatMessageFile } from './chat-message-file.component';
 
         <div class="date-div" *ngIf="firstOfTheDay">
           <p class="date-popup">
-            {{date | date: 'longDate'}}
+            {{ formatDate(date) }}
           </p>
         </div>
 
@@ -114,6 +115,16 @@ import { NbChatMessageFile } from './chat-message-file.component';
 })
 export class NbChatMessageComponent {
 
+  formatDate(date) {
+    return moment(date).calendar(null,{
+      lastDay : '[Yesterday]',
+      sameDay : '[Today]',
+      nextDay : '[Tomorrow]',
+      lastWeek : '[last] dddd',
+      nextWeek : 'dddd',
+      sameElse : 'L'
+    });
+  }
 
   @HostBinding('@flyInOut')
   get flyInOut() {
