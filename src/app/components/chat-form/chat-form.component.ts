@@ -110,6 +110,7 @@ export class ChatFormComponent {
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
     let prevDate = null;
+    let prevSender = null;
     let reproduceSound = true;
     let justReadedMessagesId = [];
 
@@ -130,6 +131,8 @@ export class ChatFormComponent {
         else
           this.messages[indexOfMessage].user.name = "✔";
         this.messages[indexOfMessage].id = message.id;
+        prevSender = message.senderUsername;
+        prevDate = message.date;
       }
       // else if the message is already displayed, do nothing
       else if (indexOfMessage != -1){
@@ -142,6 +145,8 @@ export class ChatFormComponent {
             this.messages[indexOfMessage].user.name = "✔";
           }
         }
+        prevSender = message.senderUsername;
+        prevDate = message.date;
         return;
       }
       // else add the message to the displayed messages
@@ -153,14 +158,18 @@ export class ChatFormComponent {
         let formattedMessage = this.formatMessage(message, false);
 
         if (!moment(message.date).isSame(prevDate, 'day')) {
-          prevDate = message.date;
           formattedMessage.firstOfTheDay = true;
         }
-        console.log('message.sender', message);
-        console.log('succ message.send', orderedUnformattedMessages[index + 1]);
-        if (index < orderedUnformattedMessages.length - 1 && orderedUnformattedMessages[index + 1].senderUsername !== message.senderUsername) {
+        console.log('prev message.sender', prevSender);
+        console.log('message.send', message.senderUsername);
+        /*if (index < orderedUnformattedMessages.length - 1 && orderedUnformattedMessages[index + 1].senderUsername !== message.senderUsername) {
           formattedMessage.lastOfAGroup = true;
+        }*/
+        if (prevSender !== message.senderUsername && this.messages.length >= 1){
+          this.messages[index - 1].lastOfAGroup = true;
         }
+        prevSender = message.senderUsername;
+        prevDate = message.date;
 
         this.messages.push(formattedMessage);
       }
