@@ -4,6 +4,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { NgxHowlerService } from 'ngx-howler';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
+import moment from 'moment';
 
 @Component({
   selector: 'app-chat-form',
@@ -108,11 +109,12 @@ export class ChatFormComponent {
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
+    let prevDate = null;
     let reproduceSound = true;
     let justReadedMessagesId = [];
 
     // taking the messages loaded from CCS, but ordered from the older to the newer
-    unformattedMessages.slice().reverse().forEach(message => {
+    unformattedMessages.slice().reverse().forEach((message, index) => {
 
       let indexOfMessage = this.indexOfMessageWithDate(message.date);
       // if the message has to be confirmed
@@ -147,6 +149,13 @@ export class ChatFormComponent {
           justReadedMessagesId.push(message.id);
         }
         let formattedMessage = this.formatMessage(message, false);
+
+        if (!moment(message.date).isSame(prevDate, 'day')) {
+          prevDate = message.date;
+          formattedMessage.firstOfTheDay = true;
+        }
+
+
         this.messages.push(formattedMessage);
       }
 
@@ -253,7 +262,9 @@ export class ChatFormComponent {
       files: files,
       quote: unformattedMessage.quote ? unformattedMessage.quote : this.messages.find(message => message.id === unformattedMessage.quoteMessageId),
       //quoteMessageId: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
-      id: unformattedMessage.id
+      id: unformattedMessage.id,
+      firstOfTheDay: null,
+      lastOfAGroup: null
     };
     return formattedMessage;
   }
