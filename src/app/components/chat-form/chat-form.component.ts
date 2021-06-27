@@ -114,7 +114,9 @@ export class ChatFormComponent {
     let justReadedMessagesId = [];
 
     // taking the messages loaded from CCS, but ordered from the older to the newer
-    unformattedMessages.slice().reverse().forEach((message, index) => {
+
+    const orderedUnformattedMessages = unformattedMessages.slice().reverse();
+    orderedUnformattedMessages.forEach((message, index) => {
 
       let indexOfMessage = this.indexOfMessageWithDate(message.date);
       // if the message has to be confirmed
@@ -154,7 +156,11 @@ export class ChatFormComponent {
           prevDate = message.date;
           formattedMessage.firstOfTheDay = true;
         }
-
+        console.log('message.sender', message);
+        console.log('succ message.send', orderedUnformattedMessages[index + 1]);
+        if (index < orderedUnformattedMessages.length - 1 && orderedUnformattedMessages[index + 1].senderUsername !== message.senderUsername) {
+          formattedMessage.lastOfAGroup = true;
+        }
 
         this.messages.push(formattedMessage);
       }
