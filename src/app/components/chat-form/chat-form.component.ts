@@ -247,14 +247,16 @@ export class ChatFormComponent {
     const files = !unformattedMessage.files ? [] : unformattedMessage.files.map((file) => {
       if(typeof file === 'string'){
         return {
-          url: file.split(' ')[0],
-          type:  file.split(' ')[1],
+          url: file.split('%%%')[0],
+          type:  file.split('%%%')[1],
+          title: file.split('%%%')[2],
           icon: 'file-text-outline',
         };
       } else {
         return {
           url: file.src,
-          type:  file.type,
+          type: file.type,
+          title: file.name,
           icon: 'file-text-outline',
         };
       }

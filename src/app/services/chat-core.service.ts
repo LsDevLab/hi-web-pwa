@@ -507,7 +507,7 @@ export class ChatCoreService {
       last(),  // emit the last element after task.snapshotChanges() completed
       switchMap(() => ref.getDownloadURL())
     ).pipe(map(url => {
-      return url + ' ' + file.type
+      return url + '%%%' + file.type + '%%%' + file.name;
     }));
   }
 
@@ -521,7 +521,7 @@ export class ChatCoreService {
       return forkJoin(storingFilesObsArray).pipe(map(obsResults => {
         obsResults.forEach(obsResult => {
           filesURLSArray.push(obsResult);
-          console.log('CCS: File stored at URL with type', obsResult);
+          console.log('CCS: File stored at URL, type, name', obsResult);
         });
       })).pipe(concatMap(() => {
           console.log('CCS: All files stored. Linking URLs and types...');

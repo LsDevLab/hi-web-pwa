@@ -9,11 +9,14 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 export interface NbChatMessageFileIconPreview {
   url: string;
+  title: string;
+  type: string;
   icon: string;
 }
 export interface NbChatMessageFileImagePreview {
   url: string;
   type: string;
+  title: string;
 }
 export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFileImagePreview;
 
@@ -27,14 +30,17 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
                           (messageQuoted)="messageQuoted.emit()">
       <ng-container>
         <div class="files-div">
-          <a *ngFor="let file of readyFiles" [href]="file.url" target="_blank">
+          <a class="file-div" *ngFor="let file of readyFiles" [href]="file.url" target="_blank">
             <div class="not-img-file" *ngIf="!file.urlStyle && file.icon">
               <nb-icon class="file-icon" [icon]="file.icon"></nb-icon>
-              <!--<p class="file-name">Nome file</p>-->
-              <!--<p class="file-type">Tipo file</p>-->
+              <div class="file-info-div">
+                <p class="file-name">{{ file.title }}</p>
+                <p class="file-type">{{ file.type }}</p>
+              </div>
             </div>
             <div class="img-file" *ngIf="file.urlStyle">
               <img class="file-img" [src]="file.urlStyle">
+              <!--<p class="file-name">{{ file.title }}</p>-->
             </div>
           </a>
           <p class="text" *ngIf="message">{{ message }}</p>
