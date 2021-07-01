@@ -40,7 +40,6 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
             </div>
             <div class="img-file" *ngIf="file.urlStyle">
               <img class="file-img" [src]="file.urlStyle">
-              <!--<p class="file-name">{{ file.title }}</p>-->
             </div>
           </a>
           <p class="text" *ngIf="message">{{ message }}</p>

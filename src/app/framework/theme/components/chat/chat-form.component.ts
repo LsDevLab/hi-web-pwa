@@ -63,7 +63,8 @@ import { NbComponentOrCustomStatus } from '../component-status';
     <div class="quoted-message-div" *ngIf="messageQuoted">
       <nb-chat-message class="form-message-quoted"
                         [type]="'text'"
-                        [message]="messageQuoted.text ? messageQuoted.text : ('This is a ' + messageQuoted.type + ' message')"
+                        [message]="messageQuoted.text ? messageQuoted.text : (messageQuoted.files.length > 1 ?
+                                (messageQuoted.files[0].title + ' and other ' + (messageQuoted.files.length - 1) + ' files') : messageQuoted.files[0].title)"
                         [reply]="false"
                         [sender]=""
                         [date]="messageQuoted.date"
