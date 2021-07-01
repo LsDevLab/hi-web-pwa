@@ -354,7 +354,11 @@
         align-items: flex-start;
 
         .files-div {
-          align-items: flex-start;
+          align-items: center;
+        }
+
+        .text {
+          width: 100%;
         }
 
 
@@ -456,7 +460,7 @@
         align-items: flex-end;
 
         .files-div {
-          align-items: flex-end;
+          align-items: center;
         }
 
         .message-content-group {
