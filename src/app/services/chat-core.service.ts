@@ -652,6 +652,9 @@ export class ChatCoreService {
   public setChat(targetUsername: string){
     // Sets as current chat the one with the user with the given username
 
+    if (this._targetUsername === targetUsername)
+      return;
+
     this.targetUsernameSource.next(targetUsername);
 
     const newTargetUserData = this._chatsUsersInfo.find(user => user.username === targetUsername);

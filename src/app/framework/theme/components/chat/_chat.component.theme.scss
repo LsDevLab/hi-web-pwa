@@ -178,7 +178,6 @@
           text-decoration: none;
         }
 
-
         .not-img-file:hover {
           opacity: 0.5;
           transition: .5s ease;
@@ -383,8 +382,8 @@
 
         .text {
           width: 100%;
+          text-align: initial;
         }
-
 
         .message-content-group {
           display: flex;
@@ -487,6 +486,11 @@
           align-items: center;
         }
 
+        .text {
+          width: 100%;
+          text-align: initial;
+        }
+
         .message-content-group {
           display: flex;
           flex-direction: row;
@@ -517,6 +521,10 @@
           flex-direction: row;
         }
 
+        .message-body {
+          align-items: flex-start;
+        }
+
         .status-time-div {
           width: fit-content;
           align-items: flex-end;
@@ -524,6 +532,7 @@
         }
 
         .text-quote {
+          text-align: initial;
           margin-top: 0;
           @include nb-ltr(border-top-right-radius, 0);
           @include nb-rtl(border-top-left-radius, 0);
