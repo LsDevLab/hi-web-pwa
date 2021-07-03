@@ -20,6 +20,7 @@ import {NgxHowlerService} from 'ngx-howler';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireModule } from '@angular/fire';
 import { angularFireModuleData } from '../../firebaseData';
+import {NgCircleProgressModule} from 'ng-circle-progress';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,7 @@ import { angularFireModuleData } from '../../firebaseData';
     NbContextMenuModule,
     NbMenuModule.forRoot(),
     AngularFireModule.initializeApp(angularFireModuleData),
-    AngularFireStorageModule
+    AngularFireStorageModule,
   ],
   bootstrap: [AppComponent],
   providers: [

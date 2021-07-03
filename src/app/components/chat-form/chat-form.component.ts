@@ -53,9 +53,11 @@ export class ChatFormComponent {
     if (prevReply !== finalMessage.reply && this.messages.length >= 1){
       this.messages[this.messages.length - 1].lastOfAGroup = true;
     }
+    finalMessage.files.forEach(file => file.uploadingPercentage = 0);
     this.messages.push(finalMessage);
     // sending messages with CCS
-    this.chatCoreService.sendMessage(message).subscribe(response => {
+    const sendMessageProgressOb = this.chatCoreService.sendMessage(message);
+    sendMessageProgressOb.sendMessageResponseOb.subscribe(response => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
       console.log("CFC: message sent to", this.targetUser);
       this.chatCoreService.setCurrentChatNotifyToTarget().subscribe(response => {
@@ -66,6 +68,22 @@ export class ChatFormComponent {
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
     });
+    if (sendMessageProgressOb.progressObs) {
+      sendMessageProgressOb.progressObs.forEach((progressOb, index) => {
+        progressOb.subscribe(percentage => {
+          const message = this.messages.find(message => message.date === finalMessage.date);
+          message.files = message.files.map((file, alreadyFileIndex) => ({
+            uploadingPercentage: index === alreadyFileIndex ? percentage : file.uploadingPercentage,
+            url: file.url,
+            type: file.type,
+            icon: file.icon,
+            name: file.name
+          }));
+          //console.log('UPLOADING FILE ', index, ' AT %', percentage, '  ', this.messages.find(message => message.date === finalMessage.date));
+        })
+      });
+
+    }
     this.messageQuoted = null;
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
@@ -130,6 +148,18 @@ export class ChatFormComponent {
         // marking the message on the UI as confirmed (displaying the date of sent)
         this.messages[indexOfMessage].date = message.date;
         this.messages[indexOfMessage].confirmDate = null;
+        if (message.files)
+          message.files.forEach((messageFile, index) => {
+            const existingMessage = this.messages.find(m => m.date === message.date);
+            existingMessage.files = existingMessage.files.map((file, alreadyFileIndex) => ({
+              uploadingPercentage: file.uploadingPercentage,
+              url: file.url ? file.url : messageFile.split('%%%')[0],
+              name: messageFile.split('%%%')[2],
+              type: messageFile.split('%%%')[1],
+              icon: file.icon
+            }));
+          });
+        console.log('formatUpdateMessages', this.messages[indexOfMessage].files);
         // marking as readed messages
         if(!message.readed)
           this.messages[indexOfMessage].user.name = "";
@@ -249,14 +279,14 @@ export class ChatFormComponent {
         return {
           url: file.split('%%%')[0],
           type:  file.split('%%%')[1],
-          title: file.split('%%%')[2],
+          name: file.split('%%%')[2],
           icon: 'file-text-outline',
         };
       } else {
         return {
           url: file.src,
           type: file.type,
-          title: file.name,
+          name: file.name,
           icon: 'file-text-outline',
         };
       }

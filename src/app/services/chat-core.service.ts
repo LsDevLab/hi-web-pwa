@@ -503,22 +503,25 @@ export class ChatCoreService {
     const fileId = Math.trunc(Math.random()*1000000);
     let ref = this.afStorage.ref('chats_files/' + this._currentUsername + '/' + this._targetUsername + '/' + fileId);
     let task = ref.put(file);
-    return task.snapshotChanges().pipe(
+    const fileObservable = task.snapshotChanges().pipe(
       last(),  // emit the last element after task.snapshotChanges() completed
       switchMap(() => ref.getDownloadURL())
     ).pipe(map(url => {
       return url + '%%%' + file.type + '%%%' + file.name;
     }));
+    const progressAndObs = { progressOb: task.percentageChanges(), fileOb: fileObservable };
+    return progressAndObs;
   }
 
-  public sendMessage(message: any): Observable<any> {
+  public sendMessage(message: any): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
 
     if(message.files.length) {
       let filesURLSArray: String[] = [];
-      let storingFilesObsArray: Observable<any>[];
-      storingFilesObsArray = message.files.map(file => this.getFileStoringObs(file));
-      return forkJoin(storingFilesObsArray).pipe(map(obsResults => {
+      const storingFilesObsArray = message.files.map(file => this.getFileStoringObs(file));
+      const progressObs: Observable<number>[] = storingFilesObsArray.map(x => x.progressOb);
+      const fileObs: Observable<any>[] = storingFilesObsArray.map(x => x.fileOb);
+      const sendMessageResponseOb = forkJoin(fileObs).pipe(map(obsResults => {
         obsResults.forEach(obsResult => {
           filesURLSArray.push(obsResult);
           console.log('CCS: File stored at URL, type, name', obsResult);
@@ -539,8 +542,9 @@ export class ChatCoreService {
           }).pipe(map(response => response.data["addMessage"]));
         }
       ));
+      return { progressObs: progressObs, sendMessageResponseOb: sendMessageResponseOb };
     } else {
-      return this.apollo.mutate({
+      const sendMessageResponseOb = this.apollo.mutate({
         mutation: GQL_ADD_MESSAGE,
         variables: {
           date: message.date,
@@ -551,6 +555,7 @@ export class ChatCoreService {
           quoteMessageId: message.quote ? message.quote.id : null,
         }
       }).pipe(map(response => response.data["addMessage"]));
+      return { sendMessageResponseOb: sendMessageResponseOb }
     }
 
 

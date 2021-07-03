@@ -19,6 +19,8 @@ import { NbChatMessageFileComponent } from './chat-message-file.component';
 import { NbChatMessageQuoteComponent } from './chat-message-quote.component';
 import { NbChatMessageMapComponent } from './chat-message-map.component';
 import { NbChatOptions } from './chat.options';
+import {CircleProgressComponent} from '../../../../components/circle-progress-bar/circle-progress-bar.component';
+import {NgCircleProgressModule} from 'ng-circle-progress';
 
 const NB_CHAT_COMPONENTS = [
   NbChatComponent,
@@ -28,6 +30,7 @@ const NB_CHAT_COMPONENTS = [
   NbChatMessageFileComponent,
   NbChatMessageQuoteComponent,
   NbChatMessageMapComponent,
+  CircleProgressComponent
 ];
 
 @NgModule({
@@ -36,6 +39,7 @@ const NB_CHAT_COMPONENTS = [
     NbIconModule,
     NbInputModule,
     NbButtonModule,
+    NgCircleProgressModule.forRoot({})
   ],
   declarations: [
     ...NB_CHAT_COMPONENTS,

@@ -184,16 +184,35 @@
           transition: .5s ease;
         }
 
-        .img-file:hover {
-          opacity: 0.5;
-          transition: .5s ease;
+        .img-file {
+          position: relative;
+
+          .file-uploading-progress-bar {
+            position: absolute;
+            bottom: 0.1rem;
+            right: 0.1rem;
+          }
 
         }
 
+        .img-file:hover {
+          opacity: 0.5;
+          transition: .5s ease;
+        }
+
         .not-img-file {
+          position: relative;
+          height: 4rem;
           display: flex;
           flex-direction: row;
           justify-content: flex-start;
+          align-items: center;
+
+          .file-uploading-progress-bar {
+            position: absolute;
+            bottom: 0.1rem;
+            right: 0.1rem;
+          }
 
           .file-icon {
             padding: 0.5rem;
@@ -209,6 +228,11 @@
               color: nb-theme(card-text-color);
               font-weight: bold;
               font-size: 12px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              max-width: 10rem;
+              text-align: initial;
             }
 
             .file-type {

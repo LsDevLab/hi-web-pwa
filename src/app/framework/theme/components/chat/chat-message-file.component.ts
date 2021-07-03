@@ -9,14 +9,16 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 export interface NbChatMessageFileIconPreview {
   url: string;
-  title: string;
+  name: string;
   type: string;
   icon: string;
+  uploadingPercentage: number;
 }
 export interface NbChatMessageFileImagePreview {
   url: string;
   type: string;
-  title: string;
+  name: string;
+  uploadingPercentage: number;
 }
 export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFileImagePreview;
 
@@ -32,14 +34,29 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
         <div class="files-div">
           <a class="file-div" *ngFor="let file of readyFiles" [href]="file.url" target="_blank">
             <div class="not-img-file" *ngIf="!file.urlStyle && file.icon">
+              <circle-progress-bar class="file-uploading-progress-bar" *ngIf="reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100"
+                [progress]="file.uploadingPercentage"
+                [radius]="7"
+                [trackWeight]="2"
+                [trackColor]="'#36f'"
+                [trackEndShape]="'round'"
+              ></circle-progress-bar>
               <nb-icon class="file-icon" [icon]="file.icon"></nb-icon>
               <div class="file-info-div">
-                <p class="file-name">{{ file.title }}</p>
+                <p class="file-name">{{ file.name }}</p>
                 <p class="file-type">{{ file.type }}</p>
               </div>
             </div>
             <div class="img-file" *ngIf="file.urlStyle">
-              <img class="file-img" [src]="file.urlStyle">
+              <img class="file-img" [src]="file.urlStyle" [ngStyle]="{'opacity': (reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100) ? 0.5 : 1 }">
+              <!--*ngIf="reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100"-->
+              <circle-progress-bar class="file-uploading-progress-bar" *ngIf="reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100"
+                                   [progress]="file.uploadingPercentage"
+                                   [radius]="7"
+                                   [trackWeight]="2"
+                                   [trackColor]="'#36f'"
+                                   [trackEndShape]="'round'"
+              ></circle-progress-bar>
             </div>
           </a>
           <p class="text" *ngIf="message">{{ message }}</p>
