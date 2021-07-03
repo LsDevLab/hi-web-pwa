@@ -64,7 +64,7 @@ import { NbComponentOrCustomStatus } from '../component-status';
       <nb-chat-message class="form-message-quoted"
                         [type]="'text'"
                         [message]="messageQuoted.text ? messageQuoted.text : (messageQuoted.files.length > 1 ?
-                                (messageQuoted.files[0].title + ' and other ' + (messageQuoted.files.length - 1) + ' files') : messageQuoted.files[0].title)"
+                                (messageQuoted.files[0].name + ' and other ' + (messageQuoted.files.length - 1) + ' files') : messageQuoted.files[0].name)"
                         [reply]="false"
                         [sender]=""
                         [date]="messageQuoted.date"
