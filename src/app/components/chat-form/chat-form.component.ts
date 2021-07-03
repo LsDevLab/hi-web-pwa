@@ -153,7 +153,7 @@ export class ChatFormComponent {
             const existingMessage = this.messages.find(m => m.date === message.date);
             existingMessage.files = existingMessage.files.map((file, alreadyFileIndex) => ({
               uploadingPercentage: file.uploadingPercentage,
-              url: file.url ? file.url : messageFile.split('%%%')[0],
+              url: messageFile.split('%%%')[0],
               name: messageFile.split('%%%')[2],
               type: messageFile.split('%%%')[1],
               icon: file.icon

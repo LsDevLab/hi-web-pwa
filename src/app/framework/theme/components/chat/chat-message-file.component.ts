@@ -48,7 +48,7 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
               </div>
             </div>
             <div class="img-file" *ngIf="file.urlStyle">
-              <img class="file-img" [src]="file.urlStyle" [ngStyle]="{'opacity': (reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100) ? 0.5 : 1 }">
+              <img class="file-img" [src]="file.imgUrl" [ngStyle]="{'opacity': (reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100) ? 0.5 : 1 }">
               <!--*ngIf="reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100"-->
               <circle-progress-bar class="file-uploading-progress-bar" *ngIf="reply && file.uploadingPercentage !== undefined && file.uploadingPercentage !== 100"
                                    [progress]="file.uploadingPercentage"
@@ -76,6 +76,8 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NbChatMessageFileComponent {
+
+  firstTimeAdded = true;
 
   /**
    * messageQuoted event
@@ -121,14 +123,16 @@ export class NbChatMessageFileComponent {
    */
   @Input()
   set files(files: NbChatMessageFile[]) {
-    this.readyFiles = (files || []).map((file: any) => {
+    this.readyFiles = (files || []).map((file: any, index: any) => {
       const isImage = this.isImage(file);
       return {
         ...file,
         urlStyle: isImage && file.url,
         isImage: isImage,
+        imgUrl: (this.firstTimeAdded || !isImage) ? file.url : this.readyFiles[index].url
       };
     });
+    this.firstTimeAdded = false;
     this.cd.detectChanges();
   }
 
