@@ -12,7 +12,7 @@ import {
   HostBinding,
   HostListener,
   Input,
-  Output,
+  Output, ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -175,6 +175,8 @@ export class NbChatFormComponent {
 
   @HostBinding('class.file-over') fileOver = false;
 
+  @ViewChild('fileInput') fileInput;
+
   constructor(protected cd: ChangeDetectorRef, protected domSanitizer: DomSanitizer) {
   }
 
@@ -209,6 +211,7 @@ export class NbChatFormComponent {
   }
 
   onAttachFileFromButton(event: any) {
+    console.log('in on attach');
     if (this.dropFiles) {
       this.fileOver = false;
 
@@ -227,6 +230,8 @@ export class NbChatFormComponent {
         }
         this.droppedFiles.push(res);
       }
+      event.target.value = null;
+      console.log(this.droppedFiles);
     }
   }
 
