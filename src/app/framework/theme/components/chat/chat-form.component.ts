@@ -206,12 +206,9 @@ export class NbChatFormComponent {
         }
       }
     }
-    // tslint:disable-next-line:no-console
-    console.log(this.droppedFiles);
   }
 
   onAttachFileFromButton(event: any) {
-    console.log('in on attach');
     if (this.dropFiles) {
       this.fileOver = false;
 
@@ -231,7 +228,6 @@ export class NbChatFormComponent {
         this.droppedFiles.push(res);
       }
       event.target.value = null;
-      console.log(this.droppedFiles);
     }
   }
 
