@@ -1,0 +1,18 @@
+<svg [attr.width]="radius*2.5" [attr.height]="radius*2.5">
+  <circle class="progress"
+          [attr.r]="radius"
+          [attr.cx]="radius*1.25"
+          [attr.cy]="radius*1.25"
+          [ngStyle]="{
+            'stroke-dasharray': [(progress / 100 * 2*radius*3.14), 2*radius*3.14],
+            'stroke-width': trackWeight,
+            'stroke': trackColor,
+            'stroke-linecap': trackEndShape
+           }"></circle>
+  <!--<image href="assets/img/upload-message-arrow.svg"
+         [attr.height]="radius*1.6"
+         [attr.width]="radius*1.6"
+         [attr.x]="radius*0.45"
+         [attr.y]="radius*0.45"/>-->
+</svg>
+
