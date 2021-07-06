@@ -1547,7 +1547,7 @@ $eva-mapping: (
   chat-border: none,
   chat-border-radius: border-radius,
   chat-shadow: shadow,
-  chat-padding: 1rem 1.25rem,
+  chat-padding: 1rem 0.5rem,
   chat-scrollbar-color: scrollbar-color,
   chat-scrollbar-background-color: scrollbar-background-color,
   chat-scrollbar-width: scrollbar-width,
@@ -1597,7 +1597,7 @@ $eva-mapping: (
   chat-message-quote-background-color: background-basic-color-2,
   chat-message-quote-text-color: text-hint-color,
   chat-message-file-text-color: text-hint-color,
-  chat-message-file-background-color: transparent,
+  chat-message-file-background-color: white,
 
   spinner-text-color: text-basic-color,
   spinner-text-font-family: text-button-font-family,

@@ -12,7 +12,7 @@ import {
   HostBinding,
   HostListener,
   Input,
-  Output,
+  Output, ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -60,6 +60,20 @@ import { NbComponentOrCustomStatus } from '../component-status';
         </div>
       </ng-container>
     </div>
+    <div class="quoted-message-div" *ngIf="messageQuoted">
+      <nb-chat-message class="form-message-quoted"
+                        [type]="'text'"
+                        [message]="messageQuoted.text ? messageQuoted.text : (messageQuoted.files.length > 1 ?
+                                (messageQuoted.files[0].name + ' and other ' + (messageQuoted.files.length - 1) + ' files') : messageQuoted.files[0].name)"
+                        [reply]="false"
+                        [sender]=""
+                        [date]="messageQuoted.date"
+                        [isAQuote]="true"
+                        dateFormat="short"
+      >
+      </nb-chat-message>
+      <nb-icon class="cancel-quote-icon" icon="close-outline" status="primary" (click)="cancelQuotedMessage()"></nb-icon>
+    </div>
     <div class="message-row">
       <button nbButton
               status="basic"
@@ -103,6 +117,14 @@ export class NbChatFormComponent {
 
   droppedFiles: any[] = [];
   imgDropTypes = ['image/png', 'image/jpeg', 'image/gif'];
+
+  /**
+   * messageQuoted event
+   * @type {string}
+   */
+  @Input() messageQuoted: any;
+
+  @Output() messageQuotedChange = new EventEmitter<any>();
 
   /**
    * Predefined message text
@@ -153,6 +175,8 @@ export class NbChatFormComponent {
 
   @HostBinding('class.file-over') fileOver = false;
 
+  @ViewChild('fileInput') fileInput;
+
   constructor(protected cd: ChangeDetectorRef, protected domSanitizer: DomSanitizer) {
   }
 
@@ -182,8 +206,6 @@ export class NbChatFormComponent {
         }
       }
     }
-    // tslint:disable-next-line:no-console
-    console.log(this.droppedFiles);
   }
 
   onAttachFileFromButton(event: any) {
@@ -205,9 +227,14 @@ export class NbChatFormComponent {
         }
         this.droppedFiles.push(res);
       }
+      event.target.value = null;
     }
   }
 
+  cancelQuotedMessage() {
+    this.messageQuoted = null;
+    this.messageQuotedChange.emit(null);
+  }
 
   removeFile(file) {
     const index = this.droppedFiles.indexOf(file);

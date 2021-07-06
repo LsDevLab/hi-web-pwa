@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 /**
  * Chat message component.
@@ -17,11 +17,12 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       <div class="status-time-div">
         <p class="sender" *ngIf="sender">{{ sender }}</p>
         <time class="time">{{ date | date: 'shortTime' }}</time>
+        <nb-icon class="reply-button" *ngIf="!reply && !isAQuote" icon="corner-up-right-outline" (click)="messageQuoted.emit()"></nb-icon>
       </div>
-      <p class="text" *ngIf="message">
+      <div class="message-body">
         <ng-content></ng-content>
-        {{ message }}
-      </p>
+        <p class="text" *ngIf="message">{{ message }}</p>
+      </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,10 +30,22 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class NbChatMessageTextComponent {
 
   /**
+   * messageQuoted event
+   * @type {EventEmitter}
+   */
+  @Output() messageQuoted = new EventEmitter<any>();
+
+  /**
    * Message sender
    * @type {string}
    */
   @Input() sender: string;
+
+  /**
+   * Message reply
+   * @type {string}
+   */
+  @Input() reply: string;
 
   /**
    * Message sender
@@ -51,5 +64,11 @@ export class NbChatMessageTextComponent {
    * @type {string}
    */
   @Input() dateFormat: string = 'shortTime';
+
+  /**
+   * Message isAQuote
+   * @type {string}
+   */
+  @Input() isAQuote: boolean;
 
 }

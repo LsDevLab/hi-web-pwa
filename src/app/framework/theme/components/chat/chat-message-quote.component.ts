@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 /**
  * Chat message component.
@@ -13,18 +13,17 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'nb-chat-message-quote',
   template: `
     <!--<p class="sender" *ngIf="sender || date">{{ sender }} <time>{{ date | date: dateFormat }}</time></p>-->
-    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat" [message]="message">
+    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat" [message]="message"
+                          [reply]="reply" (messageQuoted)="messageQuoted.emit()">
       <!--<div class="quote">
         {{ quote }}
       </div>-->
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
-          <p class="sender" *ngIf="sender">{{ sender }}</p>
-          <time class="time">{{ date | date: 'shortTime' }}</time>
+          <time class="time">{{ quote.date | date: 'shortTime' }}</time>
         </div>
         <p class="text-quote" *ngIf="quote">
-          <ng-content></ng-content>
-          {{ quote }}
+          {{ quote.text ? quote.text : ('This is a ' + quote.type + ' message') }}
         </p>
       </div>
     </nb-chat-message-text>
@@ -32,6 +31,18 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NbChatMessageQuoteComponent {
+
+  /**
+   * messageQuoted event
+   * @type {EventEmitter}
+   */
+  @Output() messageQuoted = new EventEmitter<any>();
+
+  /**
+   * Message reply
+   * @type {string}
+   */
+  @Input() reply: string;
 
   /**
    * Message sender
@@ -59,8 +70,8 @@ export class NbChatMessageQuoteComponent {
 
   /**
    * Quoted message
-   * @type {Date}
+   * @type {any}
    */
-  @Input() quote: string;
+  @Input() quote: any;
 
 }

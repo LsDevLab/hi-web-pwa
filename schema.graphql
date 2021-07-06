@@ -61,6 +61,7 @@ type Message {
   id: ID!
   latitude: String
   longitude: String
+  quoteMessageId: String
   readed: Boolean
   receiverUsername: String!
   senderUsername: String!
@@ -76,6 +77,8 @@ type MessageAggregateResult {
   latitudeMin: String
   longitudeMax: String
   longitudeMin: String
+  quoteMessageIdMax: String
+  quoteMessageIdMin: String
   receiverUsernameMax: String
   receiverUsernameMin: String
   senderUsernameMax: String
@@ -93,7 +96,7 @@ type MultiPolygon {
 type Mutation {
   addChats(input: [AddChatsInput!]!): AddChatsPayload
   addMessage(input: [AddMessageInput!]!): AddMessagePayload
-  addUser(input: [AddUserInput!]!): AddUserPayload
+  addUser(input: [AddUserInput!]!, upsert: Boolean): AddUserPayload
   deleteChats(filter: ChatsFilter!): DeleteChatsPayload
   deleteMessage(filter: MessageFilter!): DeleteMessagePayload
   deleteUser(filter: UserFilter!): DeleteUserPayload
@@ -157,10 +160,9 @@ type User {
   bio: String
   lastAccess: DateTime!
   name: String!
-  online: Boolean
   profile_img: String
   sex: String
-  surname: String
+  surname: String!
   username: String!
 }
 
@@ -229,6 +231,7 @@ enum MessageHasFilter {
   files
   latitude
   longitude
+  quoteMessageId
   readed
   receiverUsername
   senderUsername
@@ -240,6 +243,7 @@ enum MessageOrderable {
   date
   latitude
   longitude
+  quoteMessageId
   receiverUsername
   senderUsername
   text
@@ -256,7 +260,6 @@ enum UserHasFilter {
   bio
   lastAccess
   name
-  online
   profile_img
   sex
   surname
@@ -285,6 +288,7 @@ input AddMessageInput {
   files: [String]
   latitude: String
   longitude: String
+  quoteMessageId: String
   readed: Boolean
   receiverUsername: String!
   senderUsername: String!
@@ -297,10 +301,9 @@ input AddUserInput {
   bio: String
   lastAccess: DateTime!
   name: String!
-  online: Boolean
   profile_img: String
   sex: String
-  surname: String
+  surname: String!
   username: String!
 }
 
@@ -313,7 +316,7 @@ input AuthRule {
 
 input ChatsFilter {
   and: [ChatsFilter]
-  has: ChatsHasFilter
+  has: [ChatsHasFilter]
   not: ChatsFilter
   notify: StringHashFilter
   or: [ChatsFilter]
@@ -361,6 +364,7 @@ input DateTimeFilter {
   eq: DateTime
   ge: DateTime
   gt: DateTime
+  in: [DateTime]
   le: DateTime
   lt: DateTime
 }
@@ -375,6 +379,7 @@ input FloatFilter {
   eq: Float
   ge: Float
   gt: Float
+  in: [Float]
   le: Float
   lt: Float
 }
@@ -402,6 +407,7 @@ input Int64Filter {
   eq: Int64
   ge: Int64
   gt: Int64
+  in: [Int64]
   le: Int64
   lt: Int64
 }
@@ -416,6 +422,7 @@ input IntFilter {
   eq: Int
   ge: Int
   gt: Int
+  in: [Int]
   le: Int
   lt: Int
 }
@@ -433,7 +440,7 @@ input IntersectsFilter {
 input MessageFilter {
   and: [MessageFilter]
   date: DateTimeFilter
-  has: MessageHasFilter
+  has: [MessageHasFilter]
   id: [ID!]
   not: MessageFilter
   or: [MessageFilter]
@@ -453,6 +460,7 @@ input MessagePatch {
   files: [String]
   latitude: String
   longitude: String
+  quoteMessageId: String
   readed: Boolean
   receiverUsername: String
   senderUsername: String
@@ -466,6 +474,7 @@ input MessageRef {
   id: ID
   latitude: String
   longitude: String
+  quoteMessageId: String
   readed: Boolean
   receiverUsername: String
   senderUsername: String
@@ -561,7 +570,7 @@ input UpdateUserInput {
 
 input UserFilter {
   and: [UserFilter]
-  has: UserHasFilter
+  has: [UserHasFilter]
   not: UserFilter
   or: [UserFilter]
   username: StringHashFilter
@@ -578,7 +587,6 @@ input UserPatch {
   bio: String
   lastAccess: DateTime
   name: String
-  online: Boolean
   profile_img: String
   sex: String
   surname: String
@@ -589,7 +597,6 @@ input UserRef {
   bio: String
   lastAccess: DateTime
   name: String
-  online: Boolean
   profile_img: String
   sex: String
   surname: String

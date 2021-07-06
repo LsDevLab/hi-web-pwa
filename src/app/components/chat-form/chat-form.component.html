@@ -9,9 +9,12 @@
                     [quote]="msg.quote"
                     [latitude]="msg.latitude"
                     [longitude]="msg.longitude"
+                    [firstOfTheDay]="msg.firstOfTheDay"
+                    [lastOfAGroup]="msg.lastOfAGroup"
                     dateFormat="short"
+                    (messageQuoted)="assignMessageQuoted(msg)"
                     >
   </nb-chat-message>
-  <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true">
+  <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="messageQuoted">
   </nb-chat-form>
 </nb-chat>

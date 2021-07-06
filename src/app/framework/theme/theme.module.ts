@@ -45,7 +45,7 @@ export function windowFactory(platformId: Object): Window | undefined {
 
 @NgModule({
   imports: [
-    CommonModule,
+    CommonModule
   ],
   exports: [
   ],

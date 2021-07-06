@@ -19,6 +19,8 @@ import {DialogEditProfileComponent} from '../../components/dialog-edit-profile/d
 import { DialogTargetInfoComponent } from '../../components/dialog-target-info/dialog-target-info.component';
 import { DialogAboutComponent } from '../../components/dialog-about/dialog-about.component';
 import { DialogTokenExpiredComponent } from '../../components/dialog-token-expired/dialog-token-expired.component';
+import {CircleProgressComponent} from '../../components/circle-progress-bar/circle-progress-bar.component';
+import {NgCircleProgressModule} from 'ng-circle-progress';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,7 @@ import { DialogTokenExpiredComponent } from '../../components/dialog-token-expir
     DialogEditProfileComponent,
     DialogTargetInfoComponent,
     DialogAboutComponent,
-    DialogTokenExpiredComponent
+    DialogTokenExpiredComponent,
   ],
   imports: [
     ChatPageRoutingModule,

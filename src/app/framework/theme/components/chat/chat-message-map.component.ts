@@ -4,7 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import { NbChatOptions } from './chat.options';
 
 /**
@@ -14,11 +14,23 @@ import { NbChatOptions } from './chat.options';
   selector: 'nb-chat-message-map',
   template: `
     <nb-chat-message-file [files]="[file]" [message]="message" [sender]="sender" [date]="date"
-     [dateFormat]="dateFormat"></nb-chat-message-file>
+     [dateFormat]="dateFormat" [reply]="reply" (messageQuoted)="messageQuoted.emit()"></nb-chat-message-file>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NbChatMessageMapComponent {
+
+  /**
+   * messageQuoted event
+   * @type {EventEmitter}
+   */
+  @Output() messageQuoted = new EventEmitter<any>();
+
+  /**
+   * Message reply
+   * @type {string}
+   */
+  @Input() reply: string;
 
   /**
    * Message sender
