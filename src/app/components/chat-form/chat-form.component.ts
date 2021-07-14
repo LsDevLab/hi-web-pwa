@@ -5,6 +5,7 @@ import { NgxHowlerService } from 'ngx-howler';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import moment from 'moment';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-chat-form',
@@ -39,8 +40,12 @@ export class ChatFormComponent {
       this.targetUser = t;
       this.messages = [];
       this.messageQuoted = null;
+      this.chatCoreService.getMessages.pipe(first(val => val)).subscribe(msgs => this.formatUpdateMessages(msgs));
     });
-    this.chatCoreService.loadedMessagesObservable.subscribe(msgs => this.formatUpdateMessages(msgs));
+    this.chatCoreService.messageAdded.subscribe(msg => this.formatUpdateMessages([msg]));
+    this.chatCoreService.messageChanged.subscribe(msg => this.formatUpdateMessages([msg]));
+    this.chatCoreService.messageDeleted.subscribe(msg => this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1));
+
     //this.howl.get('newMessageSound').play();
   }
 
@@ -49,7 +54,7 @@ export class ChatFormComponent {
     let message = this.makeMessage(formattedMessage);
     // adding the message to the list of the displayed messages, marking it as to be confirmed ("...")
     const finalMessage = this.formatMessage(message, true);
-    const prevReply = this.messages[this.messages.length - 1].reply;
+    const prevReply = this.messages.length >= 1 ? this.messages[this.messages.length - 1].reply : null;
     if (prevReply !== finalMessage.reply && this.messages.length >= 1){
       this.messages[this.messages.length - 1].lastOfAGroup = true;
     }
@@ -60,18 +65,13 @@ export class ChatFormComponent {
     sendMessageProgressOb.sendMessageResponseOb.subscribe(response => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
       console.log("CFC: message sent to", this.targetUser);
-      this.chatCoreService.setCurrentChatNotifyToTarget().subscribe(response => {
-        console.log('CFC: setted notify flag to', this.targetUser);
-      },(error) => {
-        console.log('CFC: ERROR while setting chat notify flag to ', this.targetUser, error);
-      });
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
     });
     if (sendMessageProgressOb.progressObs) {
       sendMessageProgressOb.progressObs.forEach((progressOb, index) => {
         progressOb.subscribe(percentage => {
-          const message = this.messages.find(message => message.date === finalMessage.date);
+          const message = this.messages.find(message => message.timestamp === finalMessage.timestamp);
           message.files = message.files.map((file, alreadyFileIndex) => ({
             uploadingPercentage: index === alreadyFileIndex ? percentage : file.uploadingPercentage,
             url: file.url,
@@ -97,7 +97,7 @@ export class ChatFormComponent {
 
     let message = {
       text: formattedMessage.message,
-      date: new Date(),
+      timestamp: new Date().getTime(),
       reply: true,  // if reply then you are the sender
       type: type,
       files: formattedMessage.files,
@@ -110,15 +110,15 @@ export class ChatFormComponent {
     return message;
   }
 
-  indexOfMessageWithDate(date){
+  indexOfMessageWithTimestamp(timestamp){
     // Returns true if messages has a message with the given date, otherwise false
     let i = 0;
-    let timeDate = new Date(date).getTime();
+    let timeDate = timestamp;//new Date(date).getTime();
     while (i < this.messages.length){
-      let thisTimeDate = new Date(this.messages[i].date).getTime();
+      let thisTimeDate = this.messages[i].timestamp;
       let thisTimeDateConfirm = null;
       if (this.messages[i].confirmDate)
-        thisTimeDateConfirm = new Date(this.messages[i].confirmDate).getTime();
+        thisTimeDateConfirm = this.messages[i].confirmDate;
       if (thisTimeDate == timeDate || (thisTimeDateConfirm != null && thisTimeDateConfirm == timeDate)){
         return i;
       }
@@ -128,29 +128,28 @@ export class ChatFormComponent {
   }
 
   formatUpdateMessages(unformattedMessages) {
-    //console.log("INIZIO")
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
-    let prevDate = null;
-    let prevSender = null;
+    let prevDate = this.messages.length > 0 ? this.messages[this.messages.length - 1].timestamp : null;
+    let prevSender = this.messages.length > 0 ? this.messages[this.messages.length - 1].sender_username : null;
     let reproduceSound = true;
-    let justReadedMessagesId = [];
+    let justReadedMessages = [];
 
     // taking the messages loaded from CCS, but ordered from the older to the newer
 
     const orderedUnformattedMessages = unformattedMessages.slice().reverse();
     orderedUnformattedMessages.forEach((message, index) => {
 
-      let indexOfMessage = this.indexOfMessageWithDate(message.date);
+      let indexOfMessage = this.indexOfMessageWithTimestamp(message.timestamp);
       // if the message has to be confirmed
       if (indexOfMessage != -1 && this.messages[indexOfMessage].confirmDate){
         // marking the message on the UI as confirmed (displaying the date of sent)
-        this.messages[indexOfMessage].date = message.date;
+        this.messages[indexOfMessage].timestamp = message.timestamp;
         this.messages[indexOfMessage].confirmDate = null;
         if (message.files)
           message.files.forEach((messageFile, index) => {
-            const existingMessage = this.messages.find(m => m.date === message.date);
+            const existingMessage = this.messages.find(m => m.timestamp === message.timestamp);
             existingMessage.files = existingMessage.files.map((file, alreadyFileIndex) => ({
               uploadingPercentage: file.uploadingPercentage,
               url: messageFile.split('%%%')[0],
@@ -159,60 +158,64 @@ export class ChatFormComponent {
               icon: file.icon
             }));
           });
-        console.log('formatUpdateMessages', this.messages[indexOfMessage].files);
         // marking as readed messages
         if(!message.readed)
           this.messages[indexOfMessage].user.name = "";
         else
           this.messages[indexOfMessage].user.name = "✔";
         this.messages[indexOfMessage].id = message.id;
-        prevSender = message.senderUsername;
-        prevDate = message.date;
+        prevSender = message.sender_username;
+        prevDate = message.timestamp;
       }
       // else if the message is already displayed, do nothing
       else if (indexOfMessage != -1){
         //console.log("alreadyhas", message);
         // marking as readed messages
         if(this.messages[indexOfMessage].reply){
-          if(!message.readed)
+          if(!message.readed_from_receiver)
             this.messages[indexOfMessage].user.name = "";
           else{
             this.messages[indexOfMessage].user.name = "✔";
           }
         }
-        prevSender = message.senderUsername;
-        prevDate = message.date;
+        prevSender = message.sender_username;
+        prevDate = message.timestamp;
         return;
       }
       // else add the message to the displayed messages
       else{
         // marking as to send the readed notify the messages just readed
-        if(message.senderUsername === this.targetUser && message.readed == null){
-          justReadedMessagesId.push(message.id);
+        if(message.sender_username === this.targetUser && !message.readed_from_receiver){
+          justReadedMessages.push({
+            sender_username: message.sender_username,
+            receiver_username: message.receiver_username,
+            timestamp: message.timestamp,
+            readed_from_receiver: true,
+            type: message.type
+          });
         }
         let formattedMessage = this.formatMessage(message, false);
 
-        if (!moment(message.date).isSame(prevDate, 'day')) {
+        if (!moment(message.timestamp).isSame(prevDate, 'day')) {
           formattedMessage.firstOfTheDay = true;
         }
-        if (prevSender !== message.senderUsername && this.messages.length >= 1){
-          this.messages[index - 1].lastOfAGroup = true;
+        if (prevSender !== message.sender_username && this.messages.length >= 1){
+          this.messages[this.messages.length - 1].lastOfAGroup = true;
         }
-        prevSender = message.senderUsername;
-        prevDate = message.date;
+        prevSender = message.sender_username;
+        prevDate = message.timestamp;
         this.messages.push(formattedMessage);
       }
-
 
       this.messages.sort((a, b) => {
         let d1;
         let d2;
-        if (a.date != null)
-          d1 = new Date(a.date);
+        if (a.timestamp != null)
+          d1 = new Date(a.timestamp);
         else
           d1 = new Date(a.confirmDate);
-        if (b.date != null)
-          d2 = new Date(b.date);
+        if (b.timestamp != null)
+          d2 = new Date(b.timestamp);
         else
           d2 = new Date(b.confirmDate);
         return d1 - d2;
@@ -221,28 +224,21 @@ export class ChatFormComponent {
     });
 
     // removing messages if too much
-    while (this.messages.length > unformattedMessages.length){
+    /*while (this.messages.length > unformattedMessages.length){
       this.messages.shift();
-    }
+    }*/
     //console.log("FINE");
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
 
     if(this.router.url === '/chat'){
-
-      if(justReadedMessagesId.length > 0){
-        this.chatCoreService.setMessagesAsReaded(justReadedMessagesId).subscribe(response => {
-          console.log("CFC: messages confirmed as readed", {'messages': justReadedMessagesId});
+      if(justReadedMessages.length > 0){
+        this.chatCoreService.setMessagesAsReaded(justReadedMessages).subscribe(response => {
+          console.log("CFC: messages confirmed as readed", {'messages': justReadedMessages});
         },(error) => {
           console.log('CFC: ERROR while confirming messages as readed', error);
         });
         this.howl.get('newMessageSound').play();
       }
-
-      this.chatCoreService.clearCurrentChatNotify().subscribe(response => {
-        console.log("CFC: current chat notify flag cleared");
-      },(error) => {
-        console.log('CFC: ERROR while clearing notify for current chat', error);
-      });
     }
 
 
@@ -256,10 +252,10 @@ export class ChatFormComponent {
 
     let reply = true;
     let user = "";
-    let date = unformattedMessage.date;
+    let timestamp = unformattedMessage.timestamp;
     let confirmDate = null;
 
-    if (unformattedMessage.senderUsername === this.targetUser){
+    if (unformattedMessage.sender_username === this.targetUser){
       reply = false;
     }else{
       if(!unformattedMessage.readed)
@@ -269,8 +265,8 @@ export class ChatFormComponent {
     }
 
     if (toConfirm){
-      date = null;
-      confirmDate = unformattedMessage.date.toISOString();
+      timestamp = null;
+      confirmDate = unformattedMessage.timestamp;
       user += "...";
     }
 
@@ -295,7 +291,7 @@ export class ChatFormComponent {
 
     let formattedMessage = {
       confirmDate: confirmDate,
-      date: date,
+      timestamp: timestamp,
       latitude: unformattedMessage.latitude,
       longitude: unformattedMessage.longitude,
       text: unformattedMessage.text,
@@ -310,20 +306,21 @@ export class ChatFormComponent {
       //quoteMessageId: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
       id: unformattedMessage.id,
       firstOfTheDay: null,
-      lastOfAGroup: null
+      lastOfAGroup: null,
+      sender_username: unformattedMessage.sender_username
     };
     return formattedMessage;
   }
 
   loadFilesOfMessage(date, filesURLSArray: string[]){
-    const messageIndex = this.indexOfMessageWithDate(date);
+    const messageIndex = this.indexOfMessageWithTimestamp(date);
     if (messageIndex != -1){
       this.messages[messageIndex].files = [];
       filesURLSArray.forEach(fileURL => {
         console.log('CFC: Downloading file', fileURL, ' of message with date', date);
         this.http.get(fileURL, { responseType: 'blob' }).subscribe(result => {
           console.log('CFC: File ', fileURL, 'downloaded', result);
-          const messageIndex = this.indexOfMessageWithDate(date);
+          const messageIndex = this.indexOfMessageWithTimestamp(date);
           if (messageIndex != -1){
             //const file = new File([result], fileURL, {type:result.type});
             this.messages[messageIndex].files.push({
@@ -331,7 +328,6 @@ export class ChatFormComponent {
               type: result.type,
               icon: 'file-text-outline',
             });
-            console.log('messages', this.messages);
             console.log('CFC: File ', fileURL, 'added to message with date', date);
           }
         }, error => {
@@ -344,6 +340,10 @@ export class ChatFormComponent {
   assignMessageQuoted(message) {
     console.log('Quoted message with id', message.id);
     this.messageQuoted = message;
+  }
+
+  toISODate(timestamp) {
+    return new Date(timestamp).toISOString();
   }
 
 }

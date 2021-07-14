@@ -88,6 +88,7 @@ export class ChatPageComponent implements OnInit {
         }, 2000);
       }
     }, 2000);
+
   }
 
   selectUser(){

@@ -11,7 +11,7 @@
   <nb-list
     nbInfiniteList
     [threshold]="500">
-    <nb-list-item *ngFor="let chat of chats" (click)="selectChat(chat.targetUsername)" [style.background-color]="chat.targetUsername===otherUser ? '#c7e2ff' : ''" style="cursor: pointer;">
+    <nb-list-item *ngFor="let chat of chats" (click)="selectChat(chat.targetUsername)" [style.background-color]="chat.targetUsername===targetUser ? '#c7e2ff' : ''" style="cursor: pointer;">
       <div class="item-div">
         <nb-user [name]="chat.name + ' ' + chat.surname"
                  [title]="chat.targetUsername"
@@ -21,6 +21,7 @@
         <svg height="10" width="10" *ngIf="chat.notify" >
           <circle cx="5" cy="5" r="5" fill="#36ff" />
         </svg>
+        <p>{{chat.numOfMessagesToRead}}</p>
       </div>
     </nb-list-item>
     <nb-list-item style="cursor: pointer;" (click)="openAddChatDialog()">

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-dialog-edit-profile',
@@ -21,11 +22,16 @@ export class DialogEditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.chatCoreService.currentUserDataObservable.subscribe(
-      userData => {
+    this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
+      this.chatCoreService.getUsers.pipe(first(val => val)).subscribe(users => {
+        const userData = users.find(u => u.username === currentUsername);
         this.userData = userData ? userData : this.userData;
-      }
-    );
+      });
+      this.chatCoreService.userChanged.subscribe(user => {
+        if (user.username === currentUsername)
+          this.userData = user;
+      });
+    });
   }
 
   closeDialog(){
