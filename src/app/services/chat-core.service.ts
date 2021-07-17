@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
-import {BehaviorSubject, forkJoin, interval, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, forkJoin, interval, ReplaySubject, Subject, Subscription} from 'rxjs';
 import { ChatNotificationsService } from './chat-notifications.service';
-import {first, last, map, switchMap} from 'rxjs/operators';
+import {filter, first, last, map, switchMap} from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { concatMap } from 'rxjs/operators';
-import {jsGlobalObjectValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator/src/known_declaration';
 
 const GQL_GET_MESSAGES = gql`
   query getMessages($currentUser: String!, $targetUser: String!) {
@@ -343,8 +342,8 @@ const GQL_SUB_USER_CHATSINFO = gql`
 })
 export class ChatCoreService {
 
-  private currentUsernameSource = new ReplaySubject<string>();
-  private targetUsernameSource = new ReplaySubject<string>();
+  private currentUsernameSource = new BehaviorSubject<string>(null);
+  private targetUsernameSource = new BehaviorSubject<string>(null);
   private targetUserDataSource = new BehaviorSubject<any>(null);
   private loadedMessagesSource = new BehaviorSubject<any[]>([]);
   //private chatsSource = new BehaviorSubject<any[]>([]);
@@ -369,27 +368,27 @@ export class ChatCoreService {
   private _targetUsernameSubscription: Subscription = null;
 
 
-  private usersSource = new ReplaySubject<any>();
-  private userAddedSource = new ReplaySubject<any>();
-  private userChangedSource = new ReplaySubject<any>();
-  private userDeletedSource = new ReplaySubject<any>();
+  private usersSource = new BehaviorSubject<any>(null);
+  private userAddedSource = new Subject<any>();
+  private userChangedSource = new Subject<any>();
+  private userDeletedSource = new Subject<any>();
 
-  private chatsSource = new ReplaySubject<any>();
-  private chatAddedSource = new ReplaySubject<any>();
-  private chatChangedSource = new ReplaySubject<any>();
-  private chatDeletedSource = new ReplaySubject<any>();
+  private chatsSource =  new BehaviorSubject<any>(null);
+  private chatAddedSource = new Subject<any>();
+  private chatChangedSource = new Subject<any>();
+  private chatDeletedSource = new Subject<any>();
 
-  private messagesSource = new BehaviorSubject<any>(null);
-  private messageAddedSource = new ReplaySubject<any>();
-  private messageChangedSource = new ReplaySubject<any>();
-  private messageDeletedSource = new ReplaySubject<any>();
+  private messagesSource = new Subject<any>();
+  private messageAddedSource = new Subject<any>();
+  private messageChangedSource = new Subject<any>();
+  private messageDeletedSource = new Subject<any>();
 
-  public getUsers = this.usersSource.asObservable();
+  public getUsers = this.usersSource.asObservable().pipe(filter(v => v !== null));
   public userAdded = this.userAddedSource.asObservable();
   public userChanged = this.userChangedSource.asObservable();
   public userDeleted = this.userDeletedSource.asObservable();
 
-  public getChats = this.chatsSource.asObservable();
+  public getChats = this.chatsSource.asObservable().pipe(filter(v => v !== null));
   public chatAdded = this.chatAddedSource.asObservable();
   public chatChanged = this.chatChangedSource.asObservable();
   public chatDeleted = this.chatDeletedSource.asObservable();
@@ -413,8 +412,8 @@ export class ChatCoreService {
 
   //////////////////////////// PUBLIC ATTRIBUTES ////////////////////////////
 
-  public currentUsernameObservable = this.currentUsernameSource.asObservable();
-  public targetUsernameObservable = this.targetUsernameSource.asObservable();
+  public currentUsernameObservable = this.currentUsernameSource.asObservable().pipe(filter(v => v !== null));
+  public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
   public targetUserDataObservable = this.targetUserDataSource.asObservable();
   public loadedMessagesObservable = this.loadedMessagesSource.asObservable();
   //public chatsObservable = this.chatsSource.asObservable();
@@ -425,10 +424,6 @@ export class ChatCoreService {
 
   constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService,
               private afStorage: AngularFireStorage) {
-    this._getUsers();
-    this._subscribeToUserAdded();
-    this._subscribeToUserChanged()
-    this._subscribeToUserDeleted();
 
     this.messageAdded.subscribe(msg => {
       this._messages.push(msg);
@@ -444,7 +439,7 @@ export class ChatCoreService {
       this.messagesSource.next(this._messages);
     });
 
-    this.getChats.pipe(first(val => val)).subscribe(chats => this._chats.push(...chats));
+    this.getChats.pipe(first()).subscribe(chats => this._chats.push(...chats));
     this.chatAdded.subscribe(chat => {
       this._chats.push(chat);
       this.chatsSource.next(this._chats);
@@ -459,7 +454,7 @@ export class ChatCoreService {
       this.chatsSource.next(this._chats);
     });
 
-    this.getUsers.pipe(first(val => val)).subscribe(users => this._users.push(...users));
+    this.getUsers.pipe(first()).subscribe(users => this._users.push(...users));
     this.userAdded.subscribe(user => {
       this._users.push(user);
       this.usersSource.next(this._users);
@@ -630,17 +625,22 @@ export class ChatCoreService {
   //////////////////////////// MESSAGES SUBSCRIBERS ATTRIBUTES ////////////////////////////
 
   private _getMessages(): Subscription {
+
+    this.isLoadingSource.next(true);
+
     const messagesQuery = this.apollo
       .watchQuery<any[]>({
         query: GQL_GET_MESSAGES,
         variables: {
           targetUser: this._targetUsername,
           currentUser: this._currentUsername
-        }
+        },
+        fetchPolicy: 'no-cache'
       });
 
     return messagesQuery.valueChanges.subscribe(
       response =>{
+        this.isLoadingSource.next(false);
         this.messagesSource.next(response.data["getMessages"]);
         console.log("CCS: messages received", {'messages': response.data["getMessages"]});
       }
@@ -724,6 +724,8 @@ export class ChatCoreService {
 
   private _getChats(): Subscription {
 
+    this.isLoadingSource.next(true);
+
     const chatsQuery = this.apollo
       .watchQuery<any[]>({
         query: GQL_GET_CHATS,
@@ -731,6 +733,7 @@ export class ChatCoreService {
 
     return chatsQuery.valueChanges.subscribe(
       response =>{
+        this.isLoadingSource.next(false);
         this.chatsSource.next(response.data["getChats"]);
         console.log("CCS: chats received", {'chats': response.data["getChats"]});
       }
@@ -805,6 +808,8 @@ export class ChatCoreService {
 
   private _getUsers(): Subscription {
 
+    this.isLoadingSource.next(true);
+
     const usersQuery = this.apollo
       .watchQuery<any[]>({
         query: GQL_GET_USERS,
@@ -812,6 +817,7 @@ export class ChatCoreService {
 
     return usersQuery.valueChanges.subscribe(
       response =>{
+        this.isLoadingSource.next(false);
         this.usersSource.next(response.data["getUsers"]);
         console.log("CCS: users received", {'users': response.data["getUsers"]});
       }
@@ -1116,19 +1122,16 @@ export class ChatCoreService {
       return;
 
     this._targetUsername = targetUsername;
-    this.messagesSource.next(null);
-    this.getMessages.pipe(first(val => !val)).subscribe(msgs => {
-      this._unsubscribeToMessages();
-      this._getMessages();
-      this._subscribeToMessages();
-      this.getMessages.pipe(first(val => val)).subscribe(msgs => {
-        this._messages = [];
-        this._messages.push(...msgs);
-        this.targetUsernameSource.next(targetUsername);
-      });
+    this.targetUsernameSource.next(targetUsername);
+
+    this._unsubscribeToMessages();
+    this._getMessages();
+    this._subscribeToMessages();
+
+    this.getMessages.pipe(first()).subscribe(msgs => {
+      this._messages = [];
+      this._messages.push(...msgs);
     });
-
-
 
     //const newTargetUserData = this._chatsUsersInfo.find(user => user.username === targetUsername);
     //this.targetUserDataSource.next(newTargetUserData);
@@ -1173,7 +1176,7 @@ export class ChatCoreService {
         this._getUsers();
         this._subscribeToUsers();
         // updating last access of current user once every 10s
-        this.updateCurrentUserLastAccess().subscribe(response => {
+        /*this.updateCurrentUserLastAccess().subscribe(response => {
           console.log("CCS: current user last access updated");
         },(error) => {
           console.log('CCS: ERROR while updating last access of the current user', error);
@@ -1184,7 +1187,7 @@ export class ChatCoreService {
           },(error) => {
             console.log('CCS: ERROR while updating last access of the current user', error);
           })
-        );
+        );*/
         console.log("CCS: setted current user (", this._currentUsername, ")");
       }
     });

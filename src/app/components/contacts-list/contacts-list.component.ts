@@ -48,7 +48,7 @@ export class ContactsListComponent implements OnInit {
         this.size = "medium";
       }
     });
-    this.chatCoreService.getUsers.pipe(first(val => val)).subscribe(users => {
+    this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
       this.chatsUsersInfo.push(...users);
       this.chats.forEach(chat => {
         const user = users.find(user => user.username === chat.targetUsername);
@@ -90,7 +90,7 @@ export class ContactsListComponent implements OnInit {
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUser = t);
 
-    this.chatCoreService.getChats.pipe(first(val => val)).subscribe(c => {
+    this.chatCoreService.getChats.pipe(first()).subscribe(c => {
       const precLen = this.chats.length;
       this.chats = this.formatChats(c);
       if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {

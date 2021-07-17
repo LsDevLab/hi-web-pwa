@@ -23,7 +23,7 @@ export class DialogEditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
-      this.chatCoreService.getUsers.pipe(first(val => val)).subscribe(users => {
+      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
         const userData = users.find(u => u.username === currentUsername);
         this.userData = userData ? userData : this.userData;
       });

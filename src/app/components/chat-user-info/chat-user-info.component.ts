@@ -19,15 +19,13 @@ export class ChatUserInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
-      if (targetUsername) {
-        this.chatCoreService.getUsers.pipe(first(val => val)).subscribe(users => {
-          this.targetUserData = users.find(u => u.username === targetUsername);
-        });
-        this.chatCoreService.userChanged.subscribe(user => {
-          if (user.username === targetUsername)
-            this.targetUserData = user;
-        });
-      }
+      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
+        this.targetUserData = users.find(u => u.username === targetUsername);
+      });
+      this.chatCoreService.userChanged.subscribe(user => {
+        if (user.username === targetUsername)
+          this.targetUserData = user;
+      });
     });
   }
 

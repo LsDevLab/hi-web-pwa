@@ -38,13 +38,26 @@ export class ChatFormComponent {
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.targetUser = t;
-      this.messages = [];
-      this.messageQuoted = null;
-      this.chatCoreService.getMessages.pipe(first(val => val)).subscribe(msgs => this.formatUpdateMessages(msgs));
+      this.chatCoreService.getMessages.pipe(first()).subscribe(msgs => {
+        this.messages = [];
+        this.messageQuoted = null;
+        console.log('GETTING messages', msgs);
+        this.formatUpdateMessages(msgs);
+      });
     });
-    this.chatCoreService.messageAdded.subscribe(msg => this.formatUpdateMessages([msg]));
-    this.chatCoreService.messageChanged.subscribe(msg => this.formatUpdateMessages([msg]));
-    this.chatCoreService.messageDeleted.subscribe(msg => this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1));
+
+    this.chatCoreService.messageAdded.subscribe(msg => {
+      console.log('ADDED msg', msg);
+      this.formatUpdateMessages([msg]);
+    });
+    this.chatCoreService.messageChanged.subscribe(msg => {
+      console.log('CHANGED msg', msg);
+      this.formatUpdateMessages([msg])
+    });
+    this.chatCoreService.messageDeleted.subscribe(msg => {
+      console.log('DELETED msg', msg);
+      this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1)
+    });
 
     //this.howl.get('newMessageSound').play();
   }
@@ -258,7 +271,7 @@ export class ChatFormComponent {
     if (unformattedMessage.sender_username === this.targetUser){
       reply = false;
     }else{
-      if(!unformattedMessage.readed)
+      if(!unformattedMessage.readed_from_receiver)
         user = "";
       else
         user = "✔";

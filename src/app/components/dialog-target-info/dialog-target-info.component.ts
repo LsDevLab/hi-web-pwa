@@ -23,7 +23,7 @@ export class DialogTargetInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
-      this.chatCoreService.getUsers.pipe(first(val => val)).subscribe(users => {
+      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
           const userData = users.find(u => u.username === targetUsername);
           this.userData = userData ? userData : this.userData;
       });
