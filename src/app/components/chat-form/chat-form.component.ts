@@ -169,13 +169,13 @@ export class ChatFormComponent {
         this.messages[indexOfMessage].timestamp = message.timestamp;
         this.messages[indexOfMessage].confirmDate = null;
         if (message.files)
-          message.files.forEach((messageFile, index) => {
+          message.files.forEach(messageFile => {
             const existingMessage = this.messages.find(m => m.timestamp === message.timestamp);
-            existingMessage.files = existingMessage.files.map((file, alreadyFileIndex) => ({
+            existingMessage.files = existingMessage.files.map(file => ({
               uploadingPercentage: file.uploadingPercentage,
-              url: messageFile.split('%%%')[0],
-              name: messageFile.split('%%%')[2],
-              type: messageFile.split('%%%')[1],
+              url: messageFile.url,
+              name: messageFile.name,
+              type: messageFile.type,
               icon: file.icon
             }));
           });
@@ -294,11 +294,11 @@ export class ChatFormComponent {
     }
 
     const files = !unformattedMessage.files ? [] : unformattedMessage.files.map((file) => {
-      if(typeof file === 'string'){
+      if(file.url){
         return {
-          url: file.split('%%%')[0],
-          type:  file.split('%%%')[1],
-          name: file.split('%%%')[2],
+          url: file.url,
+          type: file.type,
+          name: file.title,
           icon: 'file-text-outline',
         };
       } else {
@@ -325,7 +325,8 @@ export class ChatFormComponent {
         avatar: null
       },
       files: files,
-      quote: unformattedMessage.quote ? unformattedMessage.quote : this.messages.find(message => message.id === unformattedMessage.quote_message_id),
+      quote: unformattedMessage.quote ? unformattedMessage.quote :
+        this.messages.find(message => message.id === unformattedMessage.quote_message_id),
       //quote_message_id: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
       id: unformattedMessage.id,
       firstOfTheDay: null,

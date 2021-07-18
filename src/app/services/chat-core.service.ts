@@ -465,7 +465,7 @@ export class ChatCoreService {
       this.usersSource.next(this._users);
     });
     this.userDeleted.subscribe(user => {
-      this._users.splice(this._messages.findIndex(u => u.username === user.username), 1);
+      this._users.splice(this._users.findIndex(u => u.username === user.username), 1);
       this.usersSource.next(this._users);
     });
 
@@ -979,13 +979,13 @@ export class ChatCoreService {
     // Sends a message to the current target user
 
     if(message.files.length) {
-      let filesURLSArray: String[] = [];
+      let filesArray: any[] = [];
       const storingFilesObsArray = message.files.map(file => this.getFileStoringObs(file));
       const progressObs: Observable<number>[] = storingFilesObsArray.map(x => x.progressOb);
       const fileObs: Observable<any>[] = storingFilesObsArray.map(x => x.fileOb);
       const sendMessageResponseOb = forkJoin(fileObs).pipe(map(obsResults => {
         obsResults.forEach(obsResult => {
-          filesURLSArray.push(obsResult);
+          filesArray.push(obsResult);
           console.log('CCS: File stored at URL, type, name', obsResult);
         });
       })).pipe(concatMap(() => {
@@ -999,7 +999,7 @@ export class ChatCoreService {
                 text: message.text,
                 sender_username: this._currentUsername,
                 receiver_username: this._targetUsername,
-                files: filesURLSArray,
+                files: filesArray,
                 quote_message_id: message.quote ? message.quote.id : null
               }
             }
