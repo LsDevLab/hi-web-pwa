@@ -38,11 +38,12 @@ export class ChatFormComponent {
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.targetUser = t;
+      this.messages = [];
+      this.messageQuoted = null;
       this.chatCoreService.getMessages.pipe(first()).subscribe(msgs => {
-        this.messages = [];
-        this.messageQuoted = null;
         console.log('GETTING messages', msgs);
         this.formatUpdateMessages(msgs);
+        console.log('GETTING this.messages', this.messages);
       });
     });
 
@@ -70,6 +71,10 @@ export class ChatFormComponent {
     const prevReply = this.messages.length >= 1 ? this.messages[this.messages.length - 1].reply : null;
     if (prevReply !== finalMessage.reply && this.messages.length >= 1){
       this.messages[this.messages.length - 1].lastOfAGroup = true;
+    }
+    let prevDate = this.messages.length > 0 ? this.messages[this.messages.length - 1].timestamp : null;
+    if (!prevDate || !moment(message.timestamp).isSame(prevDate, 'day')) {
+      finalMessage.firstOfTheDay = true;
     }
     finalMessage.files.forEach(file => file.uploadingPercentage = 0);
     this.messages.push(finalMessage);
@@ -154,7 +159,10 @@ export class ChatFormComponent {
     const orderedUnformattedMessages = unformattedMessages.slice().reverse();
     orderedUnformattedMessages.forEach((message, index) => {
 
+      console.log('id', message.id);
+
       let indexOfMessage = this.indexOfMessageWithTimestamp(message.timestamp);
+      console.log('indexOfMessage', indexOfMessage);
       // if the message has to be confirmed
       if (indexOfMessage != -1 && this.messages[indexOfMessage].confirmDate){
         // marking the message on the UI as confirmed (displaying the date of sent)
@@ -172,7 +180,7 @@ export class ChatFormComponent {
             }));
           });
         // marking as readed messages
-        if(!message.readed)
+        if(!message.readed_from_receiver)
           this.messages[indexOfMessage].user.name = "";
         else
           this.messages[indexOfMessage].user.name = "✔";
@@ -212,6 +220,8 @@ export class ChatFormComponent {
         if (!moment(message.timestamp).isSame(prevDate, 'day')) {
           formattedMessage.firstOfTheDay = true;
         }
+        //console.log('prevsender', prevSender, 'sender_username', message.sender_username);
+        //console.log('!moment(message.timestamp).isSame(prevDate, \'day\')', !moment(message.timestamp).isSame(prevDate, 'day'), message.timestamp, prevDate);
         if (prevSender !== message.sender_username && this.messages.length >= 1){
           this.messages[this.messages.length - 1].lastOfAGroup = true;
         }
@@ -219,7 +229,7 @@ export class ChatFormComponent {
         prevDate = message.timestamp;
         this.messages.push(formattedMessage);
       }
-
+      /*
       this.messages.sort((a, b) => {
         let d1;
         let d2;
@@ -232,7 +242,7 @@ export class ChatFormComponent {
         else
           d2 = new Date(b.confirmDate);
         return d1 - d2;
-      });
+      });*/
 
     });
 
@@ -315,8 +325,8 @@ export class ChatFormComponent {
         avatar: null
       },
       files: files,
-      quote: unformattedMessage.quote ? unformattedMessage.quote : this.messages.find(message => message.id === unformattedMessage.quoteMessageId),
-      //quoteMessageId: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
+      quote: unformattedMessage.quote ? unformattedMessage.quote : this.messages.find(message => message.id === unformattedMessage.quote_message_id),
+      //quote_message_id: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
       id: unformattedMessage.id,
       firstOfTheDay: null,
       lastOfAGroup: null,

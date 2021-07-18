@@ -8,6 +8,7 @@ schema {
 
 type Chat {
   hasToRead: String
+  id: String
   numOfMessagesToRead: Int
   username1: String!
   username2: String!
@@ -26,7 +27,8 @@ type File {
 
 type Message {
   files: [File]
-  quoteMessageId: String
+  id: String
+  quote_message_id: String
   readed_from_receiver: Boolean!
   receiver_username: String!
   sender_username: String!
@@ -74,6 +76,7 @@ type Subscription {
 type User {
   age: Int
   bio: String
+  id: String
   last_access: Timestamp!
   name: String!
   profile_img: String
@@ -118,7 +121,7 @@ input GetMessagesInput {
 
 input MessageInput {
   files: [FileInput]
-  quoteMessageId: String
+  quote_message_id: String
   readed_from_receiver: Boolean
   receiver_username: String!
   sender_username: String!

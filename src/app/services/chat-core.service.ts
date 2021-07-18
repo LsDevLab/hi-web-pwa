@@ -20,7 +20,7 @@ const GQL_GET_MESSAGES = gql`
         url
         type
       }
-      quoteMessageId
+      quote_message_id
       sender_username
       receiver_username
       readed_from_receiver
@@ -39,7 +39,7 @@ const GQL_MESSAGE_ADDED = gql`
         url
         type
       }
-      quoteMessageId
+      quote_message_id
       sender_username
       receiver_username
       readed_from_receiver
@@ -58,7 +58,7 @@ const GQL_MESSAGE_CHANGED = gql`
         url
         type
       }
-      quoteMessageId
+      quote_message_id
       sender_username
       receiver_username
       readed_from_receiver
@@ -77,7 +77,7 @@ const GQL_MESSAGE_DELETED = gql`
         url
         type
       }
-      quoteMessageId
+      quote_message_id
       sender_username
       receiver_username
       readed_from_receiver
@@ -99,7 +99,7 @@ const GQL_ADD_MESSAGE = gql`
           url
           type
         }
-        quoteMessageId
+        quote_message_id
         sender_username
         receiver_username
         readed_from_receiver
@@ -122,7 +122,7 @@ const GQL_UPDATE_MESSAGES = gql`
           url
           type
         }
-        quoteMessageId
+        quote_message_id
         sender_username
         receiver_username
         readed_from_receiver
@@ -1000,7 +1000,7 @@ export class ChatCoreService {
                 sender_username: this._currentUsername,
                 receiver_username: this._targetUsername,
                 files: filesURLSArray,
-                quoteMessageId: message.quote ? message.quote.id : null
+                quote_message_id: message.quote ? message.quote.id : null
               }
             }
           }).pipe(map(response => response.data["addMessages"]));
@@ -1017,7 +1017,7 @@ export class ChatCoreService {
             text: message.text,
             sender_username: this._currentUsername,
             receiver_username: this._targetUsername,
-            quoteMessageId: message.quote ? message.quote.id : null,
+            quote_message_id: message.quote ? message.quote.id : null,
           }
         }
       }).pipe(map(response => response.data["addMessages"]));
