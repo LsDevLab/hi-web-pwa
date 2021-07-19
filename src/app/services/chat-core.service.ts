@@ -1074,11 +1074,11 @@ export class ChatCoreService {
 
   }
 
-  public updateCurrentUserProfileImage(newUserProfileImage: any): Observable<any> {
+  public updateCurrentUserProfileImage(newUserProfileImage: any): { progressOb: Observable<number>, updateCurrentUserProfileImgOb: Observable<any> } {
     let ref = this.afStorage.ref('profile_images/' + this._currentUsername);
     let task = ref.put(newUserProfileImage);
 
-    return task.snapshotChanges().pipe(
+    const imageUploadingObs = task.snapshotChanges().pipe(
       last(),  // emit the last element after task.snapshotChanges() completed
       switchMap(() => ref.getDownloadURL())
     ).pipe(concatMap(uploadedURL => {
@@ -1092,6 +1092,8 @@ export class ChatCoreService {
           }).pipe(map(response => response.data["editUsers"]));
         }
       ));
+
+    return { progressOb: task.percentageChanges(), updateCurrentUserProfileImgOb: imageUploadingObs };
 
   }
 
