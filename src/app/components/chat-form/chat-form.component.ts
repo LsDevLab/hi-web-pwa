@@ -41,22 +41,17 @@ export class ChatFormComponent {
       this.messages = [];
       this.messageQuoted = null;
       this.chatCoreService.getMessages.pipe(first()).subscribe(msgs => {
-        console.log('GETTING messages', msgs);
         this.formatUpdateMessages(msgs);
-        console.log('GETTING this.messages', this.messages);
       });
     });
 
     this.chatCoreService.messageAdded.subscribe(msg => {
-      console.log('ADDED msg', msg);
       this.formatUpdateMessages([msg]);
     });
     this.chatCoreService.messageChanged.subscribe(msg => {
-      console.log('CHANGED msg', msg);
       this.formatUpdateMessages([msg])
     });
     this.chatCoreService.messageDeleted.subscribe(msg => {
-      console.log('DELETED msg', msg);
       this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1)
     });
 
@@ -159,10 +154,8 @@ export class ChatFormComponent {
     const orderedUnformattedMessages = unformattedMessages.slice().reverse();
     orderedUnformattedMessages.forEach((message, index) => {
 
-      console.log('id', message.id);
 
       let indexOfMessage = this.indexOfMessageWithTimestamp(message.timestamp);
-      console.log('indexOfMessage', indexOfMessage);
       // if the message has to be confirmed
       if (indexOfMessage != -1 && this.messages[indexOfMessage].confirmDate){
         // marking the message on the UI as confirmed (displaying the date of sent)

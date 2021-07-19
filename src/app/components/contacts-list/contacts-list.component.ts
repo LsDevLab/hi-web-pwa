@@ -38,7 +38,6 @@ export class ContactsListComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    console.log('CONTACTLIST');
     // to deactivate title and name of user list
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
@@ -48,7 +47,9 @@ export class ContactsListComponent implements OnInit {
         this.size = "medium";
       }
     });
-    this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
+
+
+    /*this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
       this.chatsUsersInfo.push(...users);
       this.chats.forEach(chat => {
         const user = users.find(user => user.username === chat.targetUsername);
@@ -119,6 +120,21 @@ export class ContactsListComponent implements OnInit {
       if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
         this.selectChat(this.chats[0].targetUsername);
       }
+    });*/
+
+    this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
+
+    this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUser = t);
+
+    this.chatCoreService.getChats.subscribe(chats => {
+      this.chatCoreService.getUsers.subscribe(users => {
+        this.chatsUsersInfo = users;
+        const precLen = this.chats.length;
+        this.chats = this.formatChats(chats);
+        if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
+          this.selectChat(this.chats[0].targetUsername);
+        }
+      });
     });
 
     this.auth.user$.subscribe(u => {
@@ -146,7 +162,6 @@ export class ContactsListComponent implements OnInit {
       }else{
         chatUsername = chat.username1;
       }
-
 
       //console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
 

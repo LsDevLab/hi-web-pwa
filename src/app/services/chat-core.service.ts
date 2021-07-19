@@ -350,7 +350,7 @@ export class ChatCoreService {
   private chatsUsersInfoSource = new BehaviorSubject<any[]>([]);
   private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
   private currentUserDataSource = new BehaviorSubject<any>(null);
-  private isLoadingSource = new BehaviorSubject<boolean>(null);
+  private isLoadingSource = new BehaviorSubject<boolean>(true);
 
   private _currentUsername: string;
   private _targetUsername: string;
@@ -442,6 +442,9 @@ export class ChatCoreService {
     this.getChats.pipe(first()).subscribe(chats => this._chats.push(...chats));
     this.chatAdded.subscribe(chat => {
       this._chats.push(chat);
+      this._unsubscribeToUsers();
+      this._getUsers();
+      this._subscribeToUsers();
       this.chatsSource.next(this._chats);
     });
     this.chatChanged.subscribe(chat => {
@@ -729,6 +732,7 @@ export class ChatCoreService {
     const chatsQuery = this.apollo
       .watchQuery<any[]>({
         query: GQL_GET_CHATS,
+        fetchPolicy: 'no-cache'
       });
 
     return chatsQuery.valueChanges.subscribe(
@@ -813,6 +817,7 @@ export class ChatCoreService {
     const usersQuery = this.apollo
       .watchQuery<any[]>({
         query: GQL_GET_USERS,
+        fetchPolicy: 'no-cache'
       });
 
     return usersQuery.valueChanges.subscribe(
@@ -901,11 +906,11 @@ export class ChatCoreService {
       variables: {
         USER: username,
         name: '',
-        lastAccess: new Date().getMilliseconds(),
+        lastAccess: new Date().getTime(),
         bio: '',
         surname: '',
-        age: 25,
-        sex: 'M'
+        age: null,
+        sex: null
       }
     }).pipe(map(response => response.data['addUsers']));
 
@@ -1155,20 +1160,18 @@ export class ChatCoreService {
 
     // checking if the current user exists.
     this.getUser(currentUsername).subscribe(result => {
-      this.isLoadingSource.next(false);
       if (!result){
         // if not, create a new user with the given username and name
         console.log("CCS: user first login. Created profile.");
         this.addUser(currentUsername).subscribe(response => {
-          this.isLoadingSource.next(false);
           console.log("CCS: user added");
           window.location.reload();
         },(error) => {
-          this.isLoadingSource.next(false);
           console.log('CCS: ERROR while adding user', error);
           window.location.reload();
         });
       }else{
+        this.isLoadingSource.next(false);
         // subscribing to chats of the current user
         //this.subscribeToChats();
         this._getChats();
