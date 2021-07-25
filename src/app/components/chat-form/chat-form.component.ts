@@ -355,4 +355,16 @@ export class ChatFormComponent {
     return new Date(timestamp).toISOString();
   }
 
+  getDateFormat() {
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+    switch (appSettings.dateFormat) {
+      case 12:
+        return 'shortTime';
+        break;
+      case 24:
+        return 'HH:mm';
+        break;
+    }
+  }
+
 }

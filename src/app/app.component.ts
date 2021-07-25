@@ -32,6 +32,9 @@ export class AppComponent {
             localStorage.setItem('currentToken', t.__raw);
             console.log("AC: Session authenticated with token", [localStorage.getItem('currentToken')]);
             //this.router.navigateByUrl('/chat');
+            const appSettingsString = localStorage.getItem('appSettings');
+            if (!appSettingsString)
+              localStorage.setItem('appSettings', JSON.stringify({maxNumOfChatMessages: 60, dateFormat: 12}));
           }
         });
     });

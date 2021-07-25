@@ -9,6 +9,7 @@ import {DialogAddChatComponent} from '../dialog-add-chat/dialog-add-chat.compone
 import {DialogEditProfileComponent} from '../dialog-edit-profile/dialog-edit-profile.component';
 import {ChatCoreService} from '../../services/chat-core.service';
 import {DialogAboutComponent} from '../dialog-about/dialog-about.component';
+import {DialogSettingsComponent} from '../dialog-settings/dialog-settings.component';
 
 
 @Component({
@@ -33,6 +34,10 @@ export class ChatLoggerComponent implements OnInit {
     {
       title: 'Edit profile',
       icon: 'person-outline',
+    },
+    {
+      title: 'Settings',
+      icon: 'settings-outline'
     },
     {
       title: 'About...',
@@ -62,6 +67,9 @@ export class ChatLoggerComponent implements OnInit {
             break;
           case 'About...':
             this.dialogService.open(DialogAboutComponent);
+            break;
+          case 'Settings':
+            this.dialogService.open(DialogSettingsComponent);
             break;
         }
       }

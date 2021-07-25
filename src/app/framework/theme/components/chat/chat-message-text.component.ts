@@ -16,7 +16,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
     <div class="message-div">
       <div class="status-time-div">
         <p class="sender" *ngIf="sender">{{ sender }}</p>
-        <time class="time">{{ date | date: 'shortTime' }}</time>
+        <time class="time">{{ date | date: dateFormat }}</time>
         <nb-icon class="reply-button" *ngIf="!reply && !isAQuote" icon="corner-up-right-outline" (click)="messageQuoted.emit()"></nb-icon>
       </div>
       <div class="message-body">
