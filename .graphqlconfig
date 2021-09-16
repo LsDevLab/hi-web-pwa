@@ -4,9 +4,10 @@
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
-        "url": "https://hi-chat-backend.tk/graphql",
+        "url": "http://localhost:4000/graphql",
         "headers": {
-          "user-agent": "JS GraphQL"
+          "user-agent": "JS GraphQL",
+          "X-Auth-Token":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBtY0t4M05IeXJ6SXJOT3BTbFNteiJ9.eyJodHRwczovL2RncmFwaC5pby9qd3QvY2xhaW1zIjp7IlVTRVIiOiJscy5kZXZsYWJAZ21haWwuY29tIn0sImdpdmVuX25hbWUiOiJMdWlnaSIsImZhbWlseV9uYW1lIjoiU2NoaWF2b25lIiwibmlja25hbWUiOiJscy5kZXZsYWIiLCJuYW1lIjoiTHVpZ2kgU2NoaWF2b25lIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBVFhBSnhaQk5rTXVrMW1YYkVzS1Y5anBHSmFYcVpUc1Q5dEk1SUx6SVl2PXM5Ni1jIiwibG9jYWxlIjoiaXQiLCJ1cGRhdGVkX2F0IjoiMjAyMS0wNy0xOFQxMDoxOTo0NC4zNzVaIiwiZW1haWwiOiJscy5kZXZsYWJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vbHNsYWIudXMuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTA4OTQ0NTc1ODYxNjA4NTA3NjQ4IiwiYXVkIjoicTR4cG9WazEyR1lwR2JyOWsyWnduY0JVbDhQOWpzdVYiLCJpYXQiOjE2MjY2MDM1ODYsImV4cCI6MTYyNjYzOTU4Niwibm9uY2UiOiJVM2hUTm5OQlVFcFlUalF5TTM1aWNIUlVUa1puVTFsaloxOWllV1J1V2t4RmZrOTNOVmt5WjB4UmFBPT0ifQ.UkdnLqsJLqF27wvaSNkRWI43SuZp7_qQdk043CALTOy6EiV0OvfHWfVoXlDF4IODLEq9uCOEMO7CpzLAhs2yUs_8Wop_AuXykWD2MAkKE3ZGH0n8T4ikYGqC71FM0Z62KfQMHHjnPL_E13o9Jq3GEoWiyLbDenMsoWfkDGInkPAZ9pajlMOIsFF4cw5kE4IJ16Wp_xNn4x7G5T-AaM9FXPvFQnpxignG-4Tz7cevFp2B7dmCtHhotOjpBvubiE3Lj9IGfWdLkJClvTERU6MimYivo__0oeSZPg9m2h2ob1paBRJ_pEPHsQAA2jcU5bupfM1VqwIB6rwCoThi8JacQA"
         },
         "introspect": false
       }

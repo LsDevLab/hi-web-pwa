@@ -12,6 +12,13 @@
           <img class="profile-img"
                [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'"
                (click)="imageFileInput.click()">
+          <circle-progress-bar class="img-uploading-progress-bar" *ngIf="imgUploadingPercentage !== null && imgUploadingPercentage !== 100"
+                               [progress]="imgUploadingPercentage"
+                               [radius]="7"
+                               [trackWeight]="2"
+                               [trackColor]="'#ffffff'"
+                               [trackEndShape]="'round'"
+          ></circle-progress-bar>
         </div>
         <div class="profile-img-info-div">
           <p class="profile-img-loading-info">Premi sull'immagine per caricare</p>
@@ -21,17 +28,21 @@
       </div>
       <div class="profile-inputs-div">
         <nb-form-field class="profile-input-field">
-          <input #bioInput type="text" fieldSize="small" placeholder="Bio" nbInput fullWidth status="basic" [value]="userData.bio">
+          <input #bioInput type="text" fieldSize="small" placeholder="Bio"
+                 nbInput fullWidth status="basic" [value]="userData.bio" [disabled]="this.loadingUserData">
         </nb-form-field>
         <nb-form-field class="profile-input-field">
           <nb-icon nbPrefix icon="person-outline" pack="eva"></nb-icon>
-          <input #nameInput type="text" placeholder="Name" nbInput fullWidth [value]="userData.name">
+          <input #nameInput type="text" placeholder="Name"
+                 nbInput fullWidth [value]="userData.name" [disabled]="this.loadingUserData">
         </nb-form-field>
         <nb-form-field class="profile-input-field">
           <nb-icon nbPrefix icon="person-outline" pack="eva"></nb-icon>
-          <input #surnameInput type="text" placeholder="Surname" nbInput fullWidth [value]="userData.surname">
+          <input #surnameInput type="text" placeholder="Surname"
+                 nbInput fullWidth [value]="userData.surname" [disabled]="this.loadingUserData">
         </nb-form-field>
-        <nb-select #sexSelect placeholder="Sex" class="profile-input-field" fullWidth [selected]="userData.sex">
+        <nb-select #sexSelect placeholder="Sex" class="profile-input-field"
+                   fullWidth [selected]="userData.sex" [disabled]="this.loadingUserData">
           <nb-option value="">No sex specified</nb-option>
           <nb-option value="M">M</nb-option>
           <nb-option value="F">F</nb-option>
@@ -39,7 +50,8 @@
         </nb-select>
         <nb-form-field class="profile-input-field">
           <nb-icon nbPrefix icon="hash-outline" pack="eva"></nb-icon>
-          <input #ageInput type="text" placeholder="Age" nbInput fullWidth [value]="userData.age">
+          <input #ageInput type="text" placeholder="Age"
+                 nbInput fullWidth [value]="userData.age" [disabled]="this.loadingUserData">
         </nb-form-field>
       </div>
 

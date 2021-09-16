@@ -4,14 +4,14 @@
                     [message]="msg.text"
                     [reply]="msg.reply"
                     [sender]="msg.user.name"
-                    [date]="msg.date"
+                    [date]="toISODate(msg.timestamp)"
+                    [dateFormat]="getDateFormat()"
                     [files]="msg.files"
                     [quote]="msg.quote"
                     [latitude]="msg.latitude"
                     [longitude]="msg.longitude"
                     [firstOfTheDay]="msg.firstOfTheDay"
                     [lastOfAGroup]="msg.lastOfAGroup"
-                    dateFormat="short"
                     (messageQuoted)="assignMessageQuoted(msg)"
                     >
   </nb-chat-message>

@@ -1,0 +1,34 @@
+
+.body-div {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  padding: 0rem 1rem 0rem 1rem;
+}
+
+.settings-tab {
+  padding: 0.5rem;
+}
+
+p {
+  font-family: Raleway;
+}
+
+.setting-div {
+  display: flex;
+  flex-direction: column;
+  margin: 0rem 0rem 0.5rem 0rem;
+}
+
+.setting-description-p {
+  font-size: 10pt;
+  margin: 0.5rem 0rem 0.5rem 0rem;
+  font-weight: 600;
+}
+
+.setting-input-field {
+
+}
+

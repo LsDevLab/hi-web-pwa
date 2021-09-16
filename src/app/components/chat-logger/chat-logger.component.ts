@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
-import { filter, map } from 'rxjs/operators';
+import {filter, first, map} from 'rxjs/operators';
 import {NB_WINDOW, NbDialogService, NbMenuService} from '@nebular/theme';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {Subscription} from 'apollo-client/util/Observable';
@@ -9,6 +9,7 @@ import {DialogAddChatComponent} from '../dialog-add-chat/dialog-add-chat.compone
 import {DialogEditProfileComponent} from '../dialog-edit-profile/dialog-edit-profile.component';
 import {ChatCoreService} from '../../services/chat-core.service';
 import {DialogAboutComponent} from '../dialog-about/dialog-about.component';
+import {DialogSettingsComponent} from '../dialog-settings/dialog-settings.component';
 
 
 @Component({
@@ -33,6 +34,10 @@ export class ChatLoggerComponent implements OnInit {
     {
       title: 'Edit profile',
       icon: 'person-outline',
+    },
+    {
+      title: 'Settings',
+      icon: 'settings-outline'
     },
     {
       title: 'About...',
@@ -63,13 +68,29 @@ export class ChatLoggerComponent implements OnInit {
           case 'About...':
             this.dialogService.open(DialogAboutComponent);
             break;
+          case 'Settings':
+            this.dialogService.open(DialogSettingsComponent);
+            break;
         }
       }
     });
-    this.chatCoreService.currentUserDataObservable.subscribe(userData => {
-      this.currentUserData = userData ? userData : this.currentUserData;
-      if (userData && this.currentUserData.name === ''){
-        this.dialogService.open(DialogEditProfileComponent);
+    this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
+      if (currentUsername) {
+        this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
+          const userData = users.find(u => u.username === currentUsername);
+          this.currentUserData = userData ? userData : this.currentUserData;
+          if (userData && this.currentUserData.name === ''){
+            this.dialogService.open(DialogEditProfileComponent);
+          }
+        });
+        this.chatCoreService.userChanged.subscribe(user => {
+          if (user.username === currentUsername) {
+            this.currentUserData = user;
+            if (user && this.currentUserData.name === '') {
+              this.dialogService.open(DialogEditProfileComponent);
+            }
+          }
+        });
       }
     });
   }

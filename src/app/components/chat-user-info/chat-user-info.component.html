@@ -7,5 +7,5 @@
 </nb-user>
 <div style="color: white; width: fit-content; float: right;">
   <div class="user-name" style="font-weight: bold;">{{targetUserData ? targetUserData.name + ' ' + targetUserData.surname : ''}}</div>
-  <div style="font-size: 8pt;">Last access on {{targetUserLastAccess | date:'short'}}</div>
+  <div style="font-size: 8pt;">Last access on {{(targetUserData ? targetUserData.last_access : '') | date: getDateFormat()}}</div>
 </div>

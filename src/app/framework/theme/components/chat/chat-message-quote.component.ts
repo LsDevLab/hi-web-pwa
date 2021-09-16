@@ -20,10 +20,11 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
       </div>-->
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
-          <time class="time">{{ quote.date | date: 'shortTime' }}</time>
+          <time class="time">{{ quote.date | date: dateFormat }}</time>
         </div>
         <p class="text-quote" *ngIf="quote">
-          {{ quote.text ? quote.text : ('This is a ' + quote.type + ' message') }}
+          {{ quote.text ? quote.text : (quote.files.length > 1 ?
+          (quote.files[0].name + ' and other ' + (quote.files.length - 1) + ' files') : quote.files[0].name) }}
         </p>
       </div>
     </nb-chat-message-text>

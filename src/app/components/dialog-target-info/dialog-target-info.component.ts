@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from '../../services/chat-core.service';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-dialog-target-info',
@@ -21,11 +22,16 @@ export class DialogTargetInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.chatCoreService.targetUserDataObservable.subscribe(
-      userData => {
-        this.userData = userData ? userData : this.userData;
-      }
-    );
+    this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
+      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
+          const userData = users.find(u => u.username === targetUsername);
+          this.userData = userData ? userData : this.userData;
+      });
+      this.chatCoreService.userChanged.subscribe(user => {
+        if (user.username === targetUsername)
+          this.userData = user;
+      });
+    });
   }
 
   closeDialog(){
