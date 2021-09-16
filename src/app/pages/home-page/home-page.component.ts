@@ -32,6 +32,7 @@ export class HomePageComponent implements OnInit {
 
   signIn() {
     const provider = new firebase.auth.GoogleAuthProvider()
+    //TODO: To handle the case in which the login does not success
     this.afAuth.signInWithPopup(provider).then(res => this.router.navigateByUrl('/chat'));
   }
 
