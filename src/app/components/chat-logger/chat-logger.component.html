@@ -1,5 +1,5 @@
 <div style="float: right;">
-  <div class="user-info-div" *ngIf="auth.user$ | async as user">
+  <div class="user-info-div" *ngIf="afAuth.user | async as user">
     <button nbButton ghost status="control"
             *ngIf="!screenIsSmall"
             [nbContextMenu]="userContextMenuItems"

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {AuthService} from '@auth0/auth0-angular';
 import {Router} from '@angular/router';
+import {AngularFireAuth} from '@angular/fire/auth';
+import firebase from 'firebase';
 
 @Component({
   selector: 'app-home-page',
@@ -14,17 +16,23 @@ export class HomePageComponent implements OnInit {
 
   nameOfUser: string = '';
 
-  constructor(private breakpointObserver: BreakpointObserver, public auth: AuthService, public router: Router,) {
+  constructor(private breakpointObserver: BreakpointObserver, public router: Router,
+              public afAuth: AngularFireAuth) {
   }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-    this.auth.user$.subscribe(usr => {
+    this.afAuth.user.subscribe(usr => {
       if(usr)
-        this.nameOfUser = usr.given_name;
+        this.nameOfUser = usr.displayName;
     });
+  }
+
+  signIn() {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    this.afAuth.signInWithPopup(provider).then(res => this.router.navigateByUrl('/chat'));
   }
 
 }

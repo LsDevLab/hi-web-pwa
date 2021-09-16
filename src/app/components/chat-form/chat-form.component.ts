@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import moment from 'moment';
 import {first} from 'rxjs/operators';
+import {AngularFireAuth} from '@angular/fire/auth';
 
 @Component({
   selector: 'app-chat-form',
@@ -23,7 +24,7 @@ export class ChatFormComponent {
 
   messageQuoted: any;
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
+  constructor(private chatCoreService: ChatCoreService, public afAuth: AngularFireAuth,
               private router: Router, private http: HttpClient) {
   }
 

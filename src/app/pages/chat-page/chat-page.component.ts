@@ -10,6 +10,8 @@ import {DialogAboutComponent} from '../../components/dialog-about/dialog-about.c
 import { JwtHelperService } from "@auth0/angular-jwt";
 import {DialogTokenExpiredComponent} from '../../components/dialog-token-expired/dialog-token-expired.component';
 import {DialogSettingsComponent} from '../../components/dialog-settings/dialog-settings.component';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -55,7 +57,8 @@ export class ChatPageComponent implements OnInit {
 
   constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService,
               private dialogService: NbDialogService, private nbMenuService: NbMenuService,
-              private auth: AuthService, private toastrService: NbToastrService ) { }
+              private afAuth: AngularFireAuth, private toastrService: NbToastrService,
+              public router: Router) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -92,7 +95,7 @@ export class ChatPageComponent implements OnInit {
         setTimeout(()=>{
           this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
           this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
-          setTimeout(() => this.auth.logout({ returnTo: document.location.origin }), 4000);
+          setTimeout(() => this.afAuth.signOut().then(res => this.router.navigateByUrl('/home')), 4000);
         }, 2000);
       }
     }, 2000);
@@ -104,7 +107,7 @@ export class ChatPageComponent implements OnInit {
     this.isChatOpened = true;
   }
 
-  openChat(event){
+  openChat(){
     this.isChatOpened = true;
   }
 

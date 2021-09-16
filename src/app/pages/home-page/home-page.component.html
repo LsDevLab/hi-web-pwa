@@ -15,16 +15,16 @@
         <strong>sicuro</strong>, <strong>gratuito</strong>, e disponibile sui dispositivi di tutto il mondo.</p>
       <div class="top-banner-action-div">
         <nb-card class="action-div-card">
-          <nb-card-body class="action-card-body" *ngIf="!(auth.isAuthenticated$ | async)">
+          <nb-card-body class="action-card-body" *ngIf="!(afAuth.user | async)">
             <p class="action-div-card-text" *ngIf="!screenIsSmall">
               <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
             </p>
             <button nbButton status="primary" class="login-button"
-                    (click)="auth.loginWithRedirect()">Login</button>
+                    (click)="signIn()">Login</button>
             <button nbButton status="success" class="signing-button"
-                    (click)="auth.loginWithRedirect({initialScreen: 'signUp'})">Signup</button>
+                    (click)="signIn()">Signup</button>
           </nb-card-body>
-          <nb-card-body class="action-card-body" *ngIf="(auth.isAuthenticated$ | async)">
+          <nb-card-body class="action-card-body" *ngIf="(afAuth.user | async)">
             <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
               <strong>Ciao!</strong>
             </p>

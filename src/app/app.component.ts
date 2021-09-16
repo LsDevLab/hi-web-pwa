@@ -4,6 +4,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ChatCoreService } from './services/chat-core.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import {NbDialogService} from '@nebular/theme';
+import {AngularFireAuth} from '@angular/fire/auth';
 
 
 @Component({
@@ -15,7 +16,7 @@ export class AppComponent {
 
   screenIsSmall: boolean;
 
-  constructor(public auth: AuthService, public router: Router, private breakpointObserver: BreakpointObserver,
+  constructor(public afAuth: AngularFireAuth, public router: Router, private breakpointObserver: BreakpointObserver,
               ) { }
 
   ngOnInit(){
@@ -24,12 +25,12 @@ export class AppComponent {
       this.screenIsSmall = r.matches;
     });
 
-    this.auth.isAuthenticated$.subscribe(isAuth => {
+    this.afAuth.user.subscribe(isAuth => {
       if (isAuth)
-        this.auth.idTokenClaims$.subscribe(t => {
+        this.afAuth.idToken.subscribe(t => {
           if (t){
             localStorage.setItem('isAuth', "true");
-            localStorage.setItem('currentToken', t.__raw);
+            localStorage.setItem('currentToken', t);
             console.log("AC: Session authenticated with token", [localStorage.getItem('currentToken')]);
             //this.router.navigateByUrl('/chat');
             const appSettingsString = localStorage.getItem('appSettings');

@@ -6,6 +6,7 @@ import { NbDialogService } from '@nebular/theme';
 import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.component';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 import {NgxHowlerService} from 'ngx-howler';
+import {AngularFireAuth} from '@angular/fire/auth';
 
 
 @Component({
@@ -32,7 +33,7 @@ export class ContactsListComponent implements OnInit {
   @Output()
   selectedUser: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
+  constructor(private chatCoreService: ChatCoreService, public afAuth: AngularFireAuth,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
               private chatNotificationsService: ChatNotificationsService, public howl: NgxHowlerService) {
    }
@@ -143,8 +144,8 @@ export class ContactsListComponent implements OnInit {
       });
     });
 
-    this.auth.user$.subscribe(u => {
-      this.thisName = u.name;
+    this.afAuth.user.subscribe(u => {
+      this.thisName = u.displayName;
       this.chatCoreService.init(u.email);
       this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
     });

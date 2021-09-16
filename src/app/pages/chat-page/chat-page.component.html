@@ -13,7 +13,7 @@
         <nb-card-back style="height: 100%;">
           <nb-card style="margin-bottom: 0px; height: 100%">
             <nb-card-body style="padding: 0px; height: 100%" >
-              <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
+              <app-contacts-list (selectedUser)="selectUser()"></app-contacts-list>
             </nb-card-body>
             <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px;">
               <div style="float: left; padding: 0; padding-right: 5px;">
@@ -50,7 +50,7 @@
                 <img src="assets/img/logo_gif.gif" style="height: 70%; float: left; padding: 5px">
                 <app-chat-logger></app-chat-logger>
               </div>
-              <app-contacts-list (selectedUser)="selectUser($event)"></app-contacts-list>
+              <app-contacts-list (selectedUser)="selectUser()"></app-contacts-list>
             </nb-card-body>
             <nb-card-footer style="background-color: #36f; min-height: 55px; padding: 8px; border: 0">
               <div style="float: left; padding: 0">

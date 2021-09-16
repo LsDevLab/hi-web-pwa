@@ -21,6 +21,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireModule } from '@angular/fire';
 import { angularFireModuleData } from '../../firebaseData';
 import {NgCircleProgressModule} from 'ng-circle-progress';
+import {AngularFireAuth, AngularFireAuthModule} from '@angular/fire/auth';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import {NgCircleProgressModule} from 'ng-circle-progress';
     NbMenuModule.forRoot(),
     AngularFireModule.initializeApp(angularFireModuleData),
     AngularFireStorageModule,
+    AngularFireAuthModule
   ],
   bootstrap: [AppComponent],
   providers: [

@@ -10,6 +10,8 @@ import {DialogEditProfileComponent} from '../dialog-edit-profile/dialog-edit-pro
 import {ChatCoreService} from '../../services/chat-core.service';
 import {DialogAboutComponent} from '../dialog-about/dialog-about.component';
 import {DialogSettingsComponent} from '../dialog-settings/dialog-settings.component';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -51,9 +53,10 @@ export class ChatLoggerComponent implements OnInit {
     username: ''
   };
 
-  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,
+  constructor(public afAuth: AngularFireAuth, private chatNotificationsService: ChatNotificationsService,
               private breakpointObserver: BreakpointObserver, private nbMenuService: NbMenuService,
-              private dialogService: NbDialogService, private chatCoreService: ChatCoreService) { }
+              private dialogService: NbDialogService, private chatCoreService: ChatCoreService,
+              private router: Router) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -102,7 +105,7 @@ export class ChatLoggerComponent implements OnInit {
     //console.log(localStorage.getItem('currentToken'));
     localStorage.setItem('isAuth', "false");
     localStorage.removeItem('currentToken');
-    this.auth.logout({ returnTo: document.location.origin });
+    this.afAuth.signOut().then(res => this.router.navigateByUrl('/home'));
 
   }
 
