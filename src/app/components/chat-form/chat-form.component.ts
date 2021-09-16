@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ChatCoreService } from '../../services/chat-core.service';
 import { AuthService } from '@auth0/auth0-angular';
-import { NgxHowlerService } from 'ngx-howler';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import moment from 'moment';
@@ -25,16 +24,10 @@ export class ChatFormComponent {
   messageQuoted: any;
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
-              public howl: NgxHowlerService, private router: Router, private http: HttpClient) {
+              private router: Router, private http: HttpClient) {
   }
 
   ngOnInit() {
-    this.howl.register('newMessageSound', {
-      src: ['assets/sounds/newMessageSound.mp3'],
-      html5: true
-    }).subscribe(status => {
-      //ok
-    });
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
     this.chatCoreService.targetUsernameObservable.subscribe(t => {
       this.targetUser = t;
@@ -253,7 +246,6 @@ export class ChatFormComponent {
         },(error) => {
           console.log('CFC: ERROR while confirming messages as readed', error);
         });
-        this.howl.get('newMessageSound').play();
       }
     }
 
@@ -361,6 +353,18 @@ export class ChatFormComponent {
 
   toISODate(timestamp) {
     return new Date(timestamp).toISOString();
+  }
+
+  getDateFormat() {
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+    switch (appSettings.dateFormat) {
+      case 12:
+        return 'shortTime';
+        break;
+      case 24:
+        return 'HH:mm';
+        break;
+    }
   }
 
 }

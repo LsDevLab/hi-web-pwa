@@ -20,7 +20,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
       </div>-->
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
-          <time class="time">{{ quote.date | date: 'shortTime' }}</time>
+          <time class="time">{{ quote.date | date: dateFormat }}</time>
         </div>
         <p class="text-quote" *ngIf="quote">
           {{ quote.text ? quote.text : (quote.files.length > 1 ?

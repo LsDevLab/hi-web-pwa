@@ -33,4 +33,16 @@ export class ChatUserInfoComponent implements OnInit {
     this.dialogService.open(DialogTargetInfoComponent);
   }
 
+  getDateFormat() {
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+    switch (appSettings.dateFormat) {
+      case 12:
+        return 'short';
+        break;
+      case 24:
+        return 'dd/MM/yyyy, HH:mm';
+        break;
+    }
+  }
+
 }

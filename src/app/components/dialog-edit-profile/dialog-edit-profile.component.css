@@ -28,6 +28,7 @@
 }
 
 .profile-img-container{
+  position: relative;
   border-radius: 50%;
   height: 25vh;
   width: 25vh;
@@ -82,4 +83,10 @@
   height: 12px;
   width: 12px;
   margin: 4px;
+}
+
+.img-uploading-progress-bar {
+  position: absolute;
+  bottom: 0.1rem;
+  right: 0.1rem;
 }

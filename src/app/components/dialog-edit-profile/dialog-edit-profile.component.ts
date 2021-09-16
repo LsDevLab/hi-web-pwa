@@ -16,6 +16,7 @@ export class DialogEditProfileComponent implements OnInit {
     name: '',
     surname: '',
   };
+  imgUploadingPercentage = null;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
               private toastrService: NbToastrService) {
@@ -54,14 +55,22 @@ export class DialogEditProfileComponent implements OnInit {
 
   editProfileImage(event){
     this.loadingUserData = true;
-    this.chatCoreService.updateCurrentUserProfileImage(event.target.files[0]).subscribe(result => {
+    const updateCurrentUserProfileImageObs = this.chatCoreService.updateCurrentUserProfileImage(event.target.files[0]);
+    updateCurrentUserProfileImageObs.updateCurrentUserProfileImgOb.subscribe(result => {
       console.log('DEPC: Profile image updated', result);
       this.toastrService.show("User profile image updated", "Done", new NbToastrConfig({status:"success"}));
       this.loadingUserData = false;
+      this.imgUploadingPercentage = 100;
     }, error => {
       console.log('DEPC: ERROR while updating profile image', error);
       this.toastrService.show("Error while updating profile image", "Error", new NbToastrConfig({status:"danger"}));
       this.loadingUserData = false;
+      this.imgUploadingPercentage = null;
     });
+    if (updateCurrentUserProfileImageObs.progressOb) {
+      updateCurrentUserProfileImageObs.progressOb.subscribe(percentage => {
+        this.imgUploadingPercentage = percentage < 90 ? percentage : 90;
+      });
+    }
   }
 }

@@ -1,0 +1,39 @@
+<nb-card size="medium" style="max-width: 600px; min-width: 300px; width: 25vw; height: auto; max-height: 90vh; border: none" >
+  <nb-card-header>
+    Settings
+    <nb-icon icon="settings-outline"></nb-icon>
+  </nb-card-header>
+  <nb-card-body style="padding: 0px">
+    <div class="body-div">
+    </div>
+    <nb-tabset class="tabs" fullWidth>
+      <nb-tab class="settings-tab" tabTitle="Chat" tabIcon="message-square-outline">
+        <div class="setting-div">
+          <p class="setting-description-p">Maximum number of messages to display in a chat</p>
+          <nb-select #maxNumOfMessagesSelect class="setting-input-field"
+                     size="small" [(selected)]="settings.maxNumOfChatMessages">
+            <nb-option [value]="30">30</nb-option>
+            <nb-option [value]="60">60</nb-option>
+            <nb-option [value]="120">120</nb-option>
+            <nb-option [value]="200">200</nb-option>
+          </nb-select>
+        </div>
+        <div class="setting-div">
+          <p class="setting-description-p">Date format</p>
+          <nb-select #dateFormatSelect class="setting-input-field"
+                     size="small" [(selected)]="settings.dateFormat">
+            <nb-option [value]="12">PM/AM</nb-option>
+            <nb-option [value]="24">24h</nb-option>
+          </nb-select>
+        </div>
+      </nb-tab>
+      <nb-tab tabTitle="User" tabIcon="person-outline">
+        <p>User settings</p>
+      </nb-tab>
+    </nb-tabset>
+  </nb-card-body>
+  <nb-card-footer style="clear: both;">
+    <button nbButton style="float: left;" (click)="closeDialog()">Close</button>
+    <button nbButton style="float: right;" (click)="saveSettings()" status="primary">Save</button>
+  </nb-card-footer>
+</nb-card>

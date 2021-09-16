@@ -9,6 +9,7 @@ import {DialogEditProfileComponent} from '../../components/dialog-edit-profile/d
 import {DialogAboutComponent} from '../../components/dialog-about/dialog-about.component';
 import { JwtHelperService } from "@auth0/angular-jwt";
 import {DialogTokenExpiredComponent} from '../../components/dialog-token-expired/dialog-token-expired.component';
+import {DialogSettingsComponent} from '../../components/dialog-settings/dialog-settings.component';
 
 
 @Component({
@@ -37,6 +38,10 @@ export class ChatPageComponent implements OnInit {
     {
       title: 'Edit profile',
       icon: 'person-outline',
+    },
+    {
+      title: 'Settings',
+      icon: 'settings-outline'
     },
     {
       title: 'About...',
@@ -72,6 +77,9 @@ export class ChatPageComponent implements OnInit {
             break;
           case 'About...':
             this.dialogService.open(DialogAboutComponent);
+            break;
+          case 'Settings':
+            this.dialogService.open(DialogSettingsComponent);
             break;
         }
       }

@@ -1,19 +1,12 @@
 <div style="float: right;">
   <div class="user-info-div" *ngIf="auth.user$ | async as user">
-    <nb-user *ngIf="!screenIsSmall"
-             style="width: fit-content;"
-             size="medium"
-             color="white"
-             onlyPicture=true
-             [name]="currentUserData.username"
-             [title]="currentUserData.name + currentUserData.surname"
-             [picture]="currentUserData.profile_img ? currentUserData.profile_img : ''"
-             [nbContextMenu]="userContextMenuItems"
-             nbContextMenuTag="user-context-menu"
-             nbContextMenuTrigger="hover"
-             nbContextMenuPlacement="left">
-    </nb-user>
-    <nb-user *ngIf="screenIsSmall"
+    <button nbButton ghost status="control"
+            *ngIf="!screenIsSmall"
+            [nbContextMenu]="userContextMenuItems"
+            nbContextMenuTag="user-context-menu"
+            nbContextMenuPlacement="left"
+            nbContextMenuTrigger="hover"><nb-icon icon="menu-outline"></nb-icon></button>
+    <nb-user
              style="width: fit-content;"
              size="medium"
              color="white"

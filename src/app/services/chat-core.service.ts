@@ -9,8 +9,8 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { concatMap } from 'rxjs/operators';
 
 const GQL_GET_MESSAGES = gql`
-  query getMessages($currentUser: String!, $targetUser: String!) {
-    getMessages(usernames: {username1: $currentUser, username2: $targetUser}) {
+  query getMessages($currentUser: String!, $targetUser: String!, $limit: Int) {
+    getMessages(usernames: {username1: $currentUser, username2: $targetUser}, limit: $limit) {
       id
       text
       type
@@ -631,12 +631,15 @@ export class ChatCoreService {
 
     this.isLoadingSource.next(true);
 
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+
     const messagesQuery = this.apollo
       .watchQuery<any[]>({
         query: GQL_GET_MESSAGES,
         variables: {
           targetUser: this._targetUsername,
-          currentUser: this._currentUsername
+          currentUser: this._currentUsername,
+          limit: appSettings.maxNumOfChatMessages
         },
         fetchPolicy: 'no-cache'
       });
@@ -1074,11 +1077,11 @@ export class ChatCoreService {
 
   }
 
-  public updateCurrentUserProfileImage(newUserProfileImage: any): Observable<any> {
+  public updateCurrentUserProfileImage(newUserProfileImage: any): { progressOb: Observable<number>, updateCurrentUserProfileImgOb: Observable<any> } {
     let ref = this.afStorage.ref('profile_images/' + this._currentUsername);
     let task = ref.put(newUserProfileImage);
 
-    return task.snapshotChanges().pipe(
+    const imageUploadingObs = task.snapshotChanges().pipe(
       last(),  // emit the last element after task.snapshotChanges() completed
       switchMap(() => ref.getDownloadURL())
     ).pipe(concatMap(uploadedURL => {
@@ -1092,6 +1095,8 @@ export class ChatCoreService {
           }).pipe(map(response => response.data["editUsers"]));
         }
       ));
+
+    return { progressOb: task.percentageChanges(), updateCurrentUserProfileImgOb: imageUploadingObs };
 
   }
 

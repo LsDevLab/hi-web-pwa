@@ -5,7 +5,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { NbDialogService } from '@nebular/theme';
 import { DialogAddChatComponent } from '../dialog-add-chat/dialog-add-chat.component';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
-import {first} from 'rxjs/operators';
+import {NgxHowlerService} from 'ngx-howler';
 
 
 @Component({
@@ -34,10 +34,16 @@ export class ContactsListComponent implements OnInit {
 
   constructor(private chatCoreService: ChatCoreService, public auth: AuthService,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
-              private chatNotificationsService: ChatNotificationsService) {
+              private chatNotificationsService: ChatNotificationsService, public howl: NgxHowlerService) {
    }
 
   ngOnInit(): void {
+    this.howl.register('newMessageSound', {
+      src: ['assets/sounds/newMessageSound.mp3'],
+      html5: true
+    }).subscribe(status => {
+      //ok
+    });
     // to deactivate title and name of user list
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
@@ -152,6 +158,7 @@ export class ContactsListComponent implements OnInit {
   }
 
   formatChats(unformattedChats){
+    let soundPlayed = false;
     let chats = [];
     let chatUsername;
     let notify;
@@ -174,6 +181,12 @@ export class ContactsListComponent implements OnInit {
 
       const user = this.chatsUsersInfo.find(user => user.username === chatUsername);
 
+      const prevChat = this.chats.find(c => c.targetUsername === chatUsername);
+      if (!soundPlayed && isAtLeastOneToNotify && prevChat && prevChat.numOfMessagesToRead !== chat.numOfMessagesToRead) {
+        this.howl.get('newMessageSound').play();
+        soundPlayed = true;
+      }
+
       chats.push({
         targetUsername: chatUsername,
         notify: notify,
@@ -185,7 +198,7 @@ export class ContactsListComponent implements OnInit {
         online: user ? user.online : '',
         profile_img: user ? user.profile_img : null,
         numOfMessagesToRead: isAtLeastOneToNotify ? chat.numOfMessagesToRead : null
-    })
+    });
 
     });
     return chats;

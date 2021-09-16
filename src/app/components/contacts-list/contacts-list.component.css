@@ -36,3 +36,13 @@ nb-list-item:hover{
   align-items: center;
   justify-content: space-between;
 }
+
+.notify-badge-div{
+  position: relative;
+  width: inherit;
+  height: 16px;
+}
+
+.notify-badge {
+  min-width: 15px;
+}
