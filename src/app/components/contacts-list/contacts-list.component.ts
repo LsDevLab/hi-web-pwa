@@ -182,7 +182,6 @@ export class ContactsListComponent implements OnInit {
       const user = this.chatsUsersInfo.find(user => user.username === chatUsername);
 
       const prevChat = this.chats.find(c => c.targetUsername === chatUsername);
-      console.log('prevchat', prevChat);
       if (!soundPlayed && isAtLeastOneToNotify && prevChat && prevChat.numOfMessagesToRead !== chat.numOfMessagesToRead) {
         this.howl.get('newMessageSound').play();
         soundPlayed = true;
