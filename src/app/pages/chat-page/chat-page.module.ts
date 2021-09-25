@@ -46,7 +46,6 @@ import { DialogSettingsComponent } from '../../components/dialog-settings/dialog
   imports: [
     ChatPageRoutingModule,
     CommonModule,
-    GraphQLModule,
     NbThemeModule,
     NbLayoutModule,
     NbChatModule,

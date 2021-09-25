@@ -22,6 +22,9 @@ export class ChatFormComponent {
   currentUser: string;
   targetUser: string;
 
+  currentUserUID: string;
+  targetUserUID: string;
+
   messageQuoted: any;
 
   constructor(private chatCoreService: ChatCoreService, public afAuth: AngularFireAuth,
@@ -34,9 +37,12 @@ export class ChatFormComponent {
       this.targetUser = t;
       this.messages = [];
       this.messageQuoted = null;
-      this.chatCoreService.getMessages.pipe(first()).subscribe(msgs => {
-        this.formatUpdateMessages(msgs);
-      });
+    });
+    this.chatCoreService.currentUserUIDObservable.subscribe(c => this.currentUserUID = c);
+    this.chatCoreService.targetUserUIDObservable.subscribe(t => {
+      this.targetUserUID = t;
+      this.messages = [];
+      this.messageQuoted = null;
     });
 
     this.chatCoreService.messageAdded.subscribe(msg => {
@@ -135,6 +141,7 @@ export class ChatFormComponent {
   }
 
   formatUpdateMessages(unformattedMessages) {
+
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
 
@@ -193,7 +200,7 @@ export class ChatFormComponent {
       // else add the message to the displayed messages
       else{
         // marking as to send the readed notify the messages just readed
-        if(message.sender_username === this.targetUser && !message.readed_from_receiver){
+        if(message.sender_user_uid === this.targetUserUID && !message.readed_from_receiver){
           justReadedMessages.push({
             sender_username: message.sender_username,
             receiver_username: message.receiver_username,
@@ -242,10 +249,12 @@ export class ChatFormComponent {
 
     if(this.router.url === '/chat'){
       if(justReadedMessages.length > 0){
-        this.chatCoreService.setMessagesAsReaded(justReadedMessages).subscribe(response => {
-          console.log("CFC: messages confirmed as readed", {'messages': justReadedMessages});
-        },(error) => {
-          console.log('CFC: ERROR while confirming messages as readed', error);
+        justReadedMessages.forEach(m => {
+          this.chatCoreService.setMessageAsReaded(m).subscribe(response => {
+            console.log("CFC: message confirmed as readed", {'messages': m});
+          },(error) => {
+            console.log('CFC: ERROR while confirming message as readed', error);
+          });
         });
       }
     }
@@ -264,7 +273,7 @@ export class ChatFormComponent {
     let timestamp = unformattedMessage.timestamp;
     let confirmDate = null;
 
-    if (unformattedMessage.sender_username === this.targetUser){
+    if (unformattedMessage.sender_user_uid === this.targetUserUID){
       reply = false;
     }else{
       if(!unformattedMessage.readed_from_receiver)
@@ -312,8 +321,7 @@ export class ChatFormComponent {
       },
       files: files,
       quote: unformattedMessage.quote ? unformattedMessage.quote :
-        this.messages.find(message => message.id === unformattedMessage.quote_message_id),
-      //quote_message_id: unformattedMessage.quote ? unformattedMessage.quote : unformattedMessage.quote.id,
+        this.messages.find(message => message.id === unformattedMessage.quote_message_uid),
       id: unformattedMessage.id,
       firstOfTheDay: null,
       lastOfAGroup: null,

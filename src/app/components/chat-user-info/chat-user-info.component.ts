@@ -3,6 +3,7 @@ import { ChatCoreService } from 'src/app/services/chat-core.service';
 import { NbDialogService } from '@nebular/theme';
 import { DialogTargetInfoComponent } from '../dialog-target-info/dialog-target-info.component';
 import {first} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-chat-user-info',
@@ -15,16 +16,16 @@ export class ChatUserInfoComponent implements OnInit {
   targetUsername: string;
   targetUserData: any;
 
+  usersSub: Subscription;
+
   constructor(private chatCoreService: ChatCoreService, private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
     this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
-      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
+      if (this.usersSub)
+        this.usersSub.unsubscribe()
+      this.usersSub = this.chatCoreService.users.subscribe(users => {
         this.targetUserData = users.find(u => u.username === targetUsername);
-      });
-      this.chatCoreService.userChanged.subscribe(user => {
-        if (user.username === targetUsername)
-          this.targetUserData = user;
       });
     });
   }

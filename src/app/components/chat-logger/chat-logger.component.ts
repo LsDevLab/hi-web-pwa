@@ -79,19 +79,11 @@ export class ChatLoggerComponent implements OnInit {
     });
     this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
       if (currentUsername) {
-        this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
+        this.chatCoreService.users.subscribe(users => {
           const userData = users.find(u => u.username === currentUsername);
           this.currentUserData = userData ? userData : this.currentUserData;
           if (userData && this.currentUserData.name === ''){
             this.dialogService.open(DialogEditProfileComponent);
-          }
-        });
-        this.chatCoreService.userChanged.subscribe(user => {
-          if (user.username === currentUsername) {
-            this.currentUserData = user;
-            if (user && this.currentUserData.name === '') {
-              this.dialogService.open(DialogEditProfileComponent);
-            }
           }
         });
       }

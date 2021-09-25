@@ -17,19 +17,17 @@ export class DialogTargetInfoComponent implements OnInit {
     surname: '',
   };
 
-  constructor(protected dialogRef: NbDialogRef<DialogTargetInfoComponent>, private chatCoreService: ChatCoreService,
-              private toastrService: NbToastrService) {
+  constructor(protected dialogRef: NbDialogRef<DialogTargetInfoComponent>, private chatCoreService: ChatCoreService) {
   }
 
   ngOnInit(): void {
     this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
-      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
-          const userData = users.find(u => u.username === targetUsername);
-          this.userData = userData ? userData : this.userData;
-      });
-      this.chatCoreService.userChanged.subscribe(user => {
-        if (user.username === targetUsername)
-          this.userData = user;
+      console.log('target0', targetUsername);
+      this.chatCoreService.users.subscribe(users => {
+        console.log('target', users);
+        const userData = users.find(u => u.username === targetUsername);
+        console.log('target2', userData);
+        this.userData = userData ? userData : this.userData;
       });
     });
   }
