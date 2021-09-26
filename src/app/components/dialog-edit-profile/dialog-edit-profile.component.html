@@ -10,7 +10,7 @@
         <p class="username-label">{{userData.username}}</p>
         <div class="profile-img-container">
           <img class="profile-img"
-               [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'"
+               [src]="userData.profile_img_url ? userData.profile_img_url : 'assets/img/default_profile_img.png'"
                (click)="imageFileInput.click()">
           <circle-progress-bar class="img-uploading-progress-bar" *ngIf="imgUploadingPercentage !== null && imgUploadingPercentage !== 100"
                                [progress]="imgUploadingPercentage"

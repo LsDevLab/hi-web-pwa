@@ -11,38 +11,26 @@ import {AngularFireDatabase} from '@angular/fire/database';
 import {AngularFirestore} from '@angular/fire/firestore';
 import firebase from 'firebase';
 import FieldPath = firebase.firestore.FieldPath;
+import {isArray} from 'rxjs/internal-compatibility';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatCoreService {
 
+  //////////////////////////// OBSERVABLES SOURCES ////////////////////////////
+
   private currentUserUIDSource = new BehaviorSubject<string>(null);
   private targetUserUIDSource = new BehaviorSubject<string>(null);
+
   private currentUsernameSource = new BehaviorSubject<string>(null);
   private targetUsernameSource = new BehaviorSubject<string>(null);
-  private targetUserDataSource = new BehaviorSubject<any>(null);
-  private loadedMessagesSource = new BehaviorSubject<any[]>([]);
-  private chatsUsersInfoSource = new BehaviorSubject<any[]>([]);
-  private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
-  private currentUserDataSource = new BehaviorSubject<any>(null);
-  private isLoadingSource = new BehaviorSubject<boolean>(true);
 
-  private _currentUsername: string;
-  private _targetUsername: string;
-  private _currentUserUID: string;
-  private _targetUserUID: string;
-  private _messages: any[] = [];
-  private _chats: any[] = [];
-  private _users: any[] = [];
-  private _isLoading: boolean;
+  private targetUsersSource = new BehaviorSubject<any>([]);
 
-  private usersSource = new BehaviorSubject<any>(null);
-  private userAddedSource = new Subject<any>();
-  private userChangedSource = new Subject<any>();
-  private userDeletedSource = new Subject<any>();
+  private currentUserSource = new BehaviorSubject<any>(null);
 
-  private chatsSource =  new BehaviorSubject<any>(null);
+  private chatsSource =  new BehaviorSubject<any>([]);
   private chatAddedSource = new Subject<any>();
   private chatChangedSource = new Subject<any>();
   private chatDeletedSource = new Subject<any>();
@@ -52,12 +40,45 @@ export class ChatCoreService {
   private messageChangedSource = new Subject<any>();
   private messageDeletedSource = new Subject<any>();
 
-  public users = this.usersSource.asObservable().pipe(filter(v => v !== null));
-  public userAdded = this.userAddedSource.asObservable();
-  public userChanged = this.userChangedSource.asObservable();
-  public userDeleted = this.userDeletedSource.asObservable();
+  private isLoadingSource = new BehaviorSubject<boolean>(true);
 
-  public chats = this.chatsSource.asObservable().pipe(filter(v => v !== null));
+  //////////////////////////// PRIVATE SUBSCRIPTION VARIABLES ////////////////////////////
+
+  private _messageAddedSub: Subscription;
+  private _messageChangedSub: Subscription;
+  private _messageDeletedSub: Subscription;
+
+  private _chatAddedSub: Subscription;
+  private _chatChangedSub: Subscription;
+  private _chatDeletedSub: Subscription;
+
+  private _targetUsersSub: Subscription;
+  private _currentUserSub: Subscription;
+
+  //////////////////////////// PRIVATE DATA VARIABLES ////////////////////////////
+
+  private _currentUsername: string;
+  private _targetUsername: string;
+  private _currentUserUID: string;
+  private _targetUserUID: string;
+  private _messages: any[] = [];
+  private _chats: any[] = [];
+  private _targetUsers: any[] = [];
+  private _currentUser: any;
+  private _isLoading: boolean;
+
+  //////////////////////////// PUBLIC ATTRIBUTES (OBSERVABLES) ////////////////////////////
+
+  public currentUserUIDObservable = this.currentUserUIDSource.asObservable().pipe(filter(v => v !== null));
+  public targetUserUIDObservable = this.targetUserUIDSource.asObservable().pipe(filter(v => v !== null));
+
+  public currentUsernameObservable = this.currentUsernameSource.asObservable().pipe(filter(v => v !== null));
+  public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
+
+  public currentUser = this.currentUserSource.asObservable().pipe(filter(v => v !== null));
+  public targetUsers = this.targetUsersSource.asObservable(); //.pipe(filter(v => v !== null));
+
+  public chats = this.chatsSource.asObservable();//.pipe(filter(v => v !== null));
   public chatAdded = this.chatAddedSource.asObservable();
   public chatChanged = this.chatChangedSource.asObservable();
   public chatDeleted = this.chatDeletedSource.asObservable();
@@ -67,27 +88,9 @@ export class ChatCoreService {
   public messageChanged = this.messageChangedSource.asObservable();
   public messageDeleted = this.messageDeletedSource.asObservable();
 
-  private _messagesSub: { sub1: Subscription, sub2: Subscription };
-  private _messageAddedSub: { sub1: Subscription, sub2: Subscription };
-  private _messageChangedSub: { sub1: Subscription, sub2: Subscription };
-  private _messageDeletedSub: { sub1: Subscription, sub2: Subscription };
-
-  private _chatAddedSub: { sub1: Subscription, sub2: Subscription };
-  private _chatChangedSub: { sub1: Subscription, sub2: Subscription };
-  private _chatDeletedSub: { sub1: Subscription, sub2: Subscription };
-
-  private _usersSub: Subscription;
+  public isLoadingObservable = this.isLoadingSource.asObservable();
 
   //////////////////////////// PUBLIC ATTRIBUTES ////////////////////////////
-
-  public currentUserUIDObservable = this.currentUserUIDSource.asObservable().pipe(filter(v => v !== null));
-  public targetUserUIDObservable = this.targetUserUIDSource.asObservable().pipe(filter(v => v !== null));
-  public currentUsernameObservable = this.currentUsernameSource.asObservable().pipe(filter(v => v !== null));
-  public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
-  public targetUserDataObservable = this.targetUserDataSource.asObservable();
-  public loadedMessagesObservable = this.loadedMessagesSource.asObservable();
-  public targetUserlastAccessObservable = this.targetUserlastAccessSource.asObservable();
-  public isLoadingObservable = this.isLoadingSource.asObservable();
 
   constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService,
               private afs: AngularFirestore, private afStorage: AngularFireStorage) {
@@ -108,21 +111,27 @@ export class ChatCoreService {
 
     this.chatAdded.subscribe(chat => {
       this._chats.push(chat);
-      this._subscribeToUsers(this._chats.map(chat => chat.user1_uid === this._currentUserUID ? chat.user2_uid : chat.user1_uid));
+      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
       this.chatsSource.next(this._chats);
     });
     this.chatChanged.subscribe(chat => {
-      const index = this._chats.findIndex(c => (c.user1_uid === chat.user1_uid && c.user2_uid === chat.user2_uid));
-      this._chats[index] = chat;
+      const index = this._chats.findIndex(c => (c.users_uids.includes(chat.users_uids[0]) && c.users_uids.includes(chat.users_uids[1])));
+      if (index !== -1)
+        this._chats[index] = chat;
+      else
+        this._chats.push(chat);
       this.chatsSource.next(this._chats);
+      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
     });
     this.chatDeleted.subscribe(chat => {
-      this._chats.splice(this._chats.findIndex(c => (c.user1_uid === chat.user1_uid && c.user2_uid === chat.user2_uid)), 1);
+      this._chats.splice(this._chats.findIndex(c => (c.users_uids.includes(chat.users_uids[0]) && c.users_uids.includes(chat.users_uids[1]))), 1);
       this.chatsSource.next(this._chats);
-      this._subscribeToUsers(this._chats.map(chat => chat.user1_uid === this._currentUserUID ? chat.user2_uid : chat.user1_uid));
+      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
     });
 
-    this.users.subscribe(users => this._users.push(...users));
+    this.targetUsers.subscribe(users => this._targetUsers.push(...users));
+
+    this.currentUser.subscribe(user => this._currentUser = user);
 
     this.isLoadingObservable.subscribe(isL => this._isLoading = isL);
 
@@ -130,39 +139,32 @@ export class ChatCoreService {
 
   }
 
-  //////////////////////////// MESSAGES SUBSCRIBERS ATTRIBUTES ////////////////////////////
+  //////////////////////////// PRIVATE MESSAGES SUBSCRIBERS ATTRIBUTES ////////////////////////////
 
-  private _subscribeToMessageAdded(): { sub1: Subscription, sub2: Subscription } {
+  private _subscribeToMessageAdded(): Subscription {
 
     const callback = response => {
       response.forEach(message => {
-        if (message)
+        if (message) {
           this.messageAddedSource.next(message);
-        console.log("CCS: message added", {'message': message});
+          console.log('CCS: message added', {'message': message});
+        }
       });
     };
 
-    const itemRef1 = this.afs.collection('messages', ref => ref
-      .where('sender_user_uid', '==', this._currentUserUID)
-      .where('receiver_user_uid', '==', this._targetUserUID));
-    const sub1 = itemRef1.stateChanges(['added']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
+    const itemRef = this.afs.collection('messages', ref => ref
+      .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
+      .orderBy('timestamp', 'asc'));
+    const sub = itemRef.stateChanges(['added']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
       map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
     ).subscribe(callback);
 
-    const itemRef2 = this.afs.collection('messages', ref => ref
-      .where('sender_user_uid', '==', this._targetUserUID)
-      .where('receiver_user_uid', '==', this._currentUserUID));
-    const sub2 = itemRef2.stateChanges(['added']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
-    ).subscribe(callback);
-
-    return { sub1: sub1, sub2: sub2 };
+    return sub;
 
   }
 
-  private _subscribeToMessageChanged(): { sub1: Subscription, sub2: Subscription } {
+  private _subscribeToMessageChanged(): Subscription {
 
     const callback = response => {
       response.forEach(message => {
@@ -172,26 +174,19 @@ export class ChatCoreService {
       });
     };
 
-    const itemRef1 = this.afs.collection('messages', ref => ref
-      .where('sender_user_uid', '==', this._currentUserUID)
-      .where('receiver_user_uid', '==', this._targetUserUID));
-    const sub1 = itemRef1.stateChanges(['modified']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
-    ).subscribe(callback);
-    const itemRef2 = this.afs.collection('messages', ref => ref
-      .where('sender_user_uid', '==', this._currentUserUID)
-      .where('receiver_user_uid', '==', this._targetUserUID));
-    const sub2 = itemRef2.stateChanges(['modified']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
+    const itemRef = this.afs.collection('messages', ref => ref
+      .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
+      .orderBy('timestamp', 'asc'));
+    const sub = itemRef.stateChanges(['modified']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
       map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
     ).subscribe(callback);
 
-    return { sub1: sub1, sub2: sub2 };
+    return sub;
 
   }
 
-  private _subscribeToMessageDeleted(): { sub1: Subscription, sub2: Subscription } {
+  private _subscribeToMessageDeleted(): Subscription {
 
     const callback = response => {
       response.forEach(message => {
@@ -201,48 +196,36 @@ export class ChatCoreService {
       });
     };
 
-    const itemRef1 = this.afs.collection('messages', ref => ref
-      .where('sender_user_uid', '==', this._currentUserUID)
-      .where('receiver_user_uid', '==', this._targetUserUID));
-    const sub1 = itemRef1.stateChanges(['removed']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
+    const itemRef = this.afs.collection('messages', ref => ref
+      .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
+      .orderBy('timestamp', 'asc'));
+    const sub = itemRef.stateChanges(['removed']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
       map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
     ).subscribe(callback);
 
-    const itemRef2 = this.afs.collection('messages', ref => ref
-      .where('sender_user_uid', '==', this._currentUserUID)
-      .where('receiver_user_uid', '==', this._targetUserUID));
-    const sub2 = itemRef2.stateChanges(['removed']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
-    ).subscribe(callback);
-
-    return { sub1: sub1, sub2: sub2 };
+    return sub;
 
   }
 
   private _subscribeToMessages_all() {
     if (this._messageAddedSub) {
-      this._messageAddedSub.sub1.unsubscribe();
-      this._messageAddedSub.sub2.unsubscribe();
+      this._messageAddedSub.unsubscribe();
     }
     if (this._messageChangedSub) {
-      this._messageChangedSub.sub1.unsubscribe();
-      this._messageChangedSub.sub2.unsubscribe();
+      this._messageChangedSub.unsubscribe();
     }
     if (this._messageDeletedSub) {
-      this._messageDeletedSub.sub1.unsubscribe();
-      this._messageDeletedSub.sub2.unsubscribe();
+      this._messageDeletedSub.unsubscribe();
     }
     this._messageAddedSub = this._subscribeToMessageAdded();
     this._messageChangedSub = this._subscribeToMessageChanged();
     this._messageDeletedSub = this._subscribeToMessageDeleted();
   }
 
-  //////////////////////////// CHATS SUBSCRIBERS ATTRIBUTES ////////////////////////////
+  //////////////////////////// PRIVATE CHATS SUBSCRIBERS ATTRIBUTES ////////////////////////////
 
-
-  private _subscribeToChatAdded(): { sub1: Subscription, sub2: Subscription } {
+  private _subscribeToChatAdded(): Subscription {
 
     const callback = response => {
       response.forEach(chat => {
@@ -252,25 +235,18 @@ export class ChatCoreService {
       });
     };
 
-    const listRef1 = this.afs.collection('chats', ref => ref
-      .where('user1_uid', '==', this._currentUserUID));
-    const sub1 = listRef1.stateChanges(['added']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
+    const listRef = this.afs.collection('chats', ref => ref
+      .where('users_uids', 'array-contains', this._currentUserUID));
+    const sub = listRef.stateChanges(['added']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
       map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
     ).subscribe(callback);
 
-    const listRef2 = this.afs.collection('chats', ref => ref
-      .where('user2_uid', '==', this._currentUserUID));
-    const sub2 = listRef2.stateChanges(['added']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
-    ).subscribe(callback);
-
-    return { sub1: sub1, sub2: sub2 };
+    return sub;
 
   }
 
-  private _subscribeToChatChanged(): { sub1: Subscription, sub2: Subscription } {
+  private _subscribeToChatChanged(): Subscription {
 
     const callback = response => {
       response.forEach(chat => {
@@ -280,25 +256,18 @@ export class ChatCoreService {
       });
     };
 
-    const listRef1 = this.afs.collection('chats', ref => ref
-      .where('user1_uid', '==', this._currentUserUID));
-    const sub1 = listRef1.stateChanges(['modified']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
+    const listRef = this.afs.collection('chats', ref => ref
+      .where('users_uids', 'array-contains', this._currentUserUID));
+    const sub = listRef.stateChanges(['modified']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
       map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
     ).subscribe(callback);
 
-    const listRef2 = this.afs.collection('chats', ref => ref
-      .where('user2_uid', '==', this._currentUserUID));
-    const sub2 = listRef2.stateChanges(['modified']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
-    ).subscribe(callback);
-
-    return { sub1: sub1, sub2: sub2 };
+    return sub;
 
   }
 
-  private _subscribeToChatDeleted(): { sub1: Subscription, sub2: Subscription } {
+  private _subscribeToChatDeleted(): Subscription {
 
     const callback = response => {
       response.forEach(chat => {
@@ -308,91 +277,86 @@ export class ChatCoreService {
       });
     };
 
-    const listRef1 = this.afs.collection('chats', ref => ref
-      .where('user1_uid', '==', this._currentUserUID));
-    const sub1 = listRef1.stateChanges(['removed']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
+    const listRef = this.afs.collection('chats', ref => ref
+      .where('users_uids', 'array-contains', this._currentUserUID));
+    const sub = listRef.stateChanges(['removed']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
       map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
     ).subscribe(callback);
 
-    const listRef2 = this.afs.collection('chats', ref => ref
-      .where('user2_uid', '==', this._currentUserUID));
-    const sub2 = listRef2.stateChanges(['removed']).pipe(
-      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
-    ).subscribe(callback);
-
-    return { sub1: sub1, sub2: sub2 };
+    return sub;
 
   }
 
   private _subscribeToChats_all() {
     if (this._chatAddedSub) {
-      this._chatAddedSub.sub1.unsubscribe();
-      this._chatAddedSub.sub2.unsubscribe();
+      this._chatAddedSub.unsubscribe();
     }
     if (this._chatChangedSub) {
-      this._chatChangedSub.sub1.unsubscribe();
-      this._chatChangedSub.sub2.unsubscribe();
+      this._chatChangedSub.unsubscribe();
     }
     if (this._chatDeletedSub) {
-      this._chatDeletedSub.sub1.unsubscribe();
-      this._chatDeletedSub.sub2.unsubscribe();
+      this._chatDeletedSub.unsubscribe();
     }
     this._chatAddedSub = this._subscribeToChatAdded();
     this._chatChangedSub = this._subscribeToChatChanged();
     this._chatDeletedSub = this._subscribeToChatDeleted();
   }
 
-  //////////////////////////// USERS SUBSCRIBERS ATTRIBUTES ////////////////////////////
+  //////////////////////////// PRIVATE USERS SUBSCRIBERS ATTRIBUTES ////////////////////////////
 
-  private _subscribeToUsers(userUids: string[]): Subscription {
+  private _subscribeToTargetUsers(userUids: string[]): Subscription {
 
-    if (this._usersSub)
-      this._usersSub.unsubscribe()
+    if (this._targetUsersSub)
+      this._targetUsersSub.unsubscribe()
 
     this.isLoadingSource.next(true);
 
-    userUids.push(this._currentUserUID);
-
-    const callback = response =>{
+    const callback = response => {
       this.isLoadingSource.next(false);
-      this.usersSource.next(response);
-      if (response.length !== 0)
-        console.log("CCS: users received", {'users': response });
+      if (response.length !== 0) {
+        this.targetUsersSource.next(response);
+        console.log("CCS: target users received", {'users': response });
+      }
     };
 
-    if (userUids.length !== 0) {
+    if (userUids && userUids.length !== 0) {
       const listRef = this.afs.collection('users', ref => ref.where(FieldPath.documentId(), 'in', userUids));
-      return this._usersSub = listRef.snapshotChanges().pipe(
-        map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites)),
-        map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      return listRef.snapshotChanges().pipe(
+        map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+        map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
       ).subscribe(callback);
     }
 
   }
 
-  private addUser(username: string, userUID: string): Observable<any>{
-    // Adds an user with the given username
+  private _subscribeToCurrentUser(): Subscription {
 
-    const user = {
-      username: username,
-      name: 'Name',
-      lastAccess: new Date().getTime(),
-      bio: 'sample bio',
-      surname: 'Surname',
-      age: null,
-      sex: null,
+    if (this._currentUserSub)
+      this._currentUserSub.unsubscribe()
+
+    this.isLoadingSource.next(true);
+
+    const callback = response => {
+      this.isLoadingSource.next(false);
+      this.isLoadingSource.next(false);
+      if (response.length !== 0){
+        this.currentUserSource.next(response[0]);
+        console.log("CCS: current user received", {'user': response[0] });
+      }
     };
 
-    const itemsRef = this.afs.collection('users').doc(userUID);
-    return from(itemsRef.set(user));
+    const listRef = this.afs.collection('users', ref => ref.where(FieldPath.documentId(), '==', this._currentUserUID));
+    return listRef.snapshotChanges().pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
 
   }
 
-  //////////////////////////// PUBLIC METHODS ////////////////////////////
+  //////////////////////////// OTHER PRIVATE METHODS ////////////////////////////
 
-  private getFileStoringObs(file){
+  private _getFileStoringObs(file): { progressOb: Observable<number>, fileOb: Observable<any> }{
     const fileId = Math.trunc(Math.random()*1000000);
     let ref = this.afStorage.ref('chats_files/' + this._currentUserUID + '/' + this._targetUserUID + '/' + fileId);
     let task = ref.put(file);
@@ -410,12 +374,38 @@ export class ChatCoreService {
     return progressAndObs;
   }
 
+  private _updateCurrentUserLastAccess(): Observable<void> {
+    const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
+    return from(itemsRef.update({'last_access': new Date().getTime() }));
+  }
+
+  private addCurrentUser(username: string, userUID: string): Observable<any> {
+    // Adds an user with the given username
+
+    const user = {
+      username: username,
+      name: 'Name',
+      lastAccess: new Date().getTime(),
+      bio: 'sample bio',
+      surname: 'Surname',
+      age: null,
+      sex: null,
+    };
+
+    const itemsRef = this.afs.collection('users').doc(userUID);
+    return from(itemsRef.set(user));
+
+  }
+
+
+  //////////////////////////// PUBLIC METHODS ////////////////////////////
+
   public sendMessage(message: any): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
 
     if(message.files.length) {
       let filesArray: any[] = [];
-      const storingFilesObsArray = message.files.map(file => this.getFileStoringObs(file));
+      const storingFilesObsArray = message.files.map(file => this._getFileStoringObs(file));
       const progressObs: Observable<number>[] = storingFilesObsArray.map(x => x.progressOb);
       const fileObs: Observable<any>[] = storingFilesObsArray.map(x => x.fileOb);
       const sendMessageResponseOb = forkJoin(fileObs).pipe(map(obsResults => {
@@ -431,8 +421,7 @@ export class ChatCoreService {
             text: message.text,
             files: filesArray,
             quote_message_uid : message.quote ? message.quote.id : null,
-            sender_user_uid: this._currentUserUID,
-            receiver_user_uid: this._targetUserUID
+            users_uids: [this._currentUserUID, this._targetUserUID]
           };
           const itemsRef = this.afs.collection('messages');
           return from(itemsRef.add(messageToSend));
@@ -445,8 +434,7 @@ export class ChatCoreService {
         type: message.type,
         text: message.text,
         quote_message_uid : message.quote ? message.quote.uid : null,
-        sender_user_uid: this._currentUserUID,
-        receiver_user_uid: this._targetUserUID
+        users_uids: [this._currentUserUID, this._targetUserUID]
       };
       const itemsRef = this.afs.collection('messages');
       const sendMessageResponseOb = from(itemsRef.add(messageToSend));
@@ -518,7 +506,7 @@ export class ChatCoreService {
     ).pipe(concatMap(uploadedURL => {
           console.log('CCS: Profile image stored. Linking URL... (', uploadedURL, ')')
 
-          const itemsRef = this.afs.collection('users/').doc(this._currentUserUID);
+          const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
           return from(itemsRef.update({'profile_img_url': uploadedURL }));
 
         }
@@ -533,8 +521,7 @@ export class ChatCoreService {
 
     const chat = {
       createdTimestamp: new Date().getTime(),
-      user1_uid: targetUserUID,
-      user2_uid: this._currentUserUID
+      users_uids: [this._currentUserUID, targetUserUID]
     }
 
     const itemsRef = this.afs.collection('chats');
@@ -593,7 +580,7 @@ export class ChatCoreService {
       if (!user){
         // if not, create a new user with the given username and name
         console.log("CCS: user first login. Created profile.");
-        this.addUser(currentUsername, currentUserUID).subscribe(response => {
+        this.addCurrentUser(currentUsername, currentUserUID).subscribe(response => {
           console.log("CCS: user added");
           window.location.reload();
         },(error) => {
@@ -603,21 +590,23 @@ export class ChatCoreService {
       }else{
         this.isLoadingSource.next(false);
         // subscribing to chats of the current user
-        this._subscribeToChats_all()
+        //this._subscribeToTargetUsers(null);
+        this._currentUserSub = this._subscribeToCurrentUser();
+        this._subscribeToChats_all();
         // updating last access of current user once every 10s
-        /*this.updateCurrentUserLastAccess().subscribe(response => {
+        this._updateCurrentUserLastAccess().subscribe(_ => {
           console.log("CCS: current user last access updated");
         },(error) => {
           console.log('CCS: ERROR while updating last access of the current user', error);
         });
         interval(10000).subscribe(() =>
-          this.updateCurrentUserLastAccess().subscribe(response => {
+          this._updateCurrentUserLastAccess().subscribe(_ => {
             console.log("CCS: current user last access updated");
           },(error) => {
             console.log('CCS: ERROR while updating last access of the current user', error);
           })
-        );*/
-        console.log("CCS: setted current user", user);
+        );
+        console.log("CCS: setted current user", user.uid);
       }
     });
 

@@ -64,7 +64,7 @@ export class DialogAddChatComponent implements OnInit {
           }
           console.log("DACC: adding chat with", this.username);
           this.chatCoreService.addChat(user.uid).subscribe(response => {
-            console.log("DACC: added chat with", this.username, "added");
+            console.log("DACC: chat with", this.username, "added");
             this.toastrService.show("User added", "Done", new NbToastrConfig({status:"success"}));
             this.dialogRef.close();
           },(error) => {

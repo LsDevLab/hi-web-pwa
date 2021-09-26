@@ -77,15 +77,22 @@ export class ChatLoggerComponent implements OnInit {
         }
       }
     });
+    /*
     this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
       if (currentUsername) {
-        this.chatCoreService.users.subscribe(users => {
+        this.chatCoreService.targetUsers.subscribe(users => {
           const userData = users.find(u => u.username === currentUsername);
           this.currentUserData = userData ? userData : this.currentUserData;
           if (userData && this.currentUserData.name === ''){
             this.dialogService.open(DialogEditProfileComponent);
           }
         });
+      }
+    });*/
+    this.chatCoreService.currentUser.subscribe(currentUser => {
+      this.currentUserData = currentUser;
+      if (this.currentUserData.name === '') {
+        this.dialogService.open(DialogEditProfileComponent);
       }
     });
   }

@@ -12,6 +12,7 @@ import {DialogTokenExpiredComponent} from '../../components/dialog-token-expired
 import {DialogSettingsComponent} from '../../components/dialog-settings/dialog-settings.component';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
+import {ChatNotificationsService} from '../../services/chat-notifications.service';
 
 
 @Component({
@@ -58,20 +59,18 @@ export class ChatPageComponent implements OnInit {
   constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService,
               private dialogService: NbDialogService, private nbMenuService: NbMenuService,
               private afAuth: AngularFireAuth, private toastrService: NbToastrService,
-              public router: Router) { }
+              public router: Router, private chatNotificationsService: ChatNotificationsService) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-    //this.chatCoreService.targetUserlastAccessObservable.subscribe(tula => this.targetUserLastAccess = tula);
-    //this.chatCoreService.targetUsernameObservable.subscribe(tu => this.targetUsername = tu);
-    //this.chatCoreService.currentUsernameObservable.subscribe(c => this.thisUser = c);
-    //this.auth.idTokenClaims$.subscribe(t => console.log(t));
+
     this.chatCoreService.isLoadingObservable.subscribe(isL => {
       if(isL)
         this.dialogService.open(DialogLoadingComponent, { closeOnBackdropClick: false, closeOnEsc: false });
     });
+
     this.menuSub = this.nbMenuService.onItemClick().subscribe(menu => {
       if(menu.tag === 'user-context-menu-small') {
         switch (menu.item.title) {
@@ -87,6 +86,12 @@ export class ChatPageComponent implements OnInit {
         }
       }
     });
+
+    this.afAuth.user.subscribe(u => {
+      this.chatCoreService.init(u.email, u.uid);
+      this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
+    });
+
     const helper = new JwtHelperService();
     const tokenExpiredInterval = setInterval(() => {
       const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
@@ -99,6 +104,9 @@ export class ChatPageComponent implements OnInit {
         }, 2000);
       }
     }, 2000);
+
+
+
 
   }
 

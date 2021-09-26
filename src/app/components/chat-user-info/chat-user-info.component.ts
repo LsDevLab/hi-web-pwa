@@ -24,7 +24,7 @@ export class ChatUserInfoComponent implements OnInit {
     this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
       if (this.usersSub)
         this.usersSub.unsubscribe()
-      this.usersSub = this.chatCoreService.users.subscribe(users => {
+      this.usersSub = this.chatCoreService.targetUsers.subscribe(users => {
         this.targetUserData = users.find(u => u.username === targetUsername);
       });
     });

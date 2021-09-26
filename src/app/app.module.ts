@@ -23,6 +23,8 @@ import { angularFireModuleData } from '../../firebaseData';
 import {NgCircleProgressModule} from 'ng-circle-progress';
 import {AngularFireAuth, AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
+import {AngularFirestoreModule} from '@angular/fire/firestore';
+import {ChatUiService} from './services/chat-ui.service';
 
 @NgModule({
   declarations: [
@@ -65,12 +67,14 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
     AngularFireModule.initializeApp(angularFireModuleData),
     AngularFireStorageModule,
     AngularFireAuthModule,
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    //AngularFirestoreModule
   ],
   bootstrap: [AppComponent],
   providers: [
     ChatNotificationsService,
-    NgxHowlerService
+    NgxHowlerService,
+    ChatUiService
   ]
 })
 export class AppModule {

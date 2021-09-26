@@ -24,7 +24,6 @@ export class ContactsListComponent implements OnInit {
   chats: any = [];
   chatsUsersInfo: any[] = [];
   currentUser: string;
-  thisName: string;
   targetUser: string;
   currentUserUID: string;
   targetUserUID: string;
@@ -34,12 +33,14 @@ export class ContactsListComponent implements OnInit {
   screenIsSmall = false;
   size = "medium";
 
+  unformattedChats: any[];
+
   @Output()
   selectedUser: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private chatCoreService: ChatCoreService, public afAuth: AngularFireAuth,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
-              private chatNotificationsService: ChatNotificationsService, public howl: NgxHowlerService) {
+              public howl: NgxHowlerService) {
    }
 
   ngOnInit(): void {
@@ -60,7 +61,6 @@ export class ContactsListComponent implements OnInit {
     });
 
 
-
     this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
 
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUser = t);
@@ -70,48 +70,48 @@ export class ContactsListComponent implements OnInit {
     this.chatCoreService.targetUserUIDObservable.subscribe(t => this.targetUserUID = t);
 
     this.chatCoreService.chats.subscribe(chats => {
-      if (this.usersSub)
-        this.usersSub.unsubscribe();
-      this.usersSub = this.chatCoreService.users.subscribe(users => {
-        this.chatsUsersInfo = users;
-        const precLen = this.chats.length;
-        this.chats = this.formatChats(chats);
-        if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
-          this.selectChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
-        }
-      });
+      this.unformattedChats = chats;
+      const precLen = this.chats.length;
+      this.chats = this.formatChats(chats);
+      if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
+        this.selectChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
+      }
     });
 
-    this.afAuth.user.subscribe(u => {
-      this.thisName = u.displayName;
-      this.chatCoreService.init(u.email, u.uid);
-      this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
+    this.usersSub = this.chatCoreService.targetUsers.subscribe(users => {
+      this.chatsUsersInfo = users;
+      const precLen = this.chats.length;
+      this.chats = this.formatChats(this.unformattedChats);
+      if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
+        this.selectChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
+      }
     });
+
     //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
   }
 
   selectChat(username, userUID) {
+    console.log('SELECT', username, userUID)
     this.targetUser = username;
     this.chatCoreService.setChat(username, userUID);
     this.selectedUser.emit(username);
   }
 
   formatChats(unformattedChats){
+
     let soundPlayed = false;
     let chats = [];
     let notify;
     let isAtLeastOneToNotify = false;
     let chatUserUID;
     unformattedChats.forEach(chat => {
-      if (chat.user1_uid === this.currentUserUID) {
-        chatUserUID = chat.user2_uid;
-      }else{
-        chatUserUID = chat.user1_uid;
-      }
+
+      chatUserUID = chat.users_uids.find(uid => uid !== this.currentUserUID);
 
       const user = this.chatsUsersInfo.find(user => user.uid === chatUserUID);
 
-      //console.log("N", chat.notify, "T", this.thisUser, "EQ", chat.notify == this.thisUser);
+      if (!user)
+        return;
 
       if (chat.hasToRead === this.currentUser) {
         notify = "⋯";
@@ -136,7 +136,7 @@ export class ContactsListComponent implements OnInit {
         age: user ? user.age : '',
         sex: user ? user.sex : '',
         online: user ? user.online : '',
-        profile_img: user ? user.profile_img : null,
+        profile_img_url: user ? user.profile_img_url : null,
         numOfMessagesToRead: isAtLeastOneToNotify ? chat.numOfMessagesToRead : null
     });
 

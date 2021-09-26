@@ -13,7 +13,7 @@
              onlyPicture=true
              [name]="currentUserData.username"
              [title]="currentUserData.name + currentUserData.surname"
-             [picture]="currentUserData.profile_img ? currentUserData.profile_img : ''">
+             [picture]="currentUserData.profile_img_url ? currentUserData.profile_img_url : ''">
     </nb-user>
     <div style="color: white; width: fit-content">
       <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{currentUserData.name}} {{currentUserData.surname}}</div>

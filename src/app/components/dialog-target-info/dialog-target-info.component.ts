@@ -22,11 +22,8 @@ export class DialogTargetInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
-      console.log('target0', targetUsername);
-      this.chatCoreService.users.subscribe(users => {
-        console.log('target', users);
+      this.chatCoreService.targetUsers.subscribe(users => {
         const userData = users.find(u => u.username === targetUsername);
-        console.log('target2', userData);
         this.userData = userData ? userData : this.userData;
       });
     });
