@@ -91,7 +91,6 @@ export class ContactsListComponent implements OnInit {
   }
 
   selectChat(username, userUID) {
-    console.log('SELECT', username, userUID)
     this.targetUser = username;
     this.chatCoreService.setChat(username, userUID);
     this.selectedUser.emit(username);
@@ -113,7 +112,7 @@ export class ContactsListComponent implements OnInit {
       if (!user)
         return;
 
-      if (chat.hasToRead === this.currentUser) {
+      if (chat.user_has_to_read === this.currentUserUID) {
         notify = "⋯";
         isAtLeastOneToNotify = true;
       }
@@ -121,7 +120,7 @@ export class ContactsListComponent implements OnInit {
         notify = "";
 
       const prevChat = this.chats.find(c => c.targetUsername === user.username);
-      if (!soundPlayed && isAtLeastOneToNotify && prevChat && prevChat.numOfMessagesToRead !== chat.numOfMessagesToRead) {
+      if (!soundPlayed && isAtLeastOneToNotify && prevChat && prevChat.messages_to_read !== chat.messages_to_read) {
         this.howl.get('newMessageSound').play();
         soundPlayed = true;
       }
@@ -137,7 +136,7 @@ export class ContactsListComponent implements OnInit {
         sex: user ? user.sex : '',
         online: user ? user.online : '',
         profile_img_url: user ? user.profile_img_url : null,
-        numOfMessagesToRead: isAtLeastOneToNotify ? chat.numOfMessagesToRead : null
+        messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null
     });
 
     });

@@ -310,10 +310,10 @@ export class ChatCoreService {
     if (this._targetUsersSub)
       this._targetUsersSub.unsubscribe()
 
-    this.isLoadingSource.next(true);
+    //this.isLoadingSource.next(true);
 
     const callback = response => {
-      this.isLoadingSource.next(false);
+      //this.isLoadingSource.next(false);
       if (response.length !== 0) {
         this.targetUsersSource.next(response);
         console.log("CCS: target users received", {'users': response });
