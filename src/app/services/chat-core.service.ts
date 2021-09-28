@@ -385,7 +385,7 @@ export class ChatCoreService {
     const user = {
       username: username,
       name: 'Name',
-      lastAccess: new Date().getTime(),
+      last_access: new Date().getTime(),
       bio: 'sample bio',
       surname: 'Surname',
       age: null,
@@ -520,7 +520,7 @@ export class ChatCoreService {
     // Adds the chat between the currentUser and the User with the provided targetUsername
 
     const chat = {
-      createdTimestamp: new Date().getTime(),
+      timestamp_created: new Date().getTime(),
       users_uids: [this._currentUserUID, targetUserUID]
     }
 
