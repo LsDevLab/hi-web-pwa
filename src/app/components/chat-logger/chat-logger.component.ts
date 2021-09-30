@@ -104,7 +104,7 @@ export class ChatLoggerComponent implements OnInit {
     //console.log(localStorage.getItem('currentToken'));
     localStorage.setItem('isAuth', "false");
     localStorage.removeItem('currentToken');
-    this.afAuth.signOut().then(res => this.router.navigateByUrl('/home'));
+    this.afAuth.signOut().then(_ => window.location.reload());
 
   }
 

@@ -100,7 +100,7 @@ export class ChatPageComponent implements OnInit {
         setTimeout(()=>{
           this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
           this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
-          setTimeout(() => this.afAuth.signOut().then(res => this.router.navigateByUrl('/home')), 4000);
+          setTimeout(() => this.afAuth.signOut().then(_ => window.location.reload()), 4000);
         }, 2000);
       }
     }, 2000);

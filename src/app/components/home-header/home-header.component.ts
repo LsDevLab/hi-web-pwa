@@ -29,7 +29,7 @@ export class HomeHeaderComponent implements OnInit {
     localStorage.setItem('isAuth', "false");
     localStorage.removeItem('currentToken');
     //this.auth.logout({ returnTo: document.location.origin });
-    this.afAuth.signOut()
+    this.afAuth.signOut().then(_ => window.location.reload())
   }
 
   signIn() {

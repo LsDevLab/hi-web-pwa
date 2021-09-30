@@ -3,6 +3,7 @@ import {ChatCoreService} from './chat-core.service';
 import moment from 'moment';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
+import {Subscription} from 'rxjs';
 
 
 @Injectable({
@@ -22,29 +23,10 @@ export class ChatUiService {
 
   messageQuoted: any;
 
-  constructor(private chatCoreService: ChatCoreService, private router: Router, private http: HttpClient) {
-    this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
-    this.chatCoreService.targetUsernameObservable.subscribe(t => {
-      this.targetUser = t;
-      this.messages = [];
-      this.messageQuoted = null;
-    });
-    this.chatCoreService.currentUserUIDObservable.subscribe(c => this.currentUserUID = c);
-    this.chatCoreService.targetUserUIDObservable.subscribe(t => {
-      this.targetUserUID = t;
-      this.messages = [];
-      this.messageQuoted = null;
-    });
+  subscriptions: Subscription[] = [];
 
-    this.chatCoreService.messageAdded.subscribe(msg => {
-      this.formatUpdateMessages([msg]);
-    });
-    this.chatCoreService.messageChanged.subscribe(msg => {
-      this.formatUpdateMessages([msg])
-    });
-    this.chatCoreService.messageDeleted.subscribe(msg => {
-      this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1)
-    });
+  constructor(private chatCoreService: ChatCoreService, private router: Router, private http: HttpClient) {
+    this.initializeService()
   }
 
   sendMessage(formattedMessage: any) {
@@ -367,6 +349,47 @@ export class ChatUiService {
         return 'HH:mm';
         break;
     }
+  }
+
+  initializeService() {
+    // initialize component attributes
+    this.currentUser = null;
+    this.targetUser = null;
+    this.currentUserUID = null;
+    this.targetUserUID = null;
+    this.messages = [];
+    this.messageQuoted = null;
+    // unsubscribe to CCS observables
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+    // subscribe to CCS observables
+    let s = this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
+    this.subscriptions.push(s);
+    s = this.chatCoreService.targetUsernameObservable.subscribe(t => {
+      this.targetUser = t;
+      this.messages = [];
+      this.messageQuoted = null;
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.currentUserUIDObservable.subscribe(c => this.currentUserUID = c);
+    this.subscriptions.push(s);
+    this.chatCoreService.targetUserUIDObservable.subscribe(t => {
+      this.targetUserUID = t;
+      this.messages = [];
+      this.messageQuoted = null;
+    });
+    s = this.chatCoreService.messageAdded.subscribe(msg => {
+      this.formatUpdateMessages([msg]);
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.messageChanged.subscribe(msg => {
+      this.formatUpdateMessages([msg])
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.messageDeleted.subscribe(msg => {
+      this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1)
+    });
+    this.subscriptions.push(s);
   }
 
 }
