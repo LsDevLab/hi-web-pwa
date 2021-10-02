@@ -1,32 +1,29 @@
-<!--<nb-card size="medium" class="own-scroll" status="primary" style="height: 100%; margin: 0;">-->
-  <!--
-  <nb-card-header style="padding-right: 10px;">
-    <div class="columnl">
-      Chats
-    </div>
-    <div class="columnr">
-      <button *ngIf="screenIsSmall" nbButton ghost status="control" style="height: 8px;"><nb-icon icon="settings-outline"></nb-icon></button>
-    </div>
-    </nb-card-header>-->
-  <nb-list
-    nbInfiniteList
-    [threshold]="500">
-    <nb-list-item *ngFor="let chat of chatUiService.chats" (click)="chatUiService.openChat(chat.targetUsername, chat.targetUserUID)"
-                  [style.background-color]="(chat.targetUsername===chatUiService.targetUsername && chatUiService.isChatOpened) ? '#c7e2ff' : ''" style="cursor: pointer;">
-      <div class="item-div">
-        <nb-user [name]="chat.name + ' ' + chat.surname"
-                 [title]="chat.targetUsername"
-                 [picture]="chat.profile_img_url ? chat.profile_img_url : 'assets/img/default_profile_img.png'"
-                 color="white">
-        </nb-user>
-        <div class="notify-badge-div">
-          <nb-badge class="notify-badge" *ngIf="chat.notify" [text]="chat.messages_to_read" status="primary"></nb-badge>
-        </div>
+<nb-list
+  nbInfiniteList
+  [threshold]="500">
+  <nb-list-item *ngFor="let chat of chatUiService.chats"
+                (click)="chatUiService.selectChat(chat.targetUsername, chat.targetUserUID)"
+                [style.background-color]="chat.targetUsername===chatUiService.targetUsername
+                                          ? '#c7e2ff' : ''" style="cursor: pointer;">
+    <div class="item-div">
+      <nb-user [name]="chat.name + ' ' + chat.surname"
+               [title]="chat.targetUsername"
+               [picture]="chat.profile_img_url ? chat.profile_img_url : 'assets/img/default_profile_img.png'"
+               color="white">
+      </nb-user>
+      <div class="notify-badge-div">
+        <nb-badge class="notify-badge"
+                  *ngIf="chat.notify"
+                  [text]="chat.messages_to_read"
+                  status="primary"></nb-badge>
       </div>
-    </nb-list-item>
-    <nb-list-item style="cursor: pointer;" (click)="openAddChatDialog()">
-      <nb-icon icon="plus-outline" style="display: block; margin-left: auto; margin-right: auto;"></nb-icon>
-    </nb-list-item>
-  </nb-list>
-
-<!--</nb-card>-->
+    </div>
+  </nb-list-item>
+  <nb-list-item style="cursor: pointer;"
+                (click)="openAddChatDialog()">
+    <nb-icon icon="plus-outline"
+             style="display: block;
+             margin-left: auto;
+             margin-right: auto;"></nb-icon>
+  </nb-list-item>
+</nb-list>

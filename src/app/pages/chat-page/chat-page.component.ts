@@ -22,12 +22,7 @@ import {ChatUiService} from '../../services/chat-ui.service';
   styleUrls: ['./chat-page.component.css']
 })
 export class ChatPageComponent implements OnInit {
-  isFlipped: boolean = false;
-  //screenIsSmall = false;
-  isChatOpen = false;
-  isChatSelected = false;
-  targetUsername: string;
-  targetUserLastAccess: Date;
+
   userContextMenuItems = [
     {
       title: 'Home',
@@ -55,8 +50,6 @@ export class ChatPageComponent implements OnInit {
 
   menuSub: Subscription;
 
-  //@ViewChild(NbRevealCardComponent, { static: false }) chatCard: NbRevealCardComponent;
-
   constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService,
               private dialogService: NbDialogService, private nbMenuService: NbMenuService,
               private afAuth: AngularFireAuth, private toastrService: NbToastrService,
@@ -65,14 +58,6 @@ export class ChatPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    /*this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
-      this.screenIsSmall = r.matches;
-    });*/
-
-    /*this.chat.isLoadingObservable.subscribe(isL => {
-      if(isL)
-        this.dialogService.open(DialogLoadingComponent, { closeOnBackdropClick: false, closeOnEsc: false });
-    });*/
 
     this.menuSub = this.nbMenuService.onItemClick().subscribe(menu => {
       if(menu.tag === 'user-context-menu-small') {
@@ -112,20 +97,7 @@ export class ChatPageComponent implements OnInit {
 
 
   }
-/*
-  selectUser(){
-    this.isChatSelected = true;
-    this.isChatOpen = true;
-  }
 
-  openChat(){
-    this.isChatSelected = true;
-  }
-
-  closeChat(event){
-    this.isChatSelected = false;
-  }
-*/
   ngOnDestroy(){
     this.menuSub.unsubscribe();
   }

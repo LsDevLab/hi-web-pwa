@@ -505,13 +505,17 @@ export class ChatUiService {
       this.targetUsers;
   }
 
-  openChat(username, userUID) {
+  selectChat(username, userUID) {
     this.chatCoreService.setChat(username, userUID);
-    this.isChatOpened = true;
+    this.showChat();
   }
 
-  closeChat() {
+  hideChat() {
     this.isChatOpened = false;
+  }
+
+  showChat() {
+    this.isChatOpened = true;
   }
 
 }
