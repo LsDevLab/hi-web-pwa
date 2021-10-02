@@ -5,6 +5,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import {ChatNotificationsService} from '../../services/chat-notifications.service';
 import {NbMenuService} from '@nebular/theme';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 @Component({
   selector: 'logged-app-header',

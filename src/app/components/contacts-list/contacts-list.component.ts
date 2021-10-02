@@ -8,6 +8,7 @@ import { ChatNotificationsService } from 'src/app/services/chat-notifications.se
 import {NgxHowlerService} from 'ngx-howler';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Subscription} from 'rxjs';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 
 @Component({
@@ -21,14 +22,14 @@ export class ContactsListComponent implements OnInit {
   //@Output() userSelectedEvent = new EventEmitter<any>();
 
 
-  chats: any = [];
+  //chats: any = [];
   chatsUsersInfo: any[] = [];
-  currentUser: string;
-  targetUser: string;
+  //currentUser: string;
+  //targetUser: string;
   currentUserUID: string;
   targetUserUID: string;
 
-  usersSub: Subscription;
+  //usersSub: Subscription;
   topMenuActivated = false;
   screenIsSmall = false;
   size = "medium";
@@ -40,28 +41,15 @@ export class ContactsListComponent implements OnInit {
 
   constructor(private chatCoreService: ChatCoreService, public afAuth: AngularFireAuth,
               private breakpointObserver: BreakpointObserver, private dialogService: NbDialogService,
-              public howl: NgxHowlerService) {
+              public chatUiService: ChatUiService) {
    }
 
   ngOnInit(): void {
-    this.howl.register('newMessageSound', {
-      src: ['assets/sounds/newMessageSound.mp3'],
-      html5: true
-    }).subscribe(status => {
-      //ok
-    });
-    // to deactivate title and name of user list
-    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
-      this.screenIsSmall = r.matches;
-      if (this.screenIsSmall){
-        this.size = "small";
-      }else{
-        this.size = "medium";
-      }
-    });
 
 
-    this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
+
+
+    /*this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
 
     this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUser = t);
 
@@ -85,17 +73,15 @@ export class ContactsListComponent implements OnInit {
       if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
         this.selectChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
       }
-    });
+    });*/
 
-    //this.auth.user$.subscribe(u => this.chatCoreService.setUsers(u.email, this.users[0].email));
   }
 
-  selectChat(username, userUID) {
-    this.targetUser = username;
+  /*selectChat(username, userUID) {
     this.chatCoreService.setChat(username, userUID);
     this.selectedUser.emit(username);
-  }
-
+  }*/
+/*
   formatChats(unformattedChats){
 
     let soundPlayed = false;
@@ -141,7 +127,7 @@ export class ContactsListComponent implements OnInit {
 
     });
     return chats;
-  }
+  }*/
 
   openAddChatDialog(){
     this.dialogService.open(DialogAddChatComponent);

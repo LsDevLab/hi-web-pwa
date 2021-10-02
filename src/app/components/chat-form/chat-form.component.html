@@ -1,4 +1,4 @@
-<nb-chat [title]="chatUiService.targetUser" style="height: 100%" scrollBottom="true" status="primary">
+<nb-chat [title]="chatUiService.targetUsername" style="height: 100%" scrollBottom="true" status="primary" [loading]="chatUiService.messagesLoading">
   <nb-chat-message  *ngFor="let msg of chatUiService.messages"
                     [type]="msg.type"
                     [message]="msg.text"
@@ -15,6 +15,6 @@
                     (messageQuoted)="chatUiService.assignMessageQuoted(msg)"
                     >
   </nb-chat-message>
-  <nb-chat-form (send)="chatUiService.sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="chatUiService.messageQuoted">
+  <nb-chat-form [loading]="chatUiService.messagesLoading" (send)="chatUiService.sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="chatUiService.messageQuoted">
   </nb-chat-form>
 </nb-chat>

@@ -76,9 +76,9 @@ export class ChatCoreService {
   public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
 
   public currentUser = this.currentUserSource.asObservable().pipe(filter(v => v !== null));
-  public targetUsers = this.targetUsersSource.asObservable(); //.pipe(filter(v => v !== null));
+  public targetUsers = this.targetUsersSource.asObservable().pipe(filter(v => v !== null));
 
-  public chats = this.chatsSource.asObservable();//.pipe(filter(v => v !== null));
+  public chats = this.chatsSource.asObservable().pipe(filter(v => v !== null));
   public chatAdded = this.chatAddedSource.asObservable();
   public chatChanged = this.chatChangedSource.asObservable();
   public chatDeleted = this.chatDeletedSource.asObservable();
@@ -112,6 +112,7 @@ export class ChatCoreService {
     this.chatAdded.subscribe(chat => {
       this._chats.push(chat);
       this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
+      console.log('new chats', this._chats);
       this.chatsSource.next(this._chats);
     });
     this.chatChanged.subscribe(chat => {
@@ -229,9 +230,10 @@ export class ChatCoreService {
 
     const callback = response => {
       response.forEach(chat => {
-        if (chat)
+        if (chat) {
           this.chatAddedSource.next(chat);
-        console.log("CCS: chat added", {'chat': chat});
+          console.log('CCS: chat added', {'chat': chat});
+        }
       });
     };
 

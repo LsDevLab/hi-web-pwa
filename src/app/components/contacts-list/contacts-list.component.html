@@ -11,7 +11,8 @@
   <nb-list
     nbInfiniteList
     [threshold]="500">
-    <nb-list-item *ngFor="let chat of chats" (click)="selectChat(chat.targetUsername, chat.targetUserUID)" [style.background-color]="chat.targetUsername===targetUser ? '#c7e2ff' : ''" style="cursor: pointer;">
+    <nb-list-item *ngFor="let chat of chatUiService.chats" (click)="chatUiService.openChat(chat.targetUsername, chat.targetUserUID)"
+                  [style.background-color]="(chat.targetUsername===chatUiService.targetUsername && chatUiService.isChatOpened) ? '#c7e2ff' : ''" style="cursor: pointer;">
       <div class="item-div">
         <nb-user [name]="chat.name + ' ' + chat.surname"
                  [title]="chat.targetUsername"

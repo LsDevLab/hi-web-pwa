@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-dialog-add-chat',
@@ -14,15 +15,15 @@ export class DialogAddChatComponent implements OnInit {
   name: string;
   surname: string;
   profileImg: string;
-  currentUsername: string;
+  //currentUsername: string;
   loadingUserImg: boolean = false;
 
   constructor(protected dialogRef: NbDialogRef<DialogAddChatComponent>, private chatCoreService: ChatCoreService,
-              private toastrService: NbToastrService) {
+              private toastrService: NbToastrService, public chatUiService: ChatUiService) {
   }
 
   ngOnInit(): void {
-    this.chatCoreService.currentUsernameObservable.subscribe(username => this.currentUsername = username);
+    //this.chatCoreService.currentUsernameObservable.subscribe(username => this.currentUsername = username);
   }
 
   closeDialog(){
@@ -48,7 +49,7 @@ export class DialogAddChatComponent implements OnInit {
         // if alsoAdd is true, addding the chat
         if (alsoAdd){
           // verifying if a chat with the given user already exists
-          if (username === this.currentUsername){
+          if (username === this.chatUiService.currentUsername){
             console.log("DACC: this is your username")
             this.toastrService.show("Can't create a chat with your username", "Error", new NbToastrConfig({status:"danger"}));
             this.userExists = false;

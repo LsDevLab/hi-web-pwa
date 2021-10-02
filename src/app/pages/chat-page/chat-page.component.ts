@@ -13,6 +13,7 @@ import {DialogSettingsComponent} from '../../components/dialog-settings/dialog-s
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {ChatNotificationsService} from '../../services/chat-notifications.service';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 
 @Component({
@@ -22,9 +23,9 @@ import {ChatNotificationsService} from '../../services/chat-notifications.servic
 })
 export class ChatPageComponent implements OnInit {
   isFlipped: boolean = false;
-  screenIsSmall = false;
-  isChatOpened = false;
-  isUserSelected = false;
+  //screenIsSmall = false;
+  isChatOpen = false;
+  isChatSelected = false;
   targetUsername: string;
   targetUserLastAccess: Date;
   userContextMenuItems = [
@@ -59,17 +60,19 @@ export class ChatPageComponent implements OnInit {
   constructor(private breakpointObserver: BreakpointObserver, private chatCoreService: ChatCoreService,
               private dialogService: NbDialogService, private nbMenuService: NbMenuService,
               private afAuth: AngularFireAuth, private toastrService: NbToastrService,
-              public router: Router, private chatNotificationsService: ChatNotificationsService) { }
+              public router: Router, private chatNotificationsService: ChatNotificationsService,
+              public chatUiService: ChatUiService) {
+  }
 
   ngOnInit(): void {
-    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+    /*this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
-    });
+    });*/
 
-    this.chatCoreService.isLoadingObservable.subscribe(isL => {
+    /*this.chat.isLoadingObservable.subscribe(isL => {
       if(isL)
         this.dialogService.open(DialogLoadingComponent, { closeOnBackdropClick: false, closeOnEsc: false });
-    });
+    });*/
 
     this.menuSub = this.nbMenuService.onItemClick().subscribe(menu => {
       if(menu.tag === 'user-context-menu-small') {
@@ -109,20 +112,20 @@ export class ChatPageComponent implements OnInit {
 
 
   }
-
+/*
   selectUser(){
-    this.isUserSelected = true;
-    this.isChatOpened = true;
+    this.isChatSelected = true;
+    this.isChatOpen = true;
   }
 
   openChat(){
-    this.isChatOpened = true;
+    this.isChatSelected = true;
   }
 
   closeChat(event){
-    this.isChatOpened = false;
+    this.isChatSelected = false;
   }
-
+*/
   ngOnDestroy(){
     this.menuSub.unsubscribe();
   }

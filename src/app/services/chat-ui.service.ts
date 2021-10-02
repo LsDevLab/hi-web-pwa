@@ -4,6 +4,9 @@ import moment from 'moment';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {Subscription} from 'rxjs';
+import {DialogEditProfileComponent} from '../components/dialog-edit-profile/dialog-edit-profile.component';
+import {NgxHowlerService} from 'ngx-howler';
+import {BreakpointObserver} from '@angular/cdk/layout';
 
 
 @Injectable({
@@ -12,11 +15,17 @@ import {Subscription} from 'rxjs';
 export class ChatUiService {
 
   public messages: any[] = [];
+  public chats: any[];
+
+  unformattedChats: any = [];
 
   thisUserAvatar: string = 'https://i.gifer.com/no.gif';
 
-  currentUser: string;
-  targetUser: string;
+  currentUser: any;
+  targetUsers: any;
+
+  currentUsername: string;
+  targetUsername: string;
 
   currentUserUID: string;
   targetUserUID: string;
@@ -25,8 +34,35 @@ export class ChatUiService {
 
   subscriptions: Subscription[] = [];
 
-  constructor(private chatCoreService: ChatCoreService, private router: Router, private http: HttpClient) {
-    this.initializeService()
+  messagesLoading = true;
+  chatsLoading = true;
+  currentUserLoading = true;
+  targetUsersLoading = true;
+
+  screenIsSmall = false;
+  size = "medium";
+
+  isChatOpened = false;
+
+  constructor(private chatCoreService: ChatCoreService, private router: Router,
+              private http: HttpClient, public howl: NgxHowlerService,
+              private breakpointObserver: BreakpointObserver) {
+    this.initializeService();
+    this.howl.register('newMessageSound', {
+      src: ['assets/sounds/newMessageSound.mp3'],
+      html5: true
+    }).subscribe(status => {
+      //ok
+    });
+    // to deactivate title and name of user list
+    this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
+      this.screenIsSmall = r.matches;
+      if (this.screenIsSmall){
+        this.size = "small";
+      }else{
+        this.size = "medium";
+      }
+    });
   }
 
   sendMessage(formattedMessage: any) {
@@ -50,8 +86,8 @@ export class ChatUiService {
     // sending messages with CCS
     const sendMessageProgressOb = this.chatCoreService.sendMessage(message);
     sendMessageProgressOb.sendMessageResponseOb.subscribe(response => {
-      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser, this.targetUser);
-      console.log("CFC: message sent to", this.targetUser);
+      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUsername, this.targetUsername);
+      console.log("CFC: message sent to", this.targetUsername);
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
     });
@@ -89,7 +125,7 @@ export class ChatUiService {
       type: type,
       files: formattedMessage.files,
       user: { // the sender of the message in this application
-        name: this.currentUser,
+        name: this.currentUsername,
         avatar: this.thisUserAvatar,
       },
       users_uids: [this.currentUserUID, this.targetUserUID],
@@ -353,8 +389,8 @@ export class ChatUiService {
 
   initializeService() {
     // initialize component attributes
-    this.currentUser = null;
-    this.targetUser = null;
+    this.currentUsername = null;
+    this.targetUsername = null;
     this.currentUserUID = null;
     this.targetUserUID = null;
     this.messages = [];
@@ -363,13 +399,9 @@ export class ChatUiService {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.subscriptions = [];
     // subscribe to CCS observables
-    let s = this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUser = c);
+    let s = this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUsername = c);
     this.subscriptions.push(s);
-    s = this.chatCoreService.targetUsernameObservable.subscribe(t => {
-      this.targetUser = t;
-      this.messages = [];
-      this.messageQuoted = null;
-    });
+    s = this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUsername = t );
     this.subscriptions.push(s);
     s = this.chatCoreService.currentUserUIDObservable.subscribe(c => this.currentUserUID = c);
     this.subscriptions.push(s);
@@ -377,12 +409,15 @@ export class ChatUiService {
       this.targetUserUID = t;
       this.messages = [];
       this.messageQuoted = null;
+      this.messagesLoading = true;
     });
     s = this.chatCoreService.messageAdded.subscribe(msg => {
+      this.messagesLoading = false;
       this.formatUpdateMessages([msg]);
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.messageChanged.subscribe(msg => {
+      this.messagesLoading = false;
       this.formatUpdateMessages([msg])
     });
     this.subscriptions.push(s);
@@ -390,6 +425,95 @@ export class ChatUiService {
       this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1)
     });
     this.subscriptions.push(s);
+    s = this.chatCoreService.currentUser.subscribe(currentUser => {
+      this.currentUser = currentUser;
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
+      this.targetUsers = targetUsers;
+      //const precLen = this.chats ? this.chats.length : null;
+      this.chats = this.formatChats(this.unformattedChats);
+      /*if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
+        this.openChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
+      }*/
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.chats.subscribe(chats => {
+      this.unformattedChats = chats;
+      //const precLen = this.chats ? this.chats.length : null;
+      this.chats = this.formatChats(chats);
+      /*if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
+        this.openChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
+      }*/
+    });
+    this.subscriptions.push(s);
+  }
+
+  formatChats(unformattedChats) {
+
+    let soundPlayed = false;
+    let chats = [];
+    let notify;
+    let isAtLeastOneToNotify = false;
+    let chatUserUID;
+    unformattedChats.forEach(chat => {
+
+      chatUserUID = chat.users_uids.find(uid => uid !== this.currentUserUID);
+
+      const user = this.targetUsers.find(user => user.uid === chatUserUID);
+
+      if (!user)
+        return;
+
+      if (chat.user_has_to_read === this.currentUserUID) {
+        notify = "⋯";
+        isAtLeastOneToNotify = true;
+      } else
+        notify = "";
+
+      const prevChat = this.chats.find(c => c.targetUsername === user.username);
+      if (!soundPlayed && isAtLeastOneToNotify && prevChat && prevChat.messages_to_read !== chat.messages_to_read) {
+        this.howl.get('newMessageSound').play();
+        soundPlayed = true;
+      }
+
+      chats.push({
+        targetUserUID: chatUserUID,
+        targetUsername: user.username,
+        notify: notify,
+        bio: user ? user.bio : '',
+        name: user ? user.name : '',
+        surname: user ? user.surname : '',
+        age: user ? user.age : '',
+        sex: user ? user.sex : '',
+        online: user ? user.online : '',
+        profile_img_url: user ? user.profile_img_url : null,
+        messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null
+      });
+
+    });
+    return chats;
+  }
+
+  get targetUser() {
+    return this.targetUsers.find(u => u.username === this.targetUsername);
+  }
+
+  get isFirstDataLoading() {
+    return this.chats &&
+      this.currentUser &&
+      this.targetUsers;
+  }
+
+  openChat(username, userUID) {
+    this.chatCoreService.setChat(username, userUID);
+    this.isChatOpened = true;
+  }
+
+  closeChat() {
+    this.isChatOpened = false;
   }
 
 }
+
+

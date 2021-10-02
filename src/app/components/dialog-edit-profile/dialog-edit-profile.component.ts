@@ -3,6 +3,7 @@ import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import {first} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-dialog-edit-profile',
@@ -13,29 +14,20 @@ export class DialogEditProfileComponent implements OnInit {
 
   loadingUserData: boolean = false;
   currentName: string;
-  userData: any = {
+  /*userData: any = {
     name: '',
     surname: '',
-  };
+  };*/
   imgUploadingPercentage = null;
 
   usersSub: Subscription;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
-              private toastrService: NbToastrService) {
+              private toastrService: NbToastrService, public chatUiService: ChatUiService) {
   }
 
   ngOnInit(): void {
-    /*
-    this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
-      if (this.usersSub)
-        this.usersSub.unsubscribe();
-      this.usersSub = this.chatCoreService.targetUsers.subscribe(users => {
-        const userData = users.find(u => u.username === currentUsername);
-        this.userData = userData ? userData : this.userData;
-      });
-    });*/
-    this.chatCoreService.currentUser.subscribe(currentUser =>  this.userData = currentUser);
+    //this.chatCoreService.currentUser.subscribe(currentUser =>  this.userData = currentUser);
   }
 
   closeDialog(){

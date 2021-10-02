@@ -6,18 +6,17 @@
             nbContextMenuTag="user-context-menu"
             nbContextMenuPlacement="left"
             nbContextMenuTrigger="hover"><nb-icon icon="menu-outline"></nb-icon></button>
-    <nb-user
-             style="width: fit-content;"
+    <nb-user style="width: fit-content;"
              size="medium"
              color="white"
              onlyPicture=true
-             [name]="currentUserData.username"
-             [title]="currentUserData.name + currentUserData.surname"
-             [picture]="currentUserData.profile_img_url ? currentUserData.profile_img_url : ''">
+             [name]="chatUiService.currentUser.username"
+             [title]="chatUiService.currentUser.name + chatUiService.currentUser.surname"
+             [picture]="chatUiService.currentUser.profile_img_url ? chatUiService.currentUser.profile_img_url : ''">
     </nb-user>
     <div style="color: white; width: fit-content">
-      <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{currentUserData.name}} {{currentUserData.surname}}</div>
-      <div style="font-size: 8pt;">{{currentUserData.username}}</div>
+      <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{chatUiService.currentUser.name}} {{chatUiService.currentUser.surname}}</div>
+      <div style="font-size: 8pt;">{{chatUiService.currentUser.username}}</div>
     </div>
   </div>
   <button nbButton ghost class="log-out-btn"

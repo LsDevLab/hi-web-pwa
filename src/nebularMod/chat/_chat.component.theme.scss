@@ -53,6 +53,17 @@
       flex-direction: column;
     }
 
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+
+      .loading-img {
+        height: 20%;
+      }
+    }
+
     .no-messages {
       text-align: center;
     }

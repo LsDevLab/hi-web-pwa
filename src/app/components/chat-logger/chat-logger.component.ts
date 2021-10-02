@@ -12,6 +12,7 @@ import {DialogAboutComponent} from '../dialog-about/dialog-about.component';
 import {DialogSettingsComponent} from '../dialog-settings/dialog-settings.component';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 
 @Component({
@@ -47,16 +48,18 @@ export class ChatLoggerComponent implements OnInit {
     },
   ];
   menuSub: Subscription;
-  currentUserData: any = {
+  /*currentUserData: any = {
     name: '',
     surname: '',
     username: ''
-  };
+  };*/
+
+  //loadingUserData = true;
 
   constructor(public afAuth: AngularFireAuth, private chatNotificationsService: ChatNotificationsService,
               private breakpointObserver: BreakpointObserver, private nbMenuService: NbMenuService,
               private dialogService: NbDialogService, private chatCoreService: ChatCoreService,
-              private router: Router) { }
+              private router: Router, public chatUiService: ChatUiService) { }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
@@ -77,24 +80,13 @@ export class ChatLoggerComponent implements OnInit {
         }
       }
     });
-    /*
-    this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
-      if (currentUsername) {
-        this.chatCoreService.targetUsers.subscribe(users => {
-          const userData = users.find(u => u.username === currentUsername);
-          this.currentUserData = userData ? userData : this.currentUserData;
-          if (userData && this.currentUserData.name === ''){
-            this.dialogService.open(DialogEditProfileComponent);
-          }
-        });
-      }
-    });*/
-    this.chatCoreService.currentUser.subscribe(currentUser => {
+    /*this.chatCoreService.currentUser.subscribe(currentUser => {
       this.currentUserData = currentUser;
+      this.loadingUserData = false;
       if (this.currentUserData.name === '') {
         this.dialogService.open(DialogEditProfileComponent);
       }
-    });
+    });*/
   }
 
   logOut(){

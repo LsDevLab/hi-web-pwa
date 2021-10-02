@@ -4,6 +4,7 @@ import { NbDialogService } from '@nebular/theme';
 import { DialogTargetInfoComponent } from '../dialog-target-info/dialog-target-info.component';
 import {first} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-chat-user-info',
@@ -12,22 +13,23 @@ import {Subscription} from 'rxjs';
 })
 export class ChatUserInfoComponent implements OnInit {
 
-  targetUserLastAccess: Date;
-  targetUsername: string;
-  targetUserData: any;
+  //targetUserLastAccess: Date;
+  //targetUsername: string;
+  //targetUserData: any;
 
-  usersSub: Subscription;
+  //usersSub: Subscription;
 
-  constructor(private chatCoreService: ChatCoreService, private dialogService: NbDialogService) { }
+  constructor(private chatCoreService: ChatCoreService, private dialogService: NbDialogService,
+              public chatUiService: ChatUiService) { }
 
   ngOnInit(): void {
-    this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
+    /*this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
       if (this.usersSub)
         this.usersSub.unsubscribe()
       this.usersSub = this.chatCoreService.targetUsers.subscribe(users => {
         this.targetUserData = users.find(u => u.username === targetUsername);
       });
-    });
+    });*/
   }
 
   openUserInfoDialog(){
