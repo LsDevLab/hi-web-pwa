@@ -112,7 +112,6 @@ export class ChatCoreService {
     this.chatAdded.subscribe(chat => {
       this._chats.push(chat);
       this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
-      console.log('new chats', this._chats);
       this.chatsSource.next(this._chats);
     });
     this.chatChanged.subscribe(chat => {

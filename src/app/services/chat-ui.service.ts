@@ -7,6 +7,13 @@ import {Subscription} from 'rxjs';
 import {DialogEditProfileComponent} from '../components/dialog-edit-profile/dialog-edit-profile.component';
 import {NgxHowlerService} from 'ngx-howler';
 import {BreakpointObserver} from '@angular/cdk/layout';
+import {JwtHelperService} from '@auth0/angular-jwt';
+import {DialogTokenExpiredComponent} from '../components/dialog-token-expired/dialog-token-expired.component';
+import {NbToastrConfig} from '../framework/theme/components/toastr/toastr-config';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {ChatNotificationsService} from './chat-notifications.service';
+import {NbDialogService} from '../framework/theme/components/dialog/dialog.service';
+import {NbToastrService} from '../framework/theme/components/toastr/toastr.service';
 
 
 @Injectable({
@@ -46,7 +53,9 @@ export class ChatUiService {
 
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
-              private breakpointObserver: BreakpointObserver) {
+              private breakpointObserver: BreakpointObserver, private afAuth: AngularFireAuth,
+              private chatNotificationsService: ChatNotificationsService, private toastrService: NbToastrService,
+              private dialogService: NbDialogService ) {
     this.initializeService();
     this.howl.register('newMessageSound', {
       src: ['assets/sounds/newMessageSound.mp3'],
@@ -447,6 +456,25 @@ export class ChatUiService {
       }*/
     });
     this.subscriptions.push(s);
+
+    this.afAuth.user.subscribe(u => {
+      this.chatCoreService.init(u.email, u.uid);
+      //this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
+    });
+
+    const helper = new JwtHelperService();
+    const tokenExpiredInterval = setInterval(() => {
+      const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
+      if (isTokenExpired) {
+        clearInterval(tokenExpiredInterval);
+        setTimeout(()=>{
+          this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
+          this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
+          setTimeout(() => this.afAuth.signOut().then(_ => window.location.reload()), 4000);
+        }, 2000);
+      }
+    }, 2000);
+
   }
 
   formatChats(unformattedChats) {

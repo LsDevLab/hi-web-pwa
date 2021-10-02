@@ -75,27 +75,6 @@ export class ChatPageComponent implements OnInit {
       }
     });
 
-    this.afAuth.user.subscribe(u => {
-      this.chatCoreService.init(u.email, u.uid);
-      this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
-    });
-
-    const helper = new JwtHelperService();
-    const tokenExpiredInterval = setInterval(() => {
-      const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
-      if (isTokenExpired) {
-        clearInterval(tokenExpiredInterval);
-        setTimeout(()=>{
-          this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
-          this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
-          setTimeout(() => this.afAuth.signOut().then(_ => window.location.reload()), 4000);
-        }, 2000);
-      }
-    }, 2000);
-
-
-
-
   }
 
   ngOnDestroy(){
