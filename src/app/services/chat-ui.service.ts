@@ -14,6 +14,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {ChatNotificationsService} from './chat-notifications.service';
 import {NbDialogService} from '../framework/theme/components/dialog/dialog.service';
 import {NbToastrService} from '../framework/theme/components/toastr/toastr.service';
+import {first} from 'rxjs/operators';
 
 
 @Injectable({
@@ -23,6 +24,8 @@ export class ChatUiService {
 
   public messages: any[] = [];
   public chats: any[];
+
+  toConfirmReadedMessages: any[] = [];
 
   unformattedChats: any = [];
 
@@ -66,10 +69,8 @@ export class ChatUiService {
     // to deactivate title and name of user list
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
-      if (this.screenIsSmall){
-        this.size = "small";
-      }else{
-        this.size = "medium";
+      if (!this.screenIsSmall && this.targetUsername) {
+        this.showChat();
       }
     });
   }
@@ -167,9 +168,6 @@ export class ChatUiService {
 
     let prevDate = this.messages.length > 0 ? this.messages[this.messages.length - 1].timestamp : null;
     let prevSender = this.messages.length > 0 ? this.messages[this.messages.length - 1].users_uids[0] : null;
-    let reproduceSound = true;
-    let justReadedMessages = [];
-
     // taking the messages loaded from CCS, but ordered from the older to the newer
 
     const orderedUnformattedMessages = unformattedMessages.slice().reverse();
@@ -220,7 +218,7 @@ export class ChatUiService {
       else{
         // marking as to send the readed notify the messages just readed
         if(message.users_uids[0] === this.targetUserUID && !message.readed){
-          justReadedMessages.push({
+          this.toConfirmReadedMessages.push({
             users_uids: message.users_uids,
             timestamp: message.timestamp,
             readed: true,
@@ -265,21 +263,8 @@ export class ChatUiService {
     }*/
     //console.log("FINE");
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
-
-    if(this.router.url === '/chat'){
-      if(justReadedMessages.length > 0){
-        justReadedMessages.forEach(m => {
-          this.chatCoreService.setMessageAsReaded(m).subscribe(response => {
-            console.log("CFC: message confirmed as readed", {'messages': m});
-          },(error) => {
-            console.log('CFC: ERROR while confirming message as readed', error);
-          });
-        });
-      }
-    }
-
-
-
+    if (this.isChatOpened)
+      this.confirmMessagesAsReaded();
 
   }
 
@@ -396,6 +381,21 @@ export class ChatUiService {
     }
   }
 
+  confirmMessagesAsReaded() {
+    if(this.router.url === '/chat'){
+      if(this.toConfirmReadedMessages.length > 0){
+        this.toConfirmReadedMessages.forEach(m => {
+          this.chatCoreService.setMessageAsReaded(m).subscribe(_ => {
+            console.log("CFC: message confirmed as readed", {'messages': m});
+          },(error) => {
+            console.log('CFC: ERROR while confirming message as readed', error);
+          });
+        });
+        this.toConfirmReadedMessages = [];
+      }
+    }
+  }
+
   initializeService() {
     // initialize component attributes
     this.currentUsername = null;
@@ -417,21 +417,23 @@ export class ChatUiService {
     this.chatCoreService.targetUserUIDObservable.subscribe(t => {
       this.targetUserUID = t;
       this.messages = [];
+      this.toConfirmReadedMessages = [];
       this.messageQuoted = null;
       this.messagesLoading = true;
     });
-    s = this.chatCoreService.messageAdded.subscribe(msg => {
+    this.subscriptions.push(s);
+    s = this.chatCoreService.messagesAdded.subscribe(msgs => {
       this.messagesLoading = false;
-      this.formatUpdateMessages([msg]);
+      this.formatUpdateMessages(msgs);
     });
     this.subscriptions.push(s);
-    s = this.chatCoreService.messageChanged.subscribe(msg => {
+    s = this.chatCoreService.messagesChanged.subscribe(msgs => {
       this.messagesLoading = false;
-      this.formatUpdateMessages([msg])
+      this.formatUpdateMessages(msgs);
     });
     this.subscriptions.push(s);
-    s = this.chatCoreService.messageDeleted.subscribe(msg => {
-      this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1)
+    s = this.chatCoreService.messagesDeleted.subscribe(msgs => {
+      msgs.forEach(msg => this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1));
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.currentUser.subscribe(currentUser => {
@@ -440,20 +442,12 @@ export class ChatUiService {
     this.subscriptions.push(s);
     s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
       this.targetUsers = targetUsers;
-      //const precLen = this.chats ? this.chats.length : null;
       this.chats = this.formatChats(this.unformattedChats);
-      /*if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
-        this.openChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
-      }*/
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.chats.subscribe(chats => {
       this.unformattedChats = chats;
-      //const precLen = this.chats ? this.chats.length : null;
       this.chats = this.formatChats(chats);
-      /*if (!this.screenIsSmall && !precLen && this.chats.length >= 1) {
-        this.openChat(this.chats[0].targetUsername, this.chats[0].targetUserUID);
-      }*/
     });
     this.subscriptions.push(s);
 
@@ -516,10 +510,14 @@ export class ChatUiService {
         sex: user ? user.sex : '',
         online: user ? user.online : '',
         profile_img_url: user ? user.profile_img_url : null,
-        messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null
+        messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
+        updated_timestamp: chat.updated_timestamp
       });
 
     });
+    console.log('chats before sorting', chats);
+    chats.sort((c1, c2) => (c2.updated_timestamp - c1.updated_timestamp));
+    console.log('chats after sorting', chats);
     return chats;
   }
 
@@ -544,6 +542,7 @@ export class ChatUiService {
 
   showChat() {
     this.isChatOpened = true;
+    this.confirmMessagesAsReaded();
   }
 
 }
