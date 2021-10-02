@@ -1,29 +1,44 @@
 <nb-list
   nbInfiniteList
   [threshold]="500">
-  <nb-list-item *ngFor="let chat of chatUiService.chats"
-                (click)="chatUiService.selectChat(chat.targetUsername, chat.targetUserUID)"
-                [style.background-color]="chat.targetUsername===chatUiService.targetUsername
-                                          ? '#c7e2ff' : ''" style="cursor: pointer;">
-    <div class="item-div">
-      <nb-user [name]="chat.name + ' ' + chat.surname"
-               [title]="chat.targetUsername"
-               [picture]="chat.profile_img_url ? chat.profile_img_url : 'assets/img/default_profile_img.png'"
-               color="white">
-      </nb-user>
-      <div class="notify-badge-div">
-        <nb-badge class="notify-badge"
-                  *ngIf="chat.notify"
-                  [text]="chat.messages_to_read"
-                  status="primary"></nb-badge>
-      </div>
-    </div>
-  </nb-list-item>
   <nb-list-item style="cursor: pointer;"
                 (click)="openAddChatDialog()">
     <nb-icon icon="plus-outline"
              style="display: block;
              margin-left: auto;
              margin-right: auto;"></nb-icon>
+  </nb-list-item>
+  <nb-list-item *ngFor="let chat of chatUiService.chats"
+                (click)="chatUiService.selectChat(chat.targetUsername, chat.targetUserUID)"
+                [style.background-color]="chat.targetUsername===chatUiService.targetUsername
+                                          ? '#c7e2ff' : ''" style="cursor: pointer;">
+    <div class="item-div">
+      <nb-user [picture]="chat.profile_img_url ? chat.profile_img_url : 'assets/img/default_profile_img.png'"
+               color="white"
+               size="large"
+               onlyPicture="true">
+      </nb-user>
+      <div class="chat-info-div">
+        <div class="chat-info-row-1">
+          <div class="chat-info-row-1-col-1">
+            <p class="chat-info-name-username">{{chat.name + ' ' + chat.surname}}</p>
+          </div>
+          <div class="chat-info-row-1-col-2">
+            <p class="chat-info-updated-time">{{chat.updated_timestamp | date: 'H:m'}}</p>
+          </div>
+        </div>
+        <div class="chat-info-row-2">
+          <div class="chat-info-row-2-col-1">
+            <p class="chat-info-msg-preview">{{chat.last_message_preview}}</p>
+          </div>
+          <div class="chat-info-row-2-col-2">
+            <nb-badge class="notify-badge"
+                      *ngIf="chat.notify"
+                      [text]="chat.messages_to_read"
+                      status="primary"></nb-badge>
+          </div>
+        </div>
+      </div>
+    </div>
   </nb-list-item>
 </nb-list>

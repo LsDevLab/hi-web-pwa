@@ -18,6 +18,7 @@ nb-list-item:hover{
   }
 }
 
+
 .columnl {
   float: left;
   width: 50%;
@@ -34,7 +35,7 @@ nb-list-item:hover{
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .notify-badge-div{
@@ -45,4 +46,63 @@ nb-list-item:hover{
 
 .notify-badge {
   min-width: 15px;
+  position: relative;
 }
+
+.chat-info-div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.chat-info-row-2, .chat-info-row-1 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.chat-info-row-1-col-1, .chat-info-row-2-col-1 {
+  flex-grow: 4;
+}
+
+.chat-info-row-2-col-2 {
+  display: flex;
+}
+
+.chat-info-row-2-col-2, .chat-info-row-1-col-2 {
+  white-space: nowrap;
+}
+
+.chat-info-name-username {
+  margin: 0;
+  font-family: Raleway;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.chat-info-msg-preview {
+  margin: 0;
+  font-family: Raleway;
+  font-weight: 400;
+  font-size: 13px;
+  color: #626871;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 17px;
+  -webkit-mask-image: -webkit-gradient(linear,left top,
+  right bottom, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+}
+
+.chat-info-updated-time {
+  margin: 0;
+  font-family: Raleway;
+  font-weight: 400;
+  font-size: 13px;
+  color: #626871;
+}
+
+

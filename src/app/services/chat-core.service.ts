@@ -531,7 +531,8 @@ export class ChatCoreService {
 
     const chat = {
       updated_timestamp: new Date().getTime(),
-      users_uids: [this._currentUserUID, targetUserUID]
+      users_uids: [this._currentUserUID, targetUserUID],
+      last_message_preview: 'No messages yet'
     }
 
     const itemsRef = this.afs.collection('chats');

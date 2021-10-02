@@ -511,7 +511,8 @@ export class ChatUiService {
         online: user ? user.online : '',
         profile_img_url: user ? user.profile_img_url : null,
         messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
-        updated_timestamp: chat.updated_timestamp
+        updated_timestamp: chat.updated_timestamp,
+        last_message_preview: chat.last_message_preview
       });
 
     });
