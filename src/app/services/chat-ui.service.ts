@@ -54,6 +54,8 @@ export class ChatUiService {
 
   isChatOpened = false;
 
+  firstDataLoadingStatus = 0;
+
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
               private breakpointObserver: BreakpointObserver, private afAuth: AngularFireAuth,
@@ -524,7 +526,13 @@ export class ChatUiService {
     return this.targetUsers.find(u => u.username === this.targetUsername);
   }
 
-  get isFirstDataLoading() {
+  get isFirstDataLoaded() {
+    if (this.chats)
+      this.firstDataLoadingStatus += 0.33;
+    if (this.currentUser)
+      this.firstDataLoadingStatus += 0.33;
+    if (this.targetUsers)
+      this.firstDataLoadingStatus += 0.33;
     return this.chats &&
       this.currentUser &&
       this.targetUsers;

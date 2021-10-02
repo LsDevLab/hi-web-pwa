@@ -1438,10 +1438,10 @@ $eva-mapping: (
   badge-control-text-color: color-basic-800,
 
   progress-bar-animation-duration: 400ms,
-  progress-bar-border-radius: border-radius,
+  progress-bar-border-radius: 0.5rem,
   progress-bar-text-font-family: text-subtitle-font-family,
 
-  progress-bar-tiny-height: 1rem,
+  progress-bar-tiny-height: 0.6rem,
   progress-bar-tiny-text-font-size: text-subtitle-2-font-size,
   progress-bar-tiny-text-font-weight: text-subtitle-2-font-weight,
   progress-bar-tiny-text-line-height: text-subtitle-2-line-height,
@@ -1466,8 +1466,8 @@ $eva-mapping: (
   progress-bar-basic-filled-background-color: background-basic-color-4,
   progress-bar-basic-text-color: text-basic-color,
 
-  progress-bar-primary-background-color: background-basic-color-3,
-  progress-bar-primary-filled-background-color: color-primary-default,
+  progress-bar-primary-background-color: rgba(255, 255, 255, 0.15),
+  progress-bar-primary-filled-background-color: #ffff,
   progress-bar-primary-text-color: text-control-color,
 
   progress-bar-success-background-color: background-basic-color-3,

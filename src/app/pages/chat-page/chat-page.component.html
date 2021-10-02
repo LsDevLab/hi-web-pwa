@@ -1,5 +1,5 @@
 
-<nb-layout *ngIf="chatUiService.isFirstDataLoading" withScroll=false>
+<nb-layout *ngIf="chatUiService.isFirstDataLoaded" withScroll=false>
 
   <!-- Header component when screen is large -->
   <nb-layout-header class="chat-page-header" *ngIf="!chatUiService.screenIsSmall" style="min-height: 10px;">
@@ -89,7 +89,11 @@
 
 </nb-layout>
 
-<p *ngIf="!chatUiService.isFirstDataLoading" >Loading</p>
+<div class="loading-page" *ngIf="!chatUiService.isFirstDataLoaded">
+  <img class="loading-gif"
+       src="assets/img/logo_gif.gif">
+  <nb-progress-bar class="loading-bar" [value]="chatUiService.firstDataLoadingStatus" status="primary" size="tiny"></nb-progress-bar>
+</div>
 
 
 

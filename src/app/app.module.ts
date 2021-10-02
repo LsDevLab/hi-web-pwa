@@ -20,7 +20,6 @@ import {NgxHowlerService} from 'ngx-howler';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireModule } from '@angular/fire';
 import { angularFireModuleData } from '../../firebaseData';
-import {NgCircleProgressModule} from 'ng-circle-progress';
 import {AngularFireAuth, AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AngularFirestoreModule} from '@angular/fire/firestore';

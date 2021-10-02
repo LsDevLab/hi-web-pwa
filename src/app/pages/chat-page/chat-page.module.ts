@@ -8,7 +8,7 @@ import { GraphQLModule } from '../../graphql.module';
 import {
   NbThemeModule, NbLayoutModule, NbChatModule, NbCardModule, NbListModule,
   NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
-  NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule, NbDialogModule, NbTabsetModule
+  NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule, NbDialogModule, NbTabsetModule, NbProgressBarModule
 } from '@nebular/theme';
 import { ChatPageRoutingModule } from './chat-page-routing.module';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
@@ -22,7 +22,6 @@ import { DialogTargetInfoComponent } from '../../components/dialog-target-info/d
 import { DialogAboutComponent } from '../../components/dialog-about/dialog-about.component';
 import { DialogTokenExpiredComponent } from '../../components/dialog-token-expired/dialog-token-expired.component';
 import {CircleProgressComponent} from '../../components/circle-progress-bar/circle-progress-bar.component';
-import {NgCircleProgressModule} from 'ng-circle-progress';
 import { DialogSettingsComponent } from '../../components/dialog-settings/dialog-settings.component';
 
 @NgModule({
@@ -54,7 +53,8 @@ import { DialogSettingsComponent } from '../../components/dialog-settings/dialog
     NbUserModule, NbDatepickerModule, NbInputModule, NbBadgeModule, NbSelectModule,
     NbButtonModule, NbMenuModule, NbContextMenuModule, NbIconModule, NbFormFieldModule,
     NbDialogModule.forChild(),
-    NbTabsetModule
+    NbTabsetModule,
+    NbProgressBarModule,
   ],
   exports: [
     ChatPageComponent
