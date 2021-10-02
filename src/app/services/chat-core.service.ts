@@ -411,6 +411,8 @@ export class ChatCoreService {
   public sendMessage(message: any): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
 
+    console.log(message);
+
     if(message.files.length) {
       let filesArray: any[] = [];
       const storingFilesObsArray = message.files.map(file => this._getFileStoringObs(file));
@@ -428,7 +430,7 @@ export class ChatCoreService {
             type: message.type,
             text: message.text,
             files: filesArray,
-            quote_message_uid : message.quote ? message.quote.id : null,
+            quote_message_uid : message.quote ? message.quote.uid : null,
             users_uids: [this._currentUserUID, this._targetUserUID]
           };
           const itemsRef = this.afs.collection('messages');

@@ -73,17 +73,18 @@ import moment from 'moment';
           </p>
         </div>
 
-        <nb-chat-message-file *ngSwitchCase="'file'"
-                              [sender]="sender" [date]="date" [dateFormat]="dateFormat"
-                              [message]="message" [files]="files" [reply]="reply"
-                              (messageQuoted)="messageQuoted.emit()">
-        </nb-chat-message-file>
-
-        <nb-chat-message-quote *ngSwitchCase="'quote'"
-                              [sender]="sender" [date]="date" [dateFormat]="dateFormat"
-                              [message]="message" [quote]="quote" [reply]="reply"
-                               (messageQuoted)="messageQuoted.emit()">
-        </nb-chat-message-quote>
+        <div class="quote-message-handle-div" *ngSwitchCase="'quote'">
+          <nb-chat-message-quote
+                                 [sender]="sender" [date]="date" [dateFormat]="dateFormat"
+                                 [message]="message" [quote]="quote" [reply]="reply"
+                                 (messageQuoted)="messageQuoted.emit()">
+          </nb-chat-message-quote>
+          <nb-chat-message-file *ngIf="files"
+                                [sender]="sender" [dateFormat]="dateFormat"
+                                [message]='' [files]="files" [reply]="reply"
+                                (messageQuoted)="messageQuoted.emit()">
+          </nb-chat-message-file>
+        </div>
 
         <nb-chat-message-map *ngSwitchCase="'map'"
                               [sender]="sender" [date]="date" [reply]="reply"

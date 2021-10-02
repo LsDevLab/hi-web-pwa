@@ -516,9 +516,7 @@ export class ChatUiService {
       });
 
     });
-    console.log('chats before sorting', chats);
     chats.sort((c1, c2) => (c2.updated_timestamp - c1.updated_timestamp));
-    console.log('chats after sorting', chats);
     return chats;
   }
 

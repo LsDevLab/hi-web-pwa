@@ -123,6 +123,12 @@
       font-size: 0.7rem;
     }
 
+    .quote-message-handle-div {
+      nb-chat-message-file {
+        margin-top: 0.2rem;
+      }
+    }
+
     nb-chat-message-text {
       display: flex;
       flex-direction: column;
