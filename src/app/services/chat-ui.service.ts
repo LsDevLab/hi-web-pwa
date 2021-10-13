@@ -560,7 +560,7 @@ export class ChatUiService {
     if (this.firstDataLoadingStatus == 0) {
       setTimeout(() => this.firstDataLoadingStatus += 33, 200);
     } else if (this.firstDataLoadingStatus == 66) {
-      this.firstDataLoadingStatus += 33;
+      this.firstDataLoadingStatus += 34;
       setTimeout(() => this.isFirstDataLoaded = true, 400);
     } else {
         this.firstDataLoadingStatus += 33;
