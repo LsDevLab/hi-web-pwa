@@ -1,0 +1,27 @@
+.loading-page {
+  background-color: #3366ff;
+  background-image: url("src/assets/img/loading_page_bg.svg");
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  gap: 5%
+}
+
+.loading-gif {
+  width: 13%;
+  min-width: 150px;
+}
+
+.loading-bar {
+  width: 30%;
+  min-width: 300px;
+}

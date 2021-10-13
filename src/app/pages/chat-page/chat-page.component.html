@@ -89,11 +89,9 @@
 
 </nb-layout>
 
-<div class="loading-page" *ngIf="!chatUiService.isFirstDataLoaded">
-  <img class="loading-gif"
-       src="assets/img/logo_gif.gif">
-  <nb-progress-bar class="loading-bar" [value]="chatUiService.firstDataLoadingStatus" status="primary" size="tiny"></nb-progress-bar>
-</div>
+<app-chat-loading *ngIf="!chatUiService.isFirstDataLoaded"
+                  [loadingValue]="chatUiService.firstDataLoadingStatus">
+</app-chat-loading>
 
 
 
