@@ -18,24 +18,19 @@ export class HomeHeaderComponent implements OnInit {
               public router: Router, public afAuth: AngularFireAuth) { }
 
   ngOnInit(): void {
-    this.afAuth.user.subscribe(user => console.log('Logged In User: ', user))
   }
 
   logOut(){
-
     this.chatNotificationsService.unsubscribeToMessagesPushNotifications();
-
-    //console.log(localStorage.getItem('currentToken'));
     localStorage.setItem('isAuth', "false");
     localStorage.removeItem('currentToken');
-    //this.auth.logout({ returnTo: document.location.origin });
     this.afAuth.signOut().then(_ => window.location.reload())
   }
 
   signIn() {
     const provider = new firebase.auth.GoogleAuthProvider()
-    //TODO: To handle the case in which the login does not success
-    this.afAuth.signInWithPopup(provider).then(res => this.router.navigateByUrl('/chat'));
+    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'))
+      .catch(error => console.log('HHC Authentication failed with error: ', error));
   }
 
 }

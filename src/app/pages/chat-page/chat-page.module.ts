@@ -23,6 +23,7 @@ import { DialogAboutComponent } from '../../components/dialog-about/dialog-about
 import { DialogTokenExpiredComponent } from '../../components/dialog-token-expired/dialog-token-expired.component';
 import {CircleProgressComponent} from '../../components/circle-progress-bar/circle-progress-bar.component';
 import { DialogSettingsComponent } from '../../components/dialog-settings/dialog-settings.component';
+import {ChatUiService} from '../../services/chat-ui.service';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { DialogSettingsComponent } from '../../components/dialog-settings/dialog
   ],
   providers: [
     ChatCoreService,
+    ChatUiService
   ]
 })
 export class ChatPageModule { }

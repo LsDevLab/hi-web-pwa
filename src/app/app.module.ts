@@ -72,8 +72,8 @@ import {ChatUiService} from './services/chat-ui.service';
   bootstrap: [AppComponent],
   providers: [
     ChatNotificationsService,
-    NgxHowlerService,
-    ChatUiService
+    NgxHowlerService
+
   ]
 })
 export class AppModule {

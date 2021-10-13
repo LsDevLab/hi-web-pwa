@@ -3,7 +3,7 @@ import {ChatCoreService} from './chat-core.service';
 import moment from 'moment';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
-import {Subscription} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {DialogEditProfileComponent} from '../components/dialog-edit-profile/dialog-edit-profile.component';
 import {NgxHowlerService} from 'ngx-howler';
 import {BreakpointObserver} from '@angular/cdk/layout';
@@ -54,14 +54,16 @@ export class ChatUiService {
 
   isChatOpened = false;
 
-  firstDataLoadingStatus = 0;
+  public firstDataLoadingStatus = 0
+  public isFirstDataLoaded = false;
+
+  private firstDataLoadingStatusLastUpdated: number;
 
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
               private breakpointObserver: BreakpointObserver, private afAuth: AngularFireAuth,
               private chatNotificationsService: ChatNotificationsService, private toastrService: NbToastrService,
               private dialogService: NbDialogService ) {
-    this.initializeService();
     this.howl.register('newMessageSound', {
       src: ['assets/sounds/newMessageSound.mp3'],
       html5: true
@@ -439,17 +441,31 @@ export class ChatUiService {
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.currentUser.subscribe(currentUser => {
+      if (!this.currentUser){
+        this.setFirstDataLoading()
+        console.log('first init of currentUser', this.firstDataLoadingStatus)
+      }
       this.currentUser = currentUser;
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
+      if (!this.targetUsers){
+        this.setFirstDataLoading()
+        console.log('first init of targetUsers', this.firstDataLoadingStatus)
+      }
       this.targetUsers = targetUsers;
-      this.chats = this.formatChats(this.unformattedChats);
+      if (this.chats)
+        this.chats = this.formatChats(this.unformattedChats);
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.chats.subscribe(chats => {
+      if (!this.chats) {
+        this.setFirstDataLoading()
+        console.log('first init of chats', this.firstDataLoadingStatus)
+      }
       this.unformattedChats = chats;
-      this.chats = this.formatChats(chats);
+      if (this.targetUsers)
+        this.chats = this.formatChats(chats);
     });
     this.subscriptions.push(s);
 
@@ -526,18 +542,6 @@ export class ChatUiService {
     return this.targetUsers.find(u => u.username === this.targetUsername);
   }
 
-  get isFirstDataLoaded() {
-    if (this.chats)
-      this.firstDataLoadingStatus += 0.33;
-    if (this.currentUser)
-      this.firstDataLoadingStatus += 0.33;
-    if (this.targetUsers)
-      this.firstDataLoadingStatus += 0.33;
-    return this.chats &&
-      this.currentUser &&
-      this.targetUsers;
-  }
-
   selectChat(username, userUID) {
     this.chatCoreService.setChat(username, userUID);
     this.showChat();
@@ -551,6 +555,18 @@ export class ChatUiService {
     this.isChatOpened = true;
     this.confirmMessagesAsReaded();
   }
+
+  private setFirstDataLoading() {
+    if (this.firstDataLoadingStatus == 0) {
+      setTimeout(() => this.firstDataLoadingStatus += 33, 200);
+    } else if (this.firstDataLoadingStatus == 66) {
+      this.firstDataLoadingStatus += 33;
+      setTimeout(() => this.isFirstDataLoaded = true, 400);
+    } else {
+        this.firstDataLoadingStatus += 33;
+    }
+  }
+
 
 }
 
