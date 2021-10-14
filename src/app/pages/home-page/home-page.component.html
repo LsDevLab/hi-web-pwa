@@ -6,42 +6,46 @@
 <div class="home-page-main-div">
   <div class="top-banner">
     <div class="top-banner-top">
-      <div class="title-div">
-        <img class="hi-top-banner-title" src="assets/img/logo_gif.gif">
-        <h1 class="top-banner-title">Chat</h1>
+      <div class="top-banner-top-left">
+        <div class="title-div">
+          <h1 class="top-banner-title">Say Hi! <br> Simple. Secure. Fast messaging.</h1>
+        </div>
+        <p class="top-banner-subtitle">
+          Con Hi, inviare <strong>messaggi</strong> è <strong>semplice</strong>, <strong>veloce</strong>,
+          <strong>sicuro</strong>, <br> e disponibile sui dispositivi di tutto il mondo.</p>
+        <div class="top-banner-action-div">
+          <nb-card class="action-div-card">
+            <nb-card-body class="action-card-body" *ngIf="!(afAuth.user | async)">
+              <p class="action-div-card-text" *ngIf="!screenIsSmall">
+                <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
+              </p>
+              <button nbButton status="primary" class="login-button"
+                      (click)="signIn()">Login</button>
+              <button nbButton status="success" class="signing-button"
+                      (click)="signIn()">Signup</button>
+            </nb-card-body>
+            <nb-card-body class="action-card-body" *ngIf="(afAuth.user | async)">
+              <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
+                <strong>Ciao!</strong>
+              </p>
+              <button nbButton status="primary" class="gotochat-button"
+                      (click)="this.router.navigateByUrl('/chat');">
+                Vai alla chat
+                <nb-icon icon="message-square-outline"></nb-icon>
+              </button>
+            </nb-card-body>
+          </nb-card>
+        </div>
       </div>
-      <p class="top-banner-subtitle">
-        Con Hi Chat, inviare <strong>messaggi</strong> è <strong>semplice</strong>, <strong>veloce</strong>,
-        <strong>sicuro</strong>, <strong>gratuito</strong>, e disponibile sui dispositivi di tutto il mondo.</p>
-      <div class="top-banner-action-div">
-        <nb-card class="action-div-card">
-          <nb-card-body class="action-card-body" *ngIf="!(afAuth.user | async)">
-            <p class="action-div-card-text" *ngIf="!screenIsSmall">
-              <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
-            </p>
-            <button nbButton status="primary" class="login-button"
-                    (click)="signIn()">Login</button>
-            <button nbButton status="success" class="signing-button"
-                    (click)="signIn()">Signup</button>
-          </nb-card-body>
-          <nb-card-body class="action-card-body" *ngIf="(afAuth.user | async)">
-            <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
-              <strong>Ciao!</strong>
-            </p>
-            <button nbButton status="primary" class="gotochat-button"
-                    (click)="this.router.navigateByUrl('/chat');">
-              Vai alla chat
-              <nb-icon icon="message-square-outline"></nb-icon>
-            </button>
-          </nb-card-body>
-        </nb-card>
+      <div *ngIf="!screenIsSmall" class="top-banner-top-right">
+        <img class="phone-img" src="assets/img/phone_home.png">
       </div>
     </div>
     <img class="top-banner-bottom" src="assets/img/header-bottom.svg">
   </div>
   <div class="middle-body">
     <div class="center-text-block">
-      <h1 class="center-text-title">Scopri Hi Chat</h1>
+      <h1 class="center-text-title">Scopri Hi</h1>
       <p class="center-text-subtitle">Invia messaggi ai tuoi amici da qualsiasi dispositivo: Hi è una semplice applicazione
       WEB accessibile da qualsiasi browser.</p>
     </div>
@@ -64,7 +68,7 @@
       <div class="footer-row1" [ngStyle]="{'flex-direction': screenIsSmall ? 'column' : 'row', 'align-items': screenIsSmall ? 'center' : 'flex-start'}">
         <img class="footer-logo" src="assets/img/logo_with_back.png">
         <div class="footer-hi-chat" [ngStyle]="{'align-items': screenIsSmall ? 'center' : 'flex-start'}">
-          <h4 class="footer-hi-chat-title">Hi Chat</h4>
+          <h4 class="footer-hi-chat-title">{{ appName }}</h4>
           <a href='/chat' class="go-to-chat-link">Vai alla chat</a>
         </div>
         <div class="footer-follow-me" [ngStyle]="{'align-items': screenIsSmall ? 'center' : 'flex-start'}">

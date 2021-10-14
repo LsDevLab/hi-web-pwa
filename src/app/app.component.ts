@@ -5,6 +5,8 @@ import { ChatCoreService } from './services/chat-core.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import {NbDialogService} from '@nebular/theme';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {environment} from '../environments/environment';
+import {Title} from '@angular/platform-browser';
 
 
 @Component({
@@ -15,16 +17,16 @@ import {AngularFireAuth} from '@angular/fire/auth';
 export class AppComponent {
 
   screenIsSmall: boolean;
+  appName = environment.appName;
 
-  constructor(public afAuth: AngularFireAuth, public router: Router, private breakpointObserver: BreakpointObserver,
-              ) { }
+  constructor(public afAuth: AngularFireAuth, public router: Router,
+              private breakpointObserver: BreakpointObserver, private titleService: Title) { }
 
   ngOnInit(){
-
+    this.titleService.setTitle(this.appName);
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-
     this.afAuth.user.subscribe(isAuth => {
       if (isAuth)
         this.afAuth.idToken.subscribe(t => {

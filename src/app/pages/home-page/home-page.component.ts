@@ -3,6 +3,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-home-page',
@@ -12,8 +13,8 @@ import firebase from 'firebase';
 export class HomePageComponent implements OnInit {
 
   screenIsSmall = false;
-
   nameOfUser: string = '';
+  appName = environment.appName;
 
   constructor(private breakpointObserver: BreakpointObserver, public router: Router,
               public afAuth: AngularFireAuth) {

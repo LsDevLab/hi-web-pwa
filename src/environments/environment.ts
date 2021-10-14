@@ -3,6 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  appName: 'Hi Web (Dev)',
+  appVersion: require('../../package.json').version + '-dev',
   production: false
 };
 

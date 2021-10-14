@@ -3,7 +3,9 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": [],
+    "types": [
+      "node"
+    ],
     "paths": {
       "@nebular/*": [
         "./src/app/framework/*/public_api.ts"

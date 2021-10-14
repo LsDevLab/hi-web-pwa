@@ -26,15 +26,17 @@
 
 .top-banner-title{
   color: white;
-  font-size: 50pt;
-  margin: 20px 0px 20px 0px;
+  font-size: 25pt;
+  margin: 20px 100px 10px 0px;
+  font-weight: 600;
 }
 
 .top-banner-subtitle{
   color: white;
-  font-size: 15pt;
+  font-size: 13pt;
   max-width: 800px;
   line-height: 30px;
+  margin-right: 100px;
 }
 
 .action-div-card{
@@ -85,11 +87,31 @@
 .top-banner-top{
   padding: 50px 10% 0% 10%;
   display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: self-start;
+  width: inherit;
+  gap: 100px
+}
+
+.top-banner-top-left {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: self-start;
-  width: inherit;
 }
+
+.top-banner-top-right {
+  width: 30vh;
+}
+
+.phone-img {
+  position: absolute;
+  height: 80vh;
+  right: 15vw;
+  bottom: 3vh;
+}
+
 
 .example-div-card{
   width: 70%;
@@ -296,3 +318,4 @@ h2{
   height: 40px;
   margin: 0px 10px 0px 10px;
 }
+
