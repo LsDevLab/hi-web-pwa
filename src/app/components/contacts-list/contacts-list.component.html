@@ -24,7 +24,7 @@
             <p class="chat-info-name-username">{{chat.name + ' ' + chat.surname}}</p>
           </div>
           <div class="chat-info-row-1-col-2">
-            <p class="chat-info-updated-time">{{chat.updated_timestamp | date: getDateFormat()}}</p>
+            <p class="chat-info-updated-time">{{chat.updated_timestamp | date: chatUiService.getTimeFormat()}}</p>
           </div>
         </div>
         <div class="chat-info-row-2">

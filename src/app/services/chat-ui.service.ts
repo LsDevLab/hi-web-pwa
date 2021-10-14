@@ -20,35 +20,24 @@ export class ChatUiService {
 
   public messages: any[] = [];
   public chats: any[];
-
-  toConfirmReadedMessages: any[] = [];
-
-  unformattedChats: any = [];
-
-  thisUserAvatar: string = 'https://i.gifer.com/no.gif';
-
-  currentUser: any;
-  targetUsers: any;
-
-  currentUsername: string;
-  targetUsername: string;
-
-  currentUserUID: string;
-  targetUserUID: string;
-
-  messageQuoted: any;
-
-  subscriptions: Subscription[] = [];
-
-  messagesLoading = true;
-
-  screenIsSmall = false;
-  size = "medium";
-
-  isChatOpened = false;
-
+  public currentUser: any;
+  public get targetUser(): any { return this.targetUsers.find(u => u.username === this.targetUsername) }
+  public targetUsername: string;
+  public targetUsers: any;
+  public messageQuoted: any;
+  public messagesLoading = true;
+  public screenIsSmall = false;
+  public size = "medium";
+  public isChatOpened = false;
   public firstDataLoadingStatus = 0
   public isFirstDataLoaded = false;
+
+  private currentUsername: string;
+  private currentUserUID: string;
+  private targetUserUID: string;
+  private subscriptions: Subscription[] = [];
+  private toConfirmReadedMessages: any[] = [];
+  private unformattedChats: any = [];
 
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
@@ -57,10 +46,7 @@ export class ChatUiService {
     this.howl.register('newMessageSound', {
       src: ['assets/sounds/newMessageSound.mp3'],
       html5: true
-    }).subscribe(_ => {
-      //ok
-    });
-    // to deactivate title and name of user list
+    }).subscribe();
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
       if (!this.screenIsSmall && this.targetUsername) {
@@ -69,7 +55,95 @@ export class ChatUiService {
     });
   }
 
-  sendMessage(formattedMessage: any) {
+  public initializeService() {
+    // initialize component attributes
+    this.currentUsername = null;
+    this.targetUsername = null;
+    this.currentUserUID = null;
+    this.targetUserUID = null;
+    this.messages = [];
+    this.messageQuoted = null;
+    // unsubscribe to CCS observables
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+    // subscribe to CCS observables
+    let s = this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUsername = c);
+    this.subscriptions.push(s);
+    s = this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUsername = t );
+    this.subscriptions.push(s);
+    s = this.chatCoreService.currentUserUIDObservable.subscribe(c => this.currentUserUID = c);
+    this.subscriptions.push(s);
+    this.chatCoreService.targetUserUIDObservable.subscribe(t => {
+      this.targetUserUID = t;
+      this.messages = [];
+      this.toConfirmReadedMessages = [];
+      this.messageQuoted = null;
+      this.messagesLoading = true;
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.messagesAdded.subscribe(msgs => {
+      this.messagesLoading = false;
+      this.formatUpdateMessages(msgs);
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.messagesChanged.subscribe(msgs => {
+      this.messagesLoading = false;
+      this.formatUpdateMessages(msgs);
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.messagesDeleted.subscribe(msgs => {
+      msgs.forEach(msg => this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1));
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.currentUser.subscribe(currentUser => {
+      if (!this.currentUser){
+        this.setFirstDataLoading()
+        console.log('first init of currentUser', this.firstDataLoadingStatus)
+      }
+      this.currentUser = currentUser;
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
+      if (!this.targetUsers){
+        this.setFirstDataLoading()
+        console.log('first init of targetUsers', this.firstDataLoadingStatus)
+      }
+      this.targetUsers = targetUsers;
+      if (this.chats)
+        this.chats = this.formatChats(this.unformattedChats);
+    });
+    this.subscriptions.push(s);
+    s = this.chatCoreService.chats.subscribe(chats => {
+      if (!this.chats) {
+        this.setFirstDataLoading()
+        console.log('first init of chats', this.firstDataLoadingStatus)
+      }
+      this.unformattedChats = chats;
+      if (this.targetUsers)
+        this.chats = this.formatChats(chats);
+    });
+    this.subscriptions.push(s);
+
+    this.afAuth.user.subscribe(u => {
+      this.chatCoreService.init(u.email, u.uid);
+      //this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
+    });
+
+    const helper = new JwtHelperService();
+    const tokenExpiredInterval = setInterval(() => {
+      const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
+      if (isTokenExpired) {
+        clearInterval(tokenExpiredInterval);
+        setTimeout(()=>{
+          this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
+          setTimeout(() => this.afAuth.signOut().then(_ => window.location.reload()), 4000);
+        }, 2000);
+      }
+    }, 2000);
+
+  }
+
+  public sendMessage(formattedMessage: any) {
     // making a message from the formatted one
     //console.log('message from ui to send', formattedMessage);
     let message = this.makeMessage(formattedMessage);
@@ -90,7 +164,7 @@ export class ChatUiService {
     // sending messages with CCS
     const sendMessageProgressOb = this.chatCoreService.sendMessage(message);
     sendMessageProgressOb.sendMessageResponseOb.subscribe(_ => {
-      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUsername, this.targetUsername);
+      this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUser.username, this.targetUsername);
       console.log("CFC: message sent to", this.targetUsername);
     },(error) => {
       console.log('CFC: ERROR while sending message', error);
@@ -115,8 +189,51 @@ export class ChatUiService {
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
   }
 
-  // Makes a Message to send from a FormattedMessage
-  makeMessage(formattedMessage) {
+  public assignMessageQuoted(message) {
+    console.log('Quoted message with uid', message.uid);
+    this.messageQuoted = message;
+  }
+
+  public toISODate(timestamp) {
+    return new Date(timestamp).toISOString();
+  }
+
+  public getTimeFormat() {
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+    switch (appSettings.dateFormat) {
+      case 12:
+        return 'shortTime';
+      case 24:
+        return 'HH:mm';
+    }
+  }
+
+  public getDateTimeFormat() {
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+    switch (appSettings.dateFormat) {
+      case 12:
+        return 'short';
+      case 24:
+        return 'dd/MM/yyyy, HH:mm';
+    }
+  }
+
+  public selectChat(username, userUID) {
+    this.chatCoreService.setChat(username, userUID);
+    this.showChat();
+  }
+
+  public hideChat() {
+    this.isChatOpened = false;
+  }
+
+  public showChat() {
+    this.isChatOpened = true;
+    this.confirmMessagesAsReaded();
+  }
+
+
+  private makeMessage(formattedMessage) {
 
     let type = formattedMessage.files.length ? 'file' : 'text';
     if (this.messageQuoted)
@@ -129,8 +246,7 @@ export class ChatUiService {
       type: type,
       files: formattedMessage.files,
       user: { // the sender of the message in this application
-        name: this.currentUsername,
-        avatar: this.thisUserAvatar,
+        name: this.currentUser.username
       },
       users_uids: [this.currentUserUID, this.targetUserUID],
       quote: this.messageQuoted
@@ -138,7 +254,7 @@ export class ChatUiService {
     return message;
   }
 
-  indexOfMessageWithTimestamp(timestamp){
+  private indexOfMessageWithTimestamp(timestamp){
     // Returns true if messages has a message with the given date, otherwise false
     let i = 0;
     let timeDate = timestamp;//new Date(date).getTime();
@@ -155,7 +271,7 @@ export class ChatUiService {
     return -1;
   }
 
-  formatUpdateMessages(unformattedMessages) {
+  private formatUpdateMessages(unformattedMessages) {
 
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
@@ -262,7 +378,7 @@ export class ChatUiService {
 
   }
 
-  formatMessage(unformattedMessage, toConfirm){
+  private formatMessage(unformattedMessage, toConfirm){
     // making a formatted message from an unformatted one. If toConfirm the message is
     // marked as to be confirmed
 
@@ -329,51 +445,7 @@ export class ChatUiService {
     return formattedMessage;
   }
 
-  loadFilesOfMessage(date, filesURLSArray: string[]){
-    const messageIndex = this.indexOfMessageWithTimestamp(date);
-    if (messageIndex != -1){
-      this.messages[messageIndex].files = [];
-      filesURLSArray.forEach(fileURL => {
-        console.log('CFC: Downloading file', fileURL, ' of message with date', date);
-        this.http.get(fileURL, { responseType: 'blob' }).subscribe(result => {
-          console.log('CFC: File ', fileURL, 'downloaded', result);
-          const messageIndex = this.indexOfMessageWithTimestamp(date);
-          if (messageIndex != -1){
-            //const file = new File([result], fileURL, {type:result.type});
-            this.messages[messageIndex].files.push({
-              url: fileURL,
-              type: result.type,
-              icon: 'file-text-outline',
-            });
-            console.log('CFC: File ', fileURL, 'added to message with date', date);
-          }
-        }, error => {
-          console.log('CFC: Error downloading file ', fileURL, error);
-        });
-      });
-    }
-  }
-
-  assignMessageQuoted(message) {
-    console.log('Quoted message with uid', message.uid);
-    this.messageQuoted = message;
-  }
-
-  toISODate(timestamp) {
-    return new Date(timestamp).toISOString();
-  }
-
-  getDateFormat() {
-    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
-    switch (appSettings.dateFormat) {
-      case 12:
-        return 'shortTime';
-      case 24:
-        return 'HH:mm';
-    }
-  }
-
-  confirmMessagesAsReaded() {
+  private confirmMessagesAsReaded() {
     if(this.router.url === '/chat'){
       if(this.toConfirmReadedMessages.length > 0){
         this.toConfirmReadedMessages.forEach(m => {
@@ -388,95 +460,7 @@ export class ChatUiService {
     }
   }
 
-  initializeService() {
-    // initialize component attributes
-    this.currentUsername = null;
-    this.targetUsername = null;
-    this.currentUserUID = null;
-    this.targetUserUID = null;
-    this.messages = [];
-    this.messageQuoted = null;
-    // unsubscribe to CCS observables
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.subscriptions = [];
-    // subscribe to CCS observables
-    let s = this.chatCoreService.currentUsernameObservable.subscribe(c => this.currentUsername = c);
-    this.subscriptions.push(s);
-    s = this.chatCoreService.targetUsernameObservable.subscribe(t => this.targetUsername = t );
-    this.subscriptions.push(s);
-    s = this.chatCoreService.currentUserUIDObservable.subscribe(c => this.currentUserUID = c);
-    this.subscriptions.push(s);
-    this.chatCoreService.targetUserUIDObservable.subscribe(t => {
-      this.targetUserUID = t;
-      this.messages = [];
-      this.toConfirmReadedMessages = [];
-      this.messageQuoted = null;
-      this.messagesLoading = true;
-    });
-    this.subscriptions.push(s);
-    s = this.chatCoreService.messagesAdded.subscribe(msgs => {
-      this.messagesLoading = false;
-      this.formatUpdateMessages(msgs);
-    });
-    this.subscriptions.push(s);
-    s = this.chatCoreService.messagesChanged.subscribe(msgs => {
-      this.messagesLoading = false;
-      this.formatUpdateMessages(msgs);
-    });
-    this.subscriptions.push(s);
-    s = this.chatCoreService.messagesDeleted.subscribe(msgs => {
-      msgs.forEach(msg => this.messages.splice(this.indexOfMessageWithTimestamp(msg.timestamp), 1));
-    });
-    this.subscriptions.push(s);
-    s = this.chatCoreService.currentUser.subscribe(currentUser => {
-      if (!this.currentUser){
-        this.setFirstDataLoading()
-        console.log('first init of currentUser', this.firstDataLoadingStatus)
-      }
-      this.currentUser = currentUser;
-    });
-    this.subscriptions.push(s);
-    s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
-      if (!this.targetUsers){
-        this.setFirstDataLoading()
-        console.log('first init of targetUsers', this.firstDataLoadingStatus)
-      }
-      this.targetUsers = targetUsers;
-      if (this.chats)
-        this.chats = this.formatChats(this.unformattedChats);
-    });
-    this.subscriptions.push(s);
-    s = this.chatCoreService.chats.subscribe(chats => {
-      if (!this.chats) {
-        this.setFirstDataLoading()
-        console.log('first init of chats', this.firstDataLoadingStatus)
-      }
-      this.unformattedChats = chats;
-      if (this.targetUsers)
-        this.chats = this.formatChats(chats);
-    });
-    this.subscriptions.push(s);
-
-    this.afAuth.user.subscribe(u => {
-      this.chatCoreService.init(u.email, u.uid);
-      //this.chatNotificationsService.subscribeToMessagesPushNotifications(u.email);
-    });
-
-    const helper = new JwtHelperService();
-    const tokenExpiredInterval = setInterval(() => {
-      const isTokenExpired: boolean = helper.isTokenExpired(localStorage.getItem('currentToken'));
-      if (isTokenExpired) {
-        clearInterval(tokenExpiredInterval);
-        setTimeout(()=>{
-          this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
-          setTimeout(() => this.afAuth.signOut().then(_ => window.location.reload()), 4000);
-        }, 2000);
-      }
-    }, 2000);
-
-  }
-
-  formatChats(unformattedChats) {
+  private formatChats(unformattedChats) {
 
     let soundPlayed = false;
     let chats = [];
@@ -523,24 +507,6 @@ export class ChatUiService {
     });
     chats.sort((c1, c2) => (c2.updated_timestamp - c1.updated_timestamp));
     return chats;
-  }
-
-  get targetUser() {
-    return this.targetUsers.find(u => u.username === this.targetUsername);
-  }
-
-  selectChat(username, userUID) {
-    this.chatCoreService.setChat(username, userUID);
-    this.showChat();
-  }
-
-  hideChat() {
-    this.isChatOpened = false;
-  }
-
-  showChat() {
-    this.isChatOpened = true;
-    this.confirmMessagesAsReaded();
   }
 
   private setFirstDataLoading() {

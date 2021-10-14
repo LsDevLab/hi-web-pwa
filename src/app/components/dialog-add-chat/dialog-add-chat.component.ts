@@ -22,7 +22,6 @@ export class DialogAddChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.chatCoreService.currentUsernameObservable.subscribe(username => this.currentUsername = username);
   }
 
   closeDialog(){
@@ -47,7 +46,7 @@ export class DialogAddChatComponent implements OnInit {
         // if alsoAdd is true, addding the chat
         if (alsoAdd){
           // verifying if a chat with the given user already exists
-          if (username === this.chatUiService.currentUsername){
+          if (username === this.chatUiService.currentUser.username){
             console.log("DACC: this is your username")
             this.toastrService.show("Can't create a chat with your username", "Error", new NbToastrConfig({status:"danger"}));
             this.userExists = false;

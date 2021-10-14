@@ -8,5 +8,5 @@
 </nb-user>
 <div style="color: white; width: fit-content; float: right;">
   <div class="user-name" style="font-weight: bold;">{{chatUiService.targetUser ? chatUiService.targetUser.name + ' ' + chatUiService.targetUser.surname : ''}}</div>
-  <div style="font-size: 8pt;">Last access on {{(chatUiService.targetUser ? chatUiService.targetUser.last_access : '') | date: getDateFormat()}}</div>
+  <div style="font-size: 8pt;">Last access on {{(chatUiService.targetUser ? chatUiService.targetUser.last_access : '') | date: chatUiService.getDateTimeFormat()}}</div>
 </div>

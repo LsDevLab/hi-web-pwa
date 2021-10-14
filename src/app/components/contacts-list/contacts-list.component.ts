@@ -26,14 +26,4 @@ export class ContactsListComponent implements OnInit {
     this.dialogService.open(DialogAddChatComponent);
   }
 
-  getDateFormat() {
-    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
-    switch (appSettings.dateFormat) {
-      case 12:
-        return 'shortTime';
-      case 24:
-        return 'HH:mm';
-    }
-  }
-
 }
