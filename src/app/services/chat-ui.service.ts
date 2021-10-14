@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
-import {ChatCoreService} from './chat-core.service';
+import { ChatCoreService } from './chat-core.service';
 import moment from 'moment';
-import {Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Subscription} from 'rxjs';
-import {DialogEditProfileComponent} from '../components/dialog-edit-profile/dialog-edit-profile.component';
-import {NgxHowlerService} from 'ngx-howler';
-import {BreakpointObserver} from '@angular/cdk/layout';
-import {JwtHelperService} from '@auth0/angular-jwt';
-import {DialogTokenExpiredComponent} from '../components/dialog-token-expired/dialog-token-expired.component';
-import {NbToastrConfig} from '../framework/theme/components/toastr/toastr-config';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {ChatNotificationsService} from './chat-notifications.service';
-import {NbDialogService} from '../framework/theme/components/dialog/dialog.service';
-import {NbToastrService} from '../framework/theme/components/toastr/toastr.service';
-import {first} from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { HttpClient} from '@angular/common/http';
+import { Subscription } from 'rxjs';
+import { NgxHowlerService } from 'ngx-howler';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { NbToastrConfig } from '../framework/theme/components/toastr/toastr-config';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { ChatNotificationsService } from './chat-notifications.service';
+import { NbToastrService } from '../framework/theme/components/toastr/toastr.service';
 
 
 @Injectable({
@@ -45,9 +41,6 @@ export class ChatUiService {
   subscriptions: Subscription[] = [];
 
   messagesLoading = true;
-  chatsLoading = true;
-  currentUserLoading = true;
-  targetUsersLoading = true;
 
   screenIsSmall = false;
   size = "medium";
@@ -57,17 +50,14 @@ export class ChatUiService {
   public firstDataLoadingStatus = 0
   public isFirstDataLoaded = false;
 
-  private firstDataLoadingStatusLastUpdated: number;
-
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
               private breakpointObserver: BreakpointObserver, private afAuth: AngularFireAuth,
-              private chatNotificationsService: ChatNotificationsService, private toastrService: NbToastrService,
-              private dialogService: NbDialogService ) {
+              private chatNotificationsService: ChatNotificationsService, private toastrService: NbToastrService) {
     this.howl.register('newMessageSound', {
       src: ['assets/sounds/newMessageSound.mp3'],
       html5: true
-    }).subscribe(status => {
+    }).subscribe(_ => {
       //ok
     });
     // to deactivate title and name of user list
@@ -99,7 +89,7 @@ export class ChatUiService {
     this.messages.push(finalMessage);
     // sending messages with CCS
     const sendMessageProgressOb = this.chatCoreService.sendMessage(message);
-    sendMessageProgressOb.sendMessageResponseOb.subscribe(response => {
+    sendMessageProgressOb.sendMessageResponseOb.subscribe(_ => {
       this.chatCoreService.chatNotificationsService.sendMessagePushNotification(message.text, this.currentUsername, this.targetUsername);
       console.log("CFC: message sent to", this.targetUsername);
     },(error) => {
@@ -378,10 +368,8 @@ export class ChatUiService {
     switch (appSettings.dateFormat) {
       case 12:
         return 'shortTime';
-        break;
       case 24:
         return 'HH:mm';
-        break;
     }
   }
 
@@ -480,7 +468,6 @@ export class ChatUiService {
       if (isTokenExpired) {
         clearInterval(tokenExpiredInterval);
         setTimeout(()=>{
-          this.dialogService.open(DialogTokenExpiredComponent, { closeOnBackdropClick: false, closeOnEsc: false });
           this.toastrService.show("Login into with your account again. Logging out...", "Access expired", new NbToastrConfig({status:"info"}));
           setTimeout(() => this.afAuth.signOut().then(_ => window.location.reload()), 4000);
         }, 2000);

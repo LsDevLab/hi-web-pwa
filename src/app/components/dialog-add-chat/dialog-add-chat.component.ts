@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
-import {ChatUiService} from '../../services/chat-ui.service';
+import { ChatUiService } from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-dialog-add-chat',
@@ -15,7 +15,6 @@ export class DialogAddChatComponent implements OnInit {
   name: string;
   surname: string;
   profileImg: string;
-  //currentUsername: string;
   loadingUserImg: boolean = false;
 
   constructor(protected dialogRef: NbDialogRef<DialogAddChatComponent>, private chatCoreService: ChatCoreService,
@@ -38,7 +37,6 @@ export class DialogAddChatComponent implements OnInit {
     }
 
     this.chatCoreService.getUserByUsername(username).subscribe(user => {
-      //var result = r.data["getUser"];
       // verifying if the given user exists
       if (user){
         this.userExists = true;
@@ -64,7 +62,7 @@ export class DialogAddChatComponent implements OnInit {
             return;
           }
           console.log("DACC: adding chat with", this.username);
-          this.chatCoreService.addChat(user.uid).subscribe(response => {
+          this.chatCoreService.addChat(user.uid).subscribe(_ => {
             console.log("DACC: chat with", this.username, "added");
             this.toastrService.show("User added", "Done", new NbToastrConfig({status:"success"}));
             this.dialogRef.close();

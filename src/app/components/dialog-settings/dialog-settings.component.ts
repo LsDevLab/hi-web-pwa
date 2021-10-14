@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {NbDialogRef} from '../../framework/theme/components/dialog/dialog-ref';
-import {ChatCoreService} from '../../services/chat-core.service';
-import {NbToastrService} from '../../framework/theme/components/toastr/toastr.service';
-import {NbToastrConfig} from '../../framework/theme/components/toastr/toastr-config';
+import { NbDialogRef } from '../../framework/theme/components/dialog/dialog-ref';
+import { NbToastrService } from '../../framework/theme/components/toastr/toastr.service';
+import { NbToastrConfig } from '../../framework/theme/components/toastr/toastr-config';
 
 @Component({
   selector: 'app-dialog-settings',
@@ -13,8 +12,7 @@ export class DialogSettingsComponent implements OnInit {
 
   settings;
 
-  constructor(protected dialogRef: NbDialogRef<DialogSettingsComponent>, private chatCoreService: ChatCoreService,
-              private toastrService: NbToastrService) {
+  constructor(protected dialogRef: NbDialogRef<DialogSettingsComponent>, private toastrService: NbToastrService) {
     const settingsString = localStorage.getItem('appSettings');
     this.settings = JSON.parse(settingsString);
   }

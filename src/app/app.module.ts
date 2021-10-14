@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,20 +15,15 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ChatNotificationsService } from './services/chat-notifications.service';
 import { BackButtonDisableModule } from 'angular-disable-browser-back-button';
-import {NgxHowlerService} from 'ngx-howler';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireModule } from '@angular/fire';
 import { angularFireModuleData } from '../../firebaseData';
-import {AngularFireAuth, AngularFireAuthModule} from '@angular/fire/auth';
-import {AngularFireDatabaseModule} from '@angular/fire/database';
-import {AngularFirestoreModule} from '@angular/fire/firestore';
-import {ChatUiService} from './services/chat-ui.service';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    //HeaderComponent,
-    //ChatLoggerLargeComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -67,19 +61,10 @@ import {ChatUiService} from './services/chat-ui.service';
     AngularFireStorageModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
-    //AngularFirestoreModule
   ],
   bootstrap: [AppComponent],
   providers: [
-    ChatNotificationsService,
-    NgxHowlerService
-
+    ChatNotificationsService
   ]
 })
-export class AppModule {
-  constructor(
-    ngxHowlerService: NgxHowlerService
-  ) {
-    ngxHowlerService.loadScript('https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.0/howler.min.js');
-  }
-}
+export class AppModule { }

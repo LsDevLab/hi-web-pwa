@@ -1,11 +1,8 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import {ChatNotificationsService} from '../../services/chat-notifications.service';
-import {Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ChatNotificationsService } from '../../services/chat-notifications.service';
+import { Router} from '@angular/router';
 import firebase from 'firebase';
-import {AngularFireAuth} from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'unlogged-app-header',
@@ -14,8 +11,9 @@ import {AngularFireAuth} from '@angular/fire/auth';
 })
 export class HomeHeaderComponent implements OnInit {
 
-  constructor(private chatNotificationsService: ChatNotificationsService,
-              public router: Router, public afAuth: AngularFireAuth) { }
+  constructor(private chatNotificationsService: ChatNotificationsService, public router: Router,
+              public afAuth: AngularFireAuth) {
+  }
 
   ngOnInit(): void {
   }

@@ -1,19 +1,8 @@
 import {
   Component,
-  EventEmitter,
   Input,
-  OnChanges,
-  Output,
-  OnInit,
-  OnDestroy,
-  ElementRef,
-  SimpleChanges,
-  NgZone,
-  Injector,
-  ViewChild
+  OnInit
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'circle-progress-bar',

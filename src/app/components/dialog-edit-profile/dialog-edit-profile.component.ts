@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
-import {first} from 'rxjs/operators';
-import {Subscription} from 'rxjs';
-import {ChatUiService} from '../../services/chat-ui.service';
+import { Subscription } from 'rxjs';
+import { ChatUiService } from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-dialog-edit-profile',
@@ -14,12 +13,7 @@ export class DialogEditProfileComponent implements OnInit {
 
   loadingUserData: boolean = false;
   currentName: string;
-  /*userData: any = {
-    name: '',
-    surname: '',
-  };*/
   imgUploadingPercentage = null;
-
   usersSub: Subscription;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
@@ -27,7 +21,6 @@ export class DialogEditProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.chatCoreService.currentUser.subscribe(currentUser =>  this.userData = currentUser);
   }
 
   closeDialog(){

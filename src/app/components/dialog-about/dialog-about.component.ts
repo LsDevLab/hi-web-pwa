@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {NbDialogRef, NbToastrService} from '@nebular/theme';
-import {ChatCoreService} from '../../services/chat-core.service';
+import { NbDialogRef } from '@nebular/theme';
 
 @Component({
   selector: 'app-dialog-about',

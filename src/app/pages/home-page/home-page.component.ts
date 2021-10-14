@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {BreakpointObserver} from '@angular/cdk/layout';
-import {AuthService} from '@auth0/auth0-angular';
-import {Router} from '@angular/router';
-import {AngularFireAuth} from '@angular/fire/auth';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase';
 
 @Component({
@@ -32,8 +31,7 @@ export class HomePageComponent implements OnInit {
 
   signIn() {
     const provider = new firebase.auth.GoogleAuthProvider()
-    //TODO: To handle the case in which the login does not success
-    this.afAuth.signInWithPopup(provider).then(res => this.router.navigateByUrl('/chat'));
+    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
   }
 
 }

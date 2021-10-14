@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {ChatUiService} from '../../services/chat-ui.service';
+import { ChatUiService } from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-chat-form',
@@ -9,11 +9,9 @@ import {ChatUiService} from '../../services/chat-ui.service';
 export class ChatFormComponent {
 
   constructor(public chatUiService: ChatUiService) {
-
   }
 
   ngOnInit() {
-
   }
 
 }

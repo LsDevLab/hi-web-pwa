@@ -12,14 +12,11 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): true|UrlTree {
     const url: string = state.url;
-
     return this.checkLogin(url);
   }
 
-  checkLogin(url: string): true|UrlTree {
-
+  checkLogin(_: string): true|UrlTree {
     if (localStorage.getItem('isAuth')==='true') { return true; }
-
     // Redirect to the login page
     return this.router.parseUrl('/home');
   }

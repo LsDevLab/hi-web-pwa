@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-import {BehaviorSubject, forkJoin, from, interval, ReplaySubject, Subject, Subscription} from 'rxjs';
+import { BehaviorSubject, forkJoin, from, interval, Subject, Subscription } from 'rxjs';
 import { ChatNotificationsService } from './chat-notifications.service';
-import {filter, first, last, map, switchMap} from 'rxjs/operators';
+import { filter, first, last, map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { concatMap } from 'rxjs/operators';
-import {AngularFireDatabase} from '@angular/fire/database';
-import {AngularFirestore} from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase';
 import FieldPath = firebase.firestore.FieldPath;
-import {isArray} from 'rxjs/internal-compatibility';
 
 @Injectable({
   providedIn: 'root'
