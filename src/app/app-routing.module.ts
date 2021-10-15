@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomePageComponent } from './pages/home-page/home-page.component'
-import {AngularFireAuthGuard, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
-import {ChatPageComponent} from './pages/chat-page/chat-page.component';
+import { AngularFireAuthGuard, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
+import { ChatPageComponent } from './pages/chat-page/chat-page.component';
 
 
 const routes: Routes = [

@@ -15,6 +15,7 @@ export class HomePageComponent implements OnInit {
   screenIsSmall = false;
   nameOfUser: string = '';
   appName = environment.appName;
+  isAuthenticated = (localStorage.getItem('isAuth') === 'true');
 
   constructor(private breakpointObserver: BreakpointObserver, public router: Router,
               public afAuth: AngularFireAuth) {
@@ -27,6 +28,7 @@ export class HomePageComponent implements OnInit {
     this.afAuth.user.subscribe(usr => {
       if(usr)
         this.nameOfUser = usr.displayName;
+        this.isAuthenticated = usr ? true : false;
     });
   }
 

@@ -8,7 +8,6 @@ import { NbThemeModule, NbLayoutModule, NbCardModule, NbListModule,
   NbButtonModule, NbMenuModule, NbContextMenuModule, NbDialogModule, NbToastrModule, NbIconModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HttpClientModule} from '@angular/common/http';
-import { AuthModule } from '@auth0/auth0-angular';
 import { ChatPageModule } from './pages/chat-page/chat-page.module';
 import { HomePageModule } from './pages/home-page/home-page.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -44,11 +43,6 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
     NbSelectModule,
     NbContextMenuModule,
     NbMenuModule.forRoot(),
-    AuthModule.forRoot({
-      domain: 'lslab.us.auth0.com',
-      clientId: 'q4xpoVk12GYpGbr9k2ZwncBUl8P9jsuV',
-      cacheLocation: 'localstorage',
-    }),
     ChatPageModule,
     HomePageModule,
     NbDialogModule.forRoot(),

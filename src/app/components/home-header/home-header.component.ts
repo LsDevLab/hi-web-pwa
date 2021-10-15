@@ -11,11 +11,14 @@ import { AngularFireAuth } from '@angular/fire/auth';
 })
 export class HomeHeaderComponent implements OnInit {
 
+  isAuthenticated = (localStorage.getItem('isAuth') === 'true');
+
   constructor(private chatNotificationsService: ChatNotificationsService, public router: Router,
               public afAuth: AngularFireAuth) {
   }
 
   ngOnInit(): void {
+    this.afAuth.user.subscribe(usr => this.isAuthenticated = usr ? true : false);
   }
 
   logOut(){
