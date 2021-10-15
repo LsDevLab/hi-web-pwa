@@ -11,6 +11,7 @@ import { NbToastrConfig } from '../framework/theme/components/toastr/toastr-conf
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ChatNotificationsService } from './chat-notifications.service';
 import { NbToastrService } from '../framework/theme/components/toastr/toastr.service';
+import { MessageToSend } from '../interfaces/dataTypes';
 
 
 @Injectable({
@@ -146,21 +147,21 @@ export class ChatUiService {
   public sendMessage(formattedMessage: any) {
     // making a message from the formatted one
     //console.log('message from ui to send', formattedMessage);
-    let message = this.makeMessage(formattedMessage);
+    let message = this.makeMessageToSend(formattedMessage);
     //console.log('message MAKED to send', message);
     // adding the message to the list of the displayed messages, marking it as to be confirmed ("...")
-    const finalMessage = this.formatMessage(message, true);
+    const messageToDisplay = this.formatMessage(message, true);
     //console.log('message FORMATTED to send', finalMessage);
     const prevReply = this.messages.length >= 1 ? this.messages[this.messages.length - 1].reply : null;
-    if (prevReply !== finalMessage.reply && this.messages.length >= 1){
+    if (prevReply !== messageToDisplay.reply && this.messages.length >= 1){
       this.messages[this.messages.length - 1].lastOfAGroup = true;
     }
     let prevDate = this.messages.length > 0 ? this.messages[this.messages.length - 1].timestamp : null;
     if (!prevDate || !moment(message.timestamp).isSame(prevDate, 'day')) {
-      finalMessage.firstOfTheDay = true;
+      messageToDisplay.firstOfTheDay = true;
     }
-    finalMessage.files.forEach(file => file.uploadingPercentage = 0);
-    this.messages.push(finalMessage);
+    messageToDisplay.files.forEach(file => file.uploadingPercentage = 0);
+    this.messages.push(messageToDisplay);
     // sending messages with CCS
     const sendMessageProgressOb = this.chatCoreService.sendMessage(message);
     sendMessageProgressOb.sendMessageResponseOb.subscribe(_ => {
@@ -172,7 +173,7 @@ export class ChatUiService {
     if (sendMessageProgressOb.progressObs) {
       sendMessageProgressOb.progressObs.forEach((progressOb, index) => {
         progressOb.subscribe(percentage => {
-          const message = this.messages.find(message => message.timestamp === finalMessage.timestamp);
+          const message = this.messages.find(message => message.timestamp === messageToDisplay.timestamp);
           message.files = message.files.map((file, alreadyFileIndex) => ({
             uploadingPercentage: index === alreadyFileIndex ? percentage : file.uploadingPercentage,
             url: file.url,
@@ -233,24 +234,21 @@ export class ChatUiService {
   }
 
 
-  private makeMessage(formattedMessage) {
+  private makeMessageToSend(formattedMessage): MessageToSend {
 
     let type = formattedMessage.files.length ? 'file' : 'text';
     if (this.messageQuoted)
       type = 'quote';
 
-    let message = {
+    let message: MessageToSend = {
       text: formattedMessage.message,
       timestamp: new Date().getTime(),
-      reply: true,  // if reply then you are the sender
       type: type,
       files: formattedMessage.files,
-      user: { // the sender of the message in this application
-        name: this.currentUser.username
-      },
-      users_uids: [this.currentUserUID, this.targetUserUID],
-      quote: this.messageQuoted
+      quote_message_uid: this.messageQuoted ? this.messageQuoted.uid : null,
+      users_uids: [this.currentUserUID, this.targetUserUID]
     };
+
     return message;
   }
 
@@ -281,7 +279,7 @@ export class ChatUiService {
     // taking the messages loaded from CCS, but ordered from the older to the newer
 
     const orderedUnformattedMessages = unformattedMessages.slice().reverse();
-    orderedUnformattedMessages.forEach((message, index) => {
+    orderedUnformattedMessages.forEach((message, _) => {
 
       let indexOfMessage = this.indexOfMessageWithTimestamp(message.timestamp);
       // if the message has to be confirmed
@@ -289,17 +287,19 @@ export class ChatUiService {
         // marking the message on the UI as confirmed (displaying the date of sent)
         this.messages[indexOfMessage].timestamp = message.timestamp;
         this.messages[indexOfMessage].confirmDate = null;
-        if (message.files)
-          message.files.forEach(messageFile => {
-            const existingMessage = this.messages.find(m => m.timestamp === message.timestamp);
-            existingMessage.files = existingMessage.files.map(file => ({
-              uploadingPercentage: file.uploadingPercentage,
-              url: messageFile.url,
-              name: messageFile.title,
-              type: messageFile.type,
-              icon: file.icon
-            }));
-          });
+        this.messages[indexOfMessage].uid = message.uid;
+        if (message.files) {
+          const existingMessageIndex = this.messages.findIndex(m => m.uid === message.uid);
+          console.log('prev m', this.messages[existingMessageIndex]);
+          this.messages[existingMessageIndex].files = message.files.map((confirmedFile, index) => ({
+            url: confirmedFile.url,
+            type: confirmedFile.type,
+            name: confirmedFile.title,
+            icon: this.messages[existingMessageIndex].files[index].icon,
+            uploadingPercentage: this.messages[existingMessageIndex].files[index].uploadingPercentage
+          }));
+          console.log('succ m', this.messages[existingMessageIndex]);
+        }
         // marking as readed messages
         if(!message.readed)
           this.messages[indexOfMessage].user.name = "";
@@ -375,7 +375,6 @@ export class ChatUiService {
     //console.log("CFC: currently displayed messages", {'displayed messages': this.messages});
     if (this.isChatOpened)
       this.confirmMessagesAsReaded();
-
   }
 
   private formatMessage(unformattedMessage, toConfirm){
@@ -439,7 +438,6 @@ export class ChatUiService {
       uid: unformattedMessage.uid,
       firstOfTheDay: null,
       lastOfAGroup: null,
-      sender_user_uid: unformattedMessage.users_uids[0],
       users_uids: unformattedMessage.users_uids
     };
     return formattedMessage;
@@ -449,7 +447,7 @@ export class ChatUiService {
     if(this.router.url === '/chat'){
       if(this.toConfirmReadedMessages.length > 0){
         this.toConfirmReadedMessages.forEach(m => {
-          this.chatCoreService.setMessageAsReaded(m).subscribe(_ => {
+          this.chatCoreService.setMessageAsReaded(m.uid).subscribe(_ => {
             console.log("CFC: message confirmed as readed", {'messages': m});
           },(error) => {
             console.log('CFC: ERROR while confirming message as readed', error);

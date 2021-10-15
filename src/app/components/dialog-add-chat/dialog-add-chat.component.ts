@@ -42,7 +42,7 @@ export class DialogAddChatComponent implements OnInit {
         this.username = user.username;
         this.name = user.name;
         this.surname = user.surname;
-        this.profileImg = user.profile_img;
+        this.profileImg = user.profile_img_url;
         // if alsoAdd is true, addding the chat
         if (alsoAdd){
           // verifying if a chat with the given user already exists

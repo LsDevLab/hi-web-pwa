@@ -86,6 +86,12 @@ import moment from 'moment';
           </nb-chat-message-file>
         </div>
 
+        <nb-chat-message-file *ngSwitchCase="'file'"
+                              [sender]="sender" [dateFormat]="dateFormat" [date]="date"
+                              [message]="message" [files]="files" [reply]="reply"
+                              (messageQuoted)="messageQuoted.emit()">
+        </nb-chat-message-file>
+
         <nb-chat-message-map *ngSwitchCase="'map'"
                               [sender]="sender" [date]="date" [reply]="reply"
                               [message]="message" [latitude]="latitude" [longitude]="longitude"

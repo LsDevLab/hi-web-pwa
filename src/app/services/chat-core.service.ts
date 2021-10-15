@@ -9,6 +9,7 @@ import { concatMap } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase';
 import FieldPath = firebase.firestore.FieldPath;
+import {Chat, Message, MessageToSend, User} from '../interfaces/dataTypes';
 
 @Injectable({
   providedIn: 'root'
@@ -23,19 +24,19 @@ export class ChatCoreService {
   private currentUsernameSource = new BehaviorSubject<string>(null);
   private targetUsernameSource = new BehaviorSubject<string>(null);
 
-  private targetUsersSource = new BehaviorSubject<any>([]);
+  private targetUsersSource = new BehaviorSubject<User[]>([]);
 
-  private currentUserSource = new BehaviorSubject<any>(null);
+  private currentUserSource = new BehaviorSubject<User>(null);
 
-  private chatsSource = new BehaviorSubject<any>([]);
-  private chatsAddedSource = new Subject<any>();
-  private chatsChangedSource = new Subject<any>();
-  private chatsDeletedSource = new Subject<any>();
+  private chatsSource = new BehaviorSubject<Chat[]>([]);
+  private chatsAddedSource = new Subject<Chat[]>();
+  private chatsChangedSource = new Subject<Chat[]>();
+  private chatsDeletedSource = new Subject<Chat[]>();
 
-  private messagesSource = new BehaviorSubject<any>([]);
-  private messagesAddedSource = new Subject<any>();
-  private messagesChangedSource = new Subject<any>();
-  private messagesDeletedSource = new Subject<any>();
+  private messagesSource = new BehaviorSubject<Message[]>([]);
+  private messagesAddedSource = new Subject<Message[]>();
+  private messagesChangedSource = new Subject<Message[]>();
+  private messagesDeletedSource = new Subject<Message[]>();
 
   private isLoadingSource = new BehaviorSubject<boolean>(true);
 
@@ -384,7 +385,7 @@ export class ChatCoreService {
     return from(itemsRef.update({'last_access': new Date().getTime() }));
   }
 
-  private addCurrentUser(username: string, userUID: string): Observable<any> {
+  private addCurrentUser(username: string, userUID: string): Observable<void> {
     // Adds an user with the given username
 
     const user = {
@@ -405,7 +406,7 @@ export class ChatCoreService {
 
   //////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  public sendMessage(message: any): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
+  public sendMessage(message: MessageToSend): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
 
     console.log(message);
@@ -427,7 +428,7 @@ export class ChatCoreService {
             type: message.type,
             text: message.text,
             files: filesArray,
-            quote_message_uid : message.quote ? message.quote.uid : null,
+            quote_message_uid: message.quote_message_uid,
             users_uids: [this._currentUserUID, this._targetUserUID]
           };
           const itemsRef = this.afs.collection('messages');
@@ -440,7 +441,7 @@ export class ChatCoreService {
         timestamp: message.timestamp,
         type: message.type,
         text: message.text,
-        quote_message_uid : message.quote ? message.quote.uid : null,
+        quote_message_uid: message.quote_message_uid,
         users_uids: [this._currentUserUID, this._targetUserUID]
       };
       const itemsRef = this.afs.collection('messages');
@@ -451,47 +452,47 @@ export class ChatCoreService {
 
   }
 
-  public setMessageAsReaded(message: any): Observable<any> {
+  public setMessageAsReaded(messageUid: string): Observable<void> {
     // Updates the readed flag of the message with the provided messagesId
 
     const batch = this.afs.firestore.batch()
 
-    const itemsRef = this.afs.collection('messages').doc(message.uid);
+    const itemsRef = this.afs.collection('messages').doc(messageUid);
     return from(batch.update(itemsRef.ref,{ readed: true }).commit());
 
   }
 
-  public getUser(userUID: string): Observable<any>{
+  public getUser(userUID: string): Observable<User>{
     // Returns an observable containing an the User with the provided UID
 
     const listRef = this.afs.collection('users').doc(userUID);
     return listRef.snapshotChanges().pipe(
       map(snapshot => {
         const snapshotData = snapshot.payload.data();
-        return snapshotData ? { uid: snapshot.payload.id, ...snapshotData as {} } : null ;
+        return snapshotData ? { uid: snapshot.payload.id, ...snapshotData as {} } as User : null ;
       }),
       first()
     );
 
   }
 
-  public getUserByUsername(username: string): Observable<any>{
+  public getUserByUsername(username: string): Observable<User>{
     // Returns an observable containing an the User with the provided username
 
     const listRef = this.afs.collection('users', ref => ref.where('username', '==', username));
     return listRef.snapshotChanges().pipe(
       map(snapshot => {
-        return snapshot.length !== 0 ? { uid: snapshot[0].payload.doc.id, ...snapshot[0].payload.doc.data() as {} } : null ;
+        return snapshot.length !== 0 ? { uid: snapshot[0].payload.doc.id, ...snapshot[0].payload.doc.data() as {} } as User : null ;
       }),
       first()
     );
 
   }
 
-  public updateCurrentUserData(newUserData): Observable<any>{
+  public updateCurrentUserData(newUserData: Partial<User>): Observable<void>{
     // Updates the current user data
 
-    const userData = {
+    const userData: Partial<User> = {
       username: this._currentUsername,
       name: newUserData.name,
       surname: newUserData.surname,
@@ -539,7 +540,7 @@ export class ChatCoreService {
 
   }
 
-  public chatExists(targetUserUID): boolean {
+  public chatExists(targetUserUID: string): boolean {
     // Returns true only if a chat with the given username already exists.
 
     let founded = false;
