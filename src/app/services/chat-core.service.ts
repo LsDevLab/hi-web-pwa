@@ -50,10 +50,10 @@ export class ChatCoreService {
   private _targetUsername: string;
   private _currentUserUID: string;
   private _targetUserUID: string;
-  private _messages: any[] = [];
-  private _chats: any[] = [];
-  private _targetUsers: any[] = [];
-  private _currentUser: any;
+  private _messages: Message[] = [];
+  private _chats: Chat[] = [];
+  private _targetUsers: User[] = [];
+  private _currentUser: User;
 
   //////////////////////////// PUBLIC ATTRIBUTES (OBSERVABLES) ////////////////////////////
 
@@ -517,7 +517,7 @@ export class ChatCoreService {
 
     let founded = false;
     this._chats.forEach(chat => {
-      if(chat.user1_uid == targetUserUID || chat.user2_uid == targetUserUID){
+      if(chat.users_uids.includes(targetUserUID)){
         founded = true;
       }
     });
