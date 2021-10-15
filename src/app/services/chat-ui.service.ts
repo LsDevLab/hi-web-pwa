@@ -234,9 +234,16 @@ export class ChatUiService {
 
   private makeMessageToSend(formattedMessage): Partial<Message> {
 
-    let type = formattedMessage.files.length ? 'file' : 'text';
-    if (this.messageQuoted)
+    let type;
+    console.log('sending unf', formattedMessage);
+    if (this.messageQuoted && formattedMessage.files && formattedMessage.files.length != 0)
+      type = 'quote_file';
+    else if (this.messageQuoted)
       type = 'quote';
+    else if (formattedMessage.files && formattedMessage.files.length != 0)
+      type = 'file';
+    else
+      type = 'text';
 
     let message: Partial<Message> = {
       text: formattedMessage.message,
@@ -417,18 +424,28 @@ export class ChatUiService {
 
     });
 
+    let type = unformattedMessage.type;
+    let quote = null;
+
+    if (unformattedMessage.quote_message_uid && (type === 'quote' || type === 'quote_file')) {
+      console.log('formatting m with quote', unformattedMessage);
+      quote = this.messages.find(message => message.uid === unformattedMessage.quote_message_uid);
+      console.log('finded quoted m', quote);
+      if (!quote)
+        type = (type === 'quote') ? 'text' : 'file';
+
+    }
     let formattedMessage: UIMessage = {
       confirmTimestamp: confirmTimestamp,
       timestamp: timestamp,
       latitude: null,
       longitude: null,
       text: unformattedMessage.text,
-      type: unformattedMessage.type,
+      type: type,
       reply: reply,
       status: status,
       files: files,
-      quote: unformattedMessage.quote_message_uid ?
-        this.messages.find(message => message.uid === unformattedMessage.quote_message_uid) : null,
+      quote: quote,
       uid: unformattedMessage.uid,
       firstOfTheDay: null,
       lastOfAGroup: null,

@@ -14,9 +14,6 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
   template: `
     <nb-chat-message-text [status]="status" [date]="date" [dateFormat]="dateFormat" [message]="message"
                           [reply]="reply" (messageQuoted)="messageQuoted.emit()">
-      <!--<div class="quote">
-        {{ quote }}
-      </div>-->
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
           <time class="time">{{ quote.date | date: dateFormat }}</time>
