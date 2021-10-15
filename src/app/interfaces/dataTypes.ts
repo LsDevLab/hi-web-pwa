@@ -1,4 +1,8 @@
 
+// Raw data types
+
+import {NbChatMessageFile} from '../framework/theme/components/chat/chat-message-file.component';
+
 export interface User {
     uid: string;
     username: string;
@@ -16,8 +20,8 @@ export interface Chat {
     last_message_preview?: string;
     messages_to_read?: number;
     updated_timestamp?: number;
-    users_has_to_read?: string;
-    user_uids: string[];
+    user_has_to_read?: string;
+    users_uids: string[];
 }
 
 export interface Message {
@@ -27,16 +31,7 @@ export interface Message {
     text?: string;
     timestamp: number;
     type: string;
-    files: File[];
-    user_uids: string[];
-}
-
-export interface MessageToSend {
-    quote_message_uid?: string;
-    text?: string;
-    timestamp: number;
-    type: string;
-    files: any[];
+    files: File[] | any[];
     users_uids: string[];
 }
 
@@ -45,3 +40,40 @@ export interface File {
     type: string;
     url: string;
 }
+
+// Ui data types
+
+export type UIUser = User;
+
+export interface UIChat {
+    uid: string;
+    last_message_preview?: string;
+    messages_to_read?: number;
+    updated_timestamp?: number;
+    user_has_to_read?: string;
+    targetUserUID: string,
+    targetUsername: string,
+    notify: string,
+    name: string,
+    surname: string,
+    profile_img_url: string
+}
+
+export interface UIMessage {
+    uid: string;
+    type: string;
+    text: string;
+    reply: boolean;
+    status: string;
+    timestamp?: number;
+    files?: UIFile[];
+    quote?: UIMessage;
+    latitude?: number;
+    longitude?: number;
+    firstOfTheDay: boolean;
+    lastOfAGroup: boolean;
+    confirmTimestamp?: number;
+    users_uids: string[];
+}
+
+export type UIFile = NbChatMessageFile;

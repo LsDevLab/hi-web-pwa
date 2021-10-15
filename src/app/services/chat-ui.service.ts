@@ -11,7 +11,7 @@ import { NbToastrConfig } from '../framework/theme/components/toastr/toastr-conf
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ChatNotificationsService } from './chat-notifications.service';
 import { NbToastrService } from '../framework/theme/components/toastr/toastr.service';
-import { MessageToSend } from '../interfaces/dataTypes';
+import {Chat, Message, UIChat, UIUser, File, UIMessage} from '../interfaces/dataTypes';
 
 
 @Injectable({
@@ -21,7 +21,7 @@ export class ChatUiService {
 
   public messages: any[] = [];
   public chats: any[];
-  public currentUser: any;
+  public currentUser: UIUser;
   public get targetUser(): any { return this.targetUsers.find(u => u.username === this.targetUsername) }
   public targetUsername: string;
   public targetUsers: any;
@@ -99,7 +99,6 @@ export class ChatUiService {
     s = this.chatCoreService.currentUser.subscribe(currentUser => {
       if (!this.currentUser){
         this.setFirstDataLoading()
-        console.log('first init of currentUser', this.firstDataLoadingStatus)
       }
       this.currentUser = currentUser;
     });
@@ -107,7 +106,6 @@ export class ChatUiService {
     s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
       if (!this.targetUsers){
         this.setFirstDataLoading()
-        console.log('first init of targetUsers', this.firstDataLoadingStatus)
       }
       this.targetUsers = targetUsers;
       if (this.chats)
@@ -117,7 +115,6 @@ export class ChatUiService {
     s = this.chatCoreService.chats.subscribe(chats => {
       if (!this.chats) {
         this.setFirstDataLoading()
-        console.log('first init of chats', this.firstDataLoadingStatus)
       }
       this.unformattedChats = chats;
       if (this.targetUsers)
@@ -195,11 +192,13 @@ export class ChatUiService {
     this.messageQuoted = message;
   }
 
-  public toISODate(timestamp) {
+  public toISODate(timestamp): string {
+    if (!timestamp)
+      return null;
     return new Date(timestamp).toISOString();
   }
 
-  public getTimeFormat() {
+  public getTimeFormat(): string {
     const appSettings = JSON.parse(localStorage.getItem('appSettings'));
     switch (appSettings.dateFormat) {
       case 12:
@@ -209,7 +208,7 @@ export class ChatUiService {
     }
   }
 
-  public getDateTimeFormat() {
+  public getDateTimeFormat(): string {
     const appSettings = JSON.parse(localStorage.getItem('appSettings'));
     switch (appSettings.dateFormat) {
       case 12:
@@ -233,14 +232,13 @@ export class ChatUiService {
     this.confirmMessagesAsReaded();
   }
 
-
-  private makeMessageToSend(formattedMessage): MessageToSend {
+  private makeMessageToSend(formattedMessage): Partial<Message> {
 
     let type = formattedMessage.files.length ? 'file' : 'text';
     if (this.messageQuoted)
       type = 'quote';
 
-    let message: MessageToSend = {
+    let message: Partial<Message> = {
       text: formattedMessage.message,
       timestamp: new Date().getTime(),
       type: type,
@@ -252,15 +250,15 @@ export class ChatUiService {
     return message;
   }
 
-  private indexOfMessageWithTimestamp(timestamp){
+  private indexOfMessageWithTimestamp(timestamp: number): number {
     // Returns true if messages has a message with the given date, otherwise false
     let i = 0;
     let timeDate = timestamp;//new Date(date).getTime();
     while (i < this.messages.length){
       let thisTimeDate = this.messages[i].timestamp;
       let thisTimeDateConfirm = null;
-      if (this.messages[i].confirmDate)
-        thisTimeDateConfirm = this.messages[i].confirmDate;
+      if (this.messages[i].confirmTimestamp)
+        thisTimeDateConfirm = this.messages[i].confirmTimestamp;
       if (thisTimeDate == timeDate || (thisTimeDateConfirm != null && thisTimeDateConfirm == timeDate)){
         return i;
       }
@@ -269,7 +267,7 @@ export class ChatUiService {
     return -1;
   }
 
-  private formatUpdateMessages(unformattedMessages) {
+  private formatUpdateMessages(unformattedMessages: Message[]) {
 
     // Takes an array of messages from the CCS (ordered from the newer to the older)
     // Updates the list of the displayed messages and the list of the messages to be confirmed
@@ -283,15 +281,15 @@ export class ChatUiService {
 
       let indexOfMessage = this.indexOfMessageWithTimestamp(message.timestamp);
       // if the message has to be confirmed
-      if (indexOfMessage != -1 && this.messages[indexOfMessage].confirmDate){
+      if (indexOfMessage != -1 && this.messages[indexOfMessage].confirmTimestamp){
         // marking the message on the UI as confirmed (displaying the date of sent)
         this.messages[indexOfMessage].timestamp = message.timestamp;
-        this.messages[indexOfMessage].confirmDate = null;
+        this.messages[indexOfMessage].confirmTimestamp = null;
         this.messages[indexOfMessage].uid = message.uid;
         if (message.files) {
           const existingMessageIndex = this.messages.findIndex(m => m.uid === message.uid);
           console.log('prev m', this.messages[existingMessageIndex]);
-          this.messages[existingMessageIndex].files = message.files.map((confirmedFile, index) => ({
+          this.messages[existingMessageIndex].files = (message.files as File[]).map((confirmedFile, index) => ({
             url: confirmedFile.url,
             type: confirmedFile.type,
             name: confirmedFile.title,
@@ -302,10 +300,9 @@ export class ChatUiService {
         }
         // marking as readed messages
         if(!message.readed)
-          this.messages[indexOfMessage].user.name = "";
+          this.messages[indexOfMessage].status = "";
         else
-          this.messages[indexOfMessage].user.name = "✔";
-        this.messages[indexOfMessage].uid = message.uid;
+          this.messages[indexOfMessage].status = "✔";
         prevSender = message.users_uids[0];
         prevDate = message.timestamp;
       }
@@ -315,9 +312,9 @@ export class ChatUiService {
         // marking as readed messages
         if(this.messages[indexOfMessage].reply){
           if(!message.readed)
-            this.messages[indexOfMessage].user.name = "";
+            this.messages[indexOfMessage].status = "";
           else{
-            this.messages[indexOfMessage].user.name = "✔";
+            this.messages[indexOfMessage].status = "✔";
           }
         }
         prevSender = message.users_uids[0];
@@ -357,11 +354,11 @@ export class ChatUiService {
         if (a.timestamp != null)
           d1 = new Date(a.timestamp);
         else
-          d1 = new Date(a.confirmDate);
+          d1 = new Date(a.confirmTimestamp);
         if (b.timestamp != null)
           d2 = new Date(b.timestamp);
         else
-          d2 = new Date(b.confirmDate);
+          d2 = new Date(b.confirmTimestamp);
         return d1 - d2;
       });*/
 
@@ -377,28 +374,28 @@ export class ChatUiService {
       this.confirmMessagesAsReaded();
   }
 
-  private formatMessage(unformattedMessage, toConfirm){
+  private formatMessage(unformattedMessage: any, toConfirm: boolean): UIMessage {
     // making a formatted message from an unformatted one. If toConfirm the message is
     // marked as to be confirmed
 
     let reply = true;
-    let user = "";
+    let status = "";
     let timestamp = unformattedMessage.timestamp;
-    let confirmDate = null;
+    let confirmTimestamp = null;
 
     if (unformattedMessage.users_uids[0] === this.targetUserUID){
       reply = false;
     }else{
       if(!unformattedMessage.readed)
-        user = "";
+        status = "";
       else
-        user = "✔";
+        status = "✔";
     }
 
     if (toConfirm){
       timestamp = null;
-      confirmDate = unformattedMessage.timestamp;
-      user += "...";
+      confirmTimestamp = unformattedMessage.timestamp;
+      status = "...";
     }
 
     const files = !unformattedMessage.files ? [] : unformattedMessage.files.map((file) => {
@@ -420,26 +417,24 @@ export class ChatUiService {
 
     });
 
-    let formattedMessage = {
-      confirmDate: confirmDate,
+    let formattedMessage: UIMessage = {
+      confirmTimestamp: confirmTimestamp,
       timestamp: timestamp,
-      latitude: unformattedMessage.latitude,
-      longitude: unformattedMessage.longitude,
+      latitude: null,
+      longitude: null,
       text: unformattedMessage.text,
       type: unformattedMessage.type,
       reply: reply,
-      user:{
-        name: user,
-        avatar: null
-      },
+      status: status,
       files: files,
-      quote: unformattedMessage.quote ? unformattedMessage.quote :
-        this.messages.find(message => message.uid === unformattedMessage.quote_message_uid),
+      quote: unformattedMessage.quote_message_uid ?
+        this.messages.find(message => message.uid === unformattedMessage.quote_message_uid) : null,
       uid: unformattedMessage.uid,
       firstOfTheDay: null,
       lastOfAGroup: null,
       users_uids: unformattedMessage.users_uids
     };
+
     return formattedMessage;
   }
 
@@ -458,7 +453,7 @@ export class ChatUiService {
     }
   }
 
-  private formatChats(unformattedChats) {
+  private formatChats(unformattedChats: Chat[]): UIChat[] {
 
     let soundPlayed = false;
     let chats = [];
@@ -490,12 +485,8 @@ export class ChatUiService {
         targetUserUID: chatUserUID,
         targetUsername: user.username,
         notify: notify,
-        bio: user ? user.bio : '',
         name: user ? user.name : '',
         surname: user ? user.surname : '',
-        age: user ? user.age : '',
-        sex: user ? user.sex : '',
-        online: user ? user.online : '',
         profile_img_url: user ? user.profile_img_url : null,
         messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
         updated_timestamp: chat.updated_timestamp,

@@ -74,32 +74,31 @@ import moment from 'moment';
         </div>
 
         <div class="quote-message-handle-div" *ngSwitchCase="'quote'">
-          <nb-chat-message-quote
-                                 [sender]="sender" [date]="date" [dateFormat]="dateFormat"
+          <nb-chat-message-quote [status]="status" [date]="date" [dateFormat]="dateFormat"
                                  [message]="message" [quote]="quote" [reply]="reply"
                                  (messageQuoted)="messageQuoted.emit()">
           </nb-chat-message-quote>
           <nb-chat-message-file *ngIf="files"
-                                [sender]="sender" [dateFormat]="dateFormat"
+                                [status]="status" [dateFormat]="dateFormat"
                                 [message]='' [files]="files" [reply]="reply"
                                 (messageQuoted)="messageQuoted.emit()">
           </nb-chat-message-file>
         </div>
 
         <nb-chat-message-file *ngSwitchCase="'file'"
-                              [sender]="sender" [dateFormat]="dateFormat" [date]="date"
+                              [status]="status" [dateFormat]="dateFormat" [date]="date"
                               [message]="message" [files]="files" [reply]="reply"
                               (messageQuoted)="messageQuoted.emit()">
         </nb-chat-message-file>
 
         <nb-chat-message-map *ngSwitchCase="'map'"
-                              [sender]="sender" [date]="date" [reply]="reply"
-                              [message]="message" [latitude]="latitude" [longitude]="longitude"
-                              (messageQuoted)="messageQuoted.emit()">
+                             [status]="status" [date]="date" [reply]="reply"
+                             [message]="message" [latitude]="latitude" [longitude]="longitude"
+                             (messageQuoted)="messageQuoted.emit()">
         </nb-chat-message-map>
 
         <nb-chat-message-text *ngSwitchDefault
-                              [sender]="sender" [date]="date" [dateFormat]="dateFormat"
+                              [status]="status" [date]="date" [dateFormat]="dateFormat"
                               [message]="message" [reply]="reply"
                               (messageQuoted)="messageQuoted.emit()" [isAQuote]="isAQuote">
         </nb-chat-message-text>
@@ -190,16 +189,16 @@ export class NbChatMessageComponent {
   @Input() firstOfTheDay: boolean;
 
   /**
-   * Message sender
+   * Message status
    * @type {string}
    */
   @Input() message: string;
 
   /**
-   * Message sender
+   * Message status
    * @type {string}
    */
-  @Input() sender: string;
+  @Input() status: string;
 
   /**
    * Message send date
@@ -260,8 +259,8 @@ export class NbChatMessageComponent {
   constructor(protected domSanitizer: DomSanitizer) { }
 
   getInitials(): string {
-    if (this.sender) {
-      const names = this.sender.split(' ');
+    if (this.status) {
+      const names = this.status.split(' ');
 
       return names.map(n => n.charAt(0)).splice(0, 2).join('').toUpperCase();
     }

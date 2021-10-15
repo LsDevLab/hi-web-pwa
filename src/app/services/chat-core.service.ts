@@ -9,7 +9,7 @@ import { concatMap } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase';
 import FieldPath = firebase.firestore.FieldPath;
-import {Chat, Message, MessageToSend, User} from '../interfaces/dataTypes';
+import { Chat, Message, User } from '../interfaces/dataTypes';
 
 @Injectable({
   providedIn: 'root'
@@ -20,36 +20,27 @@ export class ChatCoreService {
 
   private currentUserUIDSource = new BehaviorSubject<string>(null);
   private targetUserUIDSource = new BehaviorSubject<string>(null);
-
   private currentUsernameSource = new BehaviorSubject<string>(null);
   private targetUsernameSource = new BehaviorSubject<string>(null);
-
   private targetUsersSource = new BehaviorSubject<User[]>([]);
-
   private currentUserSource = new BehaviorSubject<User>(null);
-
   private chatsSource = new BehaviorSubject<Chat[]>([]);
   private chatsAddedSource = new Subject<Chat[]>();
   private chatsChangedSource = new Subject<Chat[]>();
   private chatsDeletedSource = new Subject<Chat[]>();
-
   private messagesSource = new BehaviorSubject<Message[]>([]);
   private messagesAddedSource = new Subject<Message[]>();
   private messagesChangedSource = new Subject<Message[]>();
   private messagesDeletedSource = new Subject<Message[]>();
-
-  private isLoadingSource = new BehaviorSubject<boolean>(true);
 
   //////////////////////////// PRIVATE SUBSCRIPTION VARIABLES ////////////////////////////
 
   private _messagesAddedSub: Subscription;
   private _messagesChangedSub: Subscription;
   private _messagesDeletedSub: Subscription;
-
   private _chatsAddedSub: Subscription;
   private _chatsChangedSub: Subscription;
   private _chatsDeletedSub: Subscription;
-
   private _targetUsersSub: Subscription;
   private _currentUserSub: Subscription;
 
@@ -63,30 +54,23 @@ export class ChatCoreService {
   private _chats: any[] = [];
   private _targetUsers: any[] = [];
   private _currentUser: any;
-  private _isLoading: boolean;
 
   //////////////////////////// PUBLIC ATTRIBUTES (OBSERVABLES) ////////////////////////////
 
   public currentUserUIDObservable = this.currentUserUIDSource.asObservable().pipe(filter(v => v !== null));
   public targetUserUIDObservable = this.targetUserUIDSource.asObservable().pipe(filter(v => v !== null));
-
   public currentUsernameObservable = this.currentUsernameSource.asObservable().pipe(filter(v => v !== null));
   public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
-
   public currentUser = this.currentUserSource.asObservable().pipe(filter(v => v !== null));
   public targetUsers = this.targetUsersSource.asObservable().pipe(filter(v => v !== null));
-
   public chats = this.chatsSource.asObservable().pipe(filter(v => v !== null));
   public chatsAdded = this.chatsAddedSource.asObservable();
   public chatsChanged = this.chatsChangedSource.asObservable();
   public chatsDeleted = this.chatsDeletedSource.asObservable();
-
   public messages = this.messagesSource.asObservable().pipe(filter(v => v !== null));
   public messagesAdded = this.messagesAddedSource.asObservable();
   public messagesChanged = this.messagesChangedSource.asObservable();
   public messagesDeleted = this.messagesDeletedSource.asObservable();
-
-  public isLoadingObservable = this.isLoadingSource.asObservable();
 
   //////////////////////////// PUBLIC ATTRIBUTES ////////////////////////////
 
@@ -140,8 +124,6 @@ export class ChatCoreService {
     this.targetUsers.subscribe(users => this._targetUsers.push(...users));
 
     this.currentUser.subscribe(user => this._currentUser = user);
-
-    this.isLoadingObservable.subscribe(isL => this._isLoading = isL);
 
     console.log("CCS: service loaded");
 
@@ -316,10 +298,7 @@ export class ChatCoreService {
     if (this._targetUsersSub)
       this._targetUsersSub.unsubscribe()
 
-    //this.isLoadingSource.next(true);
-
     const callback = response => {
-      //this.isLoadingSource.next(false);
       if (response.length !== 0) {
         this.targetUsersSource.next(response);
         console.log("CCS: target users received", {'users': response });
@@ -341,11 +320,7 @@ export class ChatCoreService {
     if (this._currentUserSub)
       this._currentUserSub.unsubscribe()
 
-    this.isLoadingSource.next(true);
-
     const callback = response => {
-      this.isLoadingSource.next(false);
-      this.isLoadingSource.next(false);
       if (response.length !== 0){
         this.currentUserSource.next(response[0]);
         console.log("CCS: current user received", {'user': response[0] });
@@ -403,17 +378,14 @@ export class ChatCoreService {
 
   }
 
-
   //////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  public sendMessage(message: MessageToSend): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
+  public sendMessage(message: Partial<Message>): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
-
-    console.log(message);
 
     if(message.files.length) {
       let filesArray: any[] = [];
-      const storingFilesObsArray = message.files.map(file => this._getFileStoringObs(file));
+      const storingFilesObsArray = (message.files as any[]).map(file => this._getFileStoringObs(file));
       const progressObs: Observable<number>[] = storingFilesObsArray.map(x => x.progressOb);
       const fileObs: Observable<any>[] = storingFilesObsArray.map(x => x.fileOb);
       const sendMessageResponseOb = forkJoin(fileObs).pipe(map(obsResults => {
@@ -579,8 +551,6 @@ export class ChatCoreService {
     if(currentUserUID == this._currentUserUID)
       return;
 
-    this.isLoadingSource.next(true);
-
     this._currentUserUID = currentUserUID;
     this.currentUserUIDSource.next(currentUserUID);
     this._currentUsername = currentUsername;
@@ -599,7 +569,6 @@ export class ChatCoreService {
           window.location.reload();
         });
       }else{
-        this.isLoadingSource.next(false);
         // subscribing to chats of the current user
         //this._subscribeToTargetUsers(null);
         this._currentUserSub = this._subscribeToCurrentUser();

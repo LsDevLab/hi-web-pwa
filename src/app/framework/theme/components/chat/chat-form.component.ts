@@ -62,14 +62,14 @@ import { NbComponentOrCustomStatus } from '../component-status';
     </div>
     <div class="quoted-message-div" *ngIf="messageQuoted">
       <nb-chat-message class="form-message-quoted"
-                        [type]="'text'"
-                        [message]="messageQuoted.text ? messageQuoted.text : (messageQuoted.files.length > 1 ?
+                       [type]="'text'"
+                       [message]="messageQuoted.text ? messageQuoted.text : (messageQuoted.files.length > 1 ?
                                 (messageQuoted.files[0].name + ' and other ' + (messageQuoted.files.length - 1) + ' files') : messageQuoted.files[0].name)"
-                        [reply]="false"
-                        [sender]=""
-                        [date]="messageQuoted.date"
-                        [isAQuote]="true"
-                        dateFormat="short"
+                       [reply]="false"
+                       [status]=""
+                       [date]="messageQuoted.date"
+                       [isAQuote]="true"
+                       dateFormat="short"
       >
       </nb-chat-message>
       <nb-icon class="cancel-quote-icon" icon="close-outline" status="primary" (click)="cancelQuotedMessage()"></nb-icon>
@@ -80,7 +80,7 @@ import { NbComponentOrCustomStatus } from '../component-status';
               [class.with-icon]="!buttonTitle"
               (click)="fileInput.click()"
               class="attach-file-button">
-        <nb-icon *ngIf="!buttonTitle; else title" icon="attach-outline" ></nb-icon>
+        <nb-icon *ngIf="!buttonTitle; else title" icon="attach-outline"></nb-icon>
         <ng-template #title>{{ buttonTitle }}</ng-template>
       </button>
       <input #fileInput type="file" (change)="onAttachFileFromButton($event)" hidden multiple [disabled]="loading"/>

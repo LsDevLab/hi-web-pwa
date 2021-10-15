@@ -12,8 +12,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 @Component({
   selector: 'nb-chat-message-quote',
   template: `
-    <!--<p class="sender" *ngIf="sender || date">{{ sender }} <time>{{ date | date: dateFormat }}</time></p>-->
-    <nb-chat-message-text [sender]="sender" [date]="date" [dateFormat]="dateFormat" [message]="message"
+    <nb-chat-message-text [status]="status" [date]="date" [dateFormat]="dateFormat" [message]="message"
                           [reply]="reply" (messageQuoted)="messageQuoted.emit()">
       <!--<div class="quote">
         {{ quote }}
@@ -46,16 +45,16 @@ export class NbChatMessageQuoteComponent {
   @Input() reply: string;
 
   /**
-   * Message sender
+   * Message status
    * @type {string}
    */
   @Input() message: string;
 
   /**
-   * Message sender
+   * Message status
    * @type {string}
    */
-  @Input() sender: string;
+  @Input() status: string;
 
   /**
    * Message send date

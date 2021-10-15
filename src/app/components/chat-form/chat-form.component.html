@@ -3,7 +3,7 @@
                     [type]="msg.type"
                     [message]="msg.text"
                     [reply]="msg.reply"
-                    [sender]="msg.user.name"
+                    [status]="msg.status"
                     [date]="chatUiService.toISODate(msg.timestamp)"
                     [dateFormat]="chatUiService.getTimeFormat()"
                     [files]="msg.files"
