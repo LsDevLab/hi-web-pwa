@@ -6,16 +6,16 @@
   <nb-card-body style="padding: 0px">
     <div class="body-div">
       <div class="profile-img-div">
-        <h5 class="name-surname-label">{{userData.name}} {{userData.surname}}</h5>
-        <p class="username-label">{{userData.username}}</p>
+        <h5 class="name-surname-label">{{chatUiService.targetUser.name}} {{chatUiService.targetUser.surname}}</h5>
+        <p class="username-label">{{chatUiService.targetUsername}}</p>
         <div class="profile-img-container">
           <img class="profile-img"
-               [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'">
+               [src]="chatUiService.targetUser.profile_img_url ? chatUiService.targetUser.profile_img_url : 'assets/img/default_profile_img.png'">
         </div>
-        <p class="sex-age-p"><strong>{{this.userData.sex}}</strong>, <strong>{{this.userData.age}}</strong> years old </p>
+        <p class="sex-age-p"><strong>{{chatUiService.targetUser.sex}}</strong>, <strong>{{chatUiService.targetUser.age}}</strong> years old </p>
       </div>
       <div class="bio-div">
-        <p class="bio-p">{{this.userData.bio}}</p>
+        <p class="bio-p">{{chatUiService.targetUser.bio}}</p>
       </div>
     </div>
   </nb-card-body>

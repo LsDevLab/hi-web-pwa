@@ -6,11 +6,11 @@
   <nb-card-body style="padding: 0px">
     <div class="body-div">
       <div class="profile-img-div">
-        <h5 class="name-surname-label">{{userData.name}} {{userData.surname}}</h5>
-        <p class="username-label">{{userData.username}}</p>
+        <h5 class="name-surname-label">{{chatUiService.currentUser.name}} {{chatUiService.currentUser.surname}}</h5>
+        <p class="username-label">{{chatUiService.currentUser.username}}</p>
         <div class="profile-img-container">
           <img class="profile-img"
-               [src]="userData.profile_img ? userData.profile_img : 'assets/img/default_profile_img.png'"
+               [src]="chatUiService.currentUser.profile_img_url ? chatUiService.currentUser.profile_img_url : 'assets/img/default_profile_img.png'"
                (click)="imageFileInput.click()">
           <circle-progress-bar class="img-uploading-progress-bar" *ngIf="imgUploadingPercentage !== null && imgUploadingPercentage !== 100"
                                [progress]="imgUploadingPercentage"
@@ -29,20 +29,20 @@
       <div class="profile-inputs-div">
         <nb-form-field class="profile-input-field">
           <input #bioInput type="text" fieldSize="small" placeholder="Bio"
-                 nbInput fullWidth status="basic" [value]="userData.bio" [disabled]="this.loadingUserData">
+                 nbInput fullWidth status="basic" [value]="chatUiService.currentUser.bio" [disabled]="this.loadingUserData">
         </nb-form-field>
         <nb-form-field class="profile-input-field">
           <nb-icon nbPrefix icon="person-outline" pack="eva"></nb-icon>
           <input #nameInput type="text" placeholder="Name"
-                 nbInput fullWidth [value]="userData.name" [disabled]="this.loadingUserData">
+                 nbInput fullWidth [value]="chatUiService.currentUser.name" [disabled]="this.loadingUserData">
         </nb-form-field>
         <nb-form-field class="profile-input-field">
           <nb-icon nbPrefix icon="person-outline" pack="eva"></nb-icon>
           <input #surnameInput type="text" placeholder="Surname"
-                 nbInput fullWidth [value]="userData.surname" [disabled]="this.loadingUserData">
+                 nbInput fullWidth [value]="chatUiService.currentUser.surname" [disabled]="this.loadingUserData">
         </nb-form-field>
         <nb-select #sexSelect placeholder="Sex" class="profile-input-field"
-                   fullWidth [selected]="userData.sex" [disabled]="this.loadingUserData">
+                   fullWidth [selected]="chatUiService.currentUser.sex" [disabled]="this.loadingUserData">
           <nb-option value="">No sex specified</nb-option>
           <nb-option value="M">M</nb-option>
           <nb-option value="F">F</nb-option>
@@ -51,7 +51,7 @@
         <nb-form-field class="profile-input-field">
           <nb-icon nbPrefix icon="hash-outline" pack="eva"></nb-icon>
           <input #ageInput type="text" placeholder="Age"
-                 nbInput fullWidth [value]="userData.age" [disabled]="this.loadingUserData">
+                 nbInput fullWidth [value]="chatUiService.currentUser.age" [disabled]="this.loadingUserData">
         </nb-form-field>
       </div>
 

@@ -2,10 +2,11 @@
   size="medium"
   color="white"
   onlyPicture=true
-  [picture]="(targetUserData && targetUserData.profile_img) ? targetUserData.profile_img : 'assets/img/default_profile_img.png'"
+  [picture]="(chatUiService.targetUser && chatUiService.targetUser.profile_img_url) ?
+    chatUiService.targetUser.profile_img_url : 'assets/img/default_profile_img.png'"
   (click)="openUserInfoDialog()" >
 </nb-user>
 <div style="color: white; width: fit-content; float: right;">
-  <div class="user-name" style="font-weight: bold;">{{targetUserData ? targetUserData.name + ' ' + targetUserData.surname : ''}}</div>
-  <div style="font-size: 8pt;">Last access on {{(targetUserData ? targetUserData.last_access : '') | date: getDateFormat()}}</div>
+  <div class="user-name" style="font-weight: bold;">{{chatUiService.targetUser ? chatUiService.targetUser.name + ' ' + chatUiService.targetUser.surname : ''}}</div>
+  <div style="font-size: 8pt;">Last access on {{(chatUiService.targetUser ? chatUiService.targetUser.last_access : '') | date: chatUiService.getDateTimeFormat()}}</div>
 </div>

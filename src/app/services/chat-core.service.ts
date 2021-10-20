@@ -1,973 +1,345 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-import {BehaviorSubject, forkJoin, interval, ReplaySubject, Subject, Subscription} from 'rxjs';
+import { BehaviorSubject, forkJoin, from, interval, Subject, Subscription } from 'rxjs';
 import { ChatNotificationsService } from './chat-notifications.service';
-import {filter, first, last, map, switchMap} from 'rxjs/operators';
+import { filter, first, last, map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { concatMap } from 'rxjs/operators';
-
-const GQL_GET_MESSAGES = gql`
-  query getMessages($currentUser: String!, $targetUser: String!, $limit: Int) {
-    getMessages(usernames: {username1: $currentUser, username2: $targetUser}, limit: $limit) {
-      id
-      text
-      type
-      timestamp
-      files {
-        title
-        url
-        type
-      }
-      quote_message_id
-      sender_username
-      receiver_username
-      readed_from_receiver
-    }
-  }
-`;
-const GQL_MESSAGE_ADDED = gql`
-  subscription messageAdded($targetUser: String!) {
-    messageAdded(username: $targetUser) {
-      id
-      text
-      type
-      timestamp
-      files {
-        title
-        url
-        type
-      }
-      quote_message_id
-      sender_username
-      receiver_username
-      readed_from_receiver
-    }
-  }
-`;
-const GQL_MESSAGE_CHANGED = gql`
-  subscription messageChanged($targetUser: String!) {
-    messageChanged(username: $targetUser) {
-      id
-      text
-      type
-      timestamp
-      files {
-        title
-        url
-        type
-      }
-      quote_message_id
-      sender_username
-      receiver_username
-      readed_from_receiver
-    }
-  }
-`;
-const GQL_MESSAGE_DELETED = gql`
-  subscription messageDeleted($targetUser: String!) {
-    messageDeleted(username: $targetUser) {
-      id
-      text
-      type
-      timestamp
-      files {
-        title
-        url
-        type
-      }
-      quote_message_id
-      sender_username
-      receiver_username
-      readed_from_receiver
-    }
-  }
-`;
-const GQL_ADD_MESSAGE = gql`
-  mutation addMessages($message: MessageInput!) {
-    addMessages(messages: [$message]) {
-      log
-      message
-      {
-        id
-        text
-        type
-        timestamp
-        files {
-          title
-          url
-          type
-        }
-        quote_message_id
-        sender_username
-        receiver_username
-        readed_from_receiver
-      }
-    }
-  }
-`;
-const GQL_UPDATE_MESSAGES = gql`
-  mutation updateMessages($messages: [MessageInput!]!) {
-    editMessages(messages: $messages) {
-      log
-      message
-      {
-        id
-        text
-        type
-        timestamp
-        files {
-          title
-          url
-          type
-        }
-        quote_message_id
-        sender_username
-        receiver_username
-        readed_from_receiver
-      }
-    }
-  }
-`;
-
-
-const GQL_GET_CHATS = gql`
-  query getChats {
-    getChats {
-      username1
-      username2
-      hasToRead
-      numOfMessagesToRead
-    }
-  }
-`;
-const GQL_CHAT_ADDED = gql`
-  subscription chatAdded {
-    chatAdded {
-      username1
-      username2
-      hasToRead
-      numOfMessagesToRead
-    }
-  }
-`;
-const GQL_CHAT_CHANGED = gql`
-  subscription chatChanged {
-    chatChanged {
-      username1
-      username2
-      hasToRead
-      numOfMessagesToRead
-    }
-  }
-`;
-const GQL_CHAT_DELETED = gql`
-  subscription chatDeleted {
-    chatDeleted {
-      username1
-      username2
-      hasToRead
-      numOfMessagesToRead
-    }
-  }
-`;
-const GQL_ADD_CHAT = gql`
-  mutation addChats($USER: String!, $otherUser: String!) {
-    addChats(chats: [{username1: $USER, username2: $otherUser}]) {
-      log
-      chat {
-        username1
-        username2
-        hasToRead
-        numOfMessagesToRead
-      }
-    }
-  }
-`;
-
-const GQL_GET_USER = gql`
-  query getUsers($USER: String!, $accessToAll: Boolean) {
-    getUsers(usernames: [$USER], accessToAll: $accessToAll) {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-      last_access
-    }
-  }
-`;
-const GQL_GET_USERS = gql`
-  query getUsers {
-    getUsers {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-      last_access
-    }
-  }
-`;
-const GQL_USER_ADDED = gql`
-  subscription userAdded {
-    userAdded {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-      last_access
-    }
-  }
-`;
-const GQL_USER_CHANGED = gql`
-  subscription userChanged {
-    userChanged {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-      last_access
-    }
-  }
-`;
-const GQL_USER_DELETED = gql`
-  subscription userDeleted {
-    userDeleted {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-      last_access
-    }
-  }
-`;
-const GQL_ADD_USER = gql`
-  mutation addUser($USER: String!, $name: String!, $lastAccess: Timestamp!,
-    $surname: String!, $bio: String, $sex: Sex, $age: Int, $profile_img: String) {
-    addUsers(users: [{username: $USER, name: $name, last_access: $lastAccess,
-      surname: $surname, bio: $bio, sex: $sex, age: $age, profile_img: $profile_img}]) {
-      log
-      user {
-        username
-        name
-        surname
-        sex
-        last_access
-        profile_img
-        bio
-      }
-    }
-  }
-`;
-const GQL_UPDATE_USER = gql`
-  mutation updateUsers($USER: String!, $name: String, $lastAccess: Timestamp,
-    $surname: String, $bio: String, $sex: Sex, $age: Int, $profile_img: String) {
-    editUsers(users: [{username: $USER, name: $name, last_access: $lastAccess,
-      surname: $surname, bio: $bio, sex: $sex, age: $age, profile_img: $profile_img}]) {
-      log
-      user {
-        username
-        name
-        surname
-        sex
-        last_access
-        profile_img
-        bio
-      }
-    }
-  }
-`;
-
-
-const GQL_QUERY_USER_TARGETLASTACCESS = gql`
-  query queryUser($USER: String!) {
-    queryUser(filter: {username: {eq: $USER}}) {
-      lastAccess
-    }
-  }
-`;
-const GQL_SUB_USER_TARGETLASTACCESS = gql`
-  subscription queryUser($USER: String!) {
-    queryUser(filter: {username: {eq: $USER}}) {
-      lastAccess
-    }
-  }
-`;
-const GQL_QUERY_USER_CHATSINFO = gql`
-  query queryUser($usernames: [String!]) {
-    queryUser(filter: {username: {in: $usernames}}) {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-    }
-  }
-`;
-const GQL_SUB_USER_CHATSINFO = gql`
-  subscription queryUser($usernames: [String!]) {
-    queryUser(filter: {username: {in: $usernames}}) {
-      username
-      name
-      surname
-      bio
-      age
-      sex
-      profile_img
-    }
-  }
-`;
-
-
+import { AngularFirestore } from '@angular/fire/firestore';
+import firebase from 'firebase';
+import FieldPath = firebase.firestore.FieldPath;
+import { Chat, Message, User } from '../interfaces/dataTypes';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatCoreService {
 
+  //////////////////////////// OBSERVABLES SOURCES ////////////////////////////
+
+  private currentUserUIDSource = new BehaviorSubject<string>(null);
+  private targetUserUIDSource = new BehaviorSubject<string>(null);
   private currentUsernameSource = new BehaviorSubject<string>(null);
   private targetUsernameSource = new BehaviorSubject<string>(null);
-  private targetUserDataSource = new BehaviorSubject<any>(null);
-  private loadedMessagesSource = new BehaviorSubject<any[]>([]);
-  //private chatsSource = new BehaviorSubject<any[]>([]);
-  private chatsUsersInfoSource = new BehaviorSubject<any[]>([]);
-  private targetUserlastAccessSource = new BehaviorSubject<Date>(null);
-  private currentUserDataSource = new BehaviorSubject<any>(null);
-  private isLoadingSource = new BehaviorSubject<boolean>(true);
+  private targetUsersSource = new BehaviorSubject<User[]>([]);
+  private currentUserSource = new BehaviorSubject<User>(null);
+  private chatsSource = new BehaviorSubject<Chat[]>([]);
+  private chatsAddedSource = new Subject<Chat[]>();
+  private chatsChangedSource = new Subject<Chat[]>();
+  private chatsDeletedSource = new Subject<Chat[]>();
+  private messagesSource = new BehaviorSubject<Message[]>([]);
+  private messagesAddedSource = new Subject<Message[]>();
+  private messagesChangedSource = new Subject<Message[]>();
+  private messagesDeletedSource = new Subject<Message[]>();
+
+  //////////////////////////// PRIVATE SUBSCRIPTION VARIABLES ////////////////////////////
+
+  private _messagesAddedSub: Subscription;
+  private _messagesChangedSub: Subscription;
+  private _messagesDeletedSub: Subscription;
+  private _chatsAddedSub: Subscription;
+  private _chatsChangedSub: Subscription;
+  private _chatsDeletedSub: Subscription;
+  private _targetUsersSub: Subscription;
+  private _currentUserSub: Subscription;
+
+  //////////////////////////// PRIVATE DATA VARIABLES ////////////////////////////
 
   private _currentUsername: string;
   private _targetUsername: string;
-  private _messages: any[] = [];
-  private _chats: any[] = [];
-  private _users: any[] = [];
-  private _targetUserlastAccess: Date;
-  private _currentUserData: any;
-  private _isLoading: boolean;
-  private _targetUserData: any;
+  private _currentUserUID: string;
+  private _targetUserUID: string;
+  private _messages: Message[] = [];
+  private _chats: Chat[] = [];
+  private _targetUsers: User[] = [];
+  private _currentUser: User;
 
-  private chatUsersInfoSubscription: Subscription = null;
-  private chatMessagesSubscription: Subscription = null;
-  private targetUserLastAccessSubscription: Subscription = null;
-  private _targetUsernameSubscription: Subscription = null;
+  //////////////////////////// PUBLIC ATTRIBUTES (OBSERVABLES) ////////////////////////////
 
-
-  private usersSource = new BehaviorSubject<any>(null);
-  private userAddedSource = new Subject<any>();
-  private userChangedSource = new Subject<any>();
-  private userDeletedSource = new Subject<any>();
-
-  private chatsSource =  new BehaviorSubject<any>(null);
-  private chatAddedSource = new Subject<any>();
-  private chatChangedSource = new Subject<any>();
-  private chatDeletedSource = new Subject<any>();
-
-  private messagesSource = new Subject<any>();
-  private messageAddedSource = new Subject<any>();
-  private messageChangedSource = new Subject<any>();
-  private messageDeletedSource = new Subject<any>();
-
-  public getUsers = this.usersSource.asObservable().pipe(filter(v => v !== null));
-  public userAdded = this.userAddedSource.asObservable();
-  public userChanged = this.userChangedSource.asObservable();
-  public userDeleted = this.userDeletedSource.asObservable();
-
-  public getChats = this.chatsSource.asObservable().pipe(filter(v => v !== null));
-  public chatAdded = this.chatAddedSource.asObservable();
-  public chatChanged = this.chatChangedSource.asObservable();
-  public chatDeleted = this.chatDeletedSource.asObservable();
-
-  public getMessages = this.messagesSource.asObservable()
-  public messageAdded = this.messageAddedSource.asObservable();
-  public messageChanged = this.messageChangedSource.asObservable();
-  public messageDeleted = this.messageDeletedSource.asObservable();
-
-  private _messageAddedSub: Subscription;
-  private _messageChangedSub: Subscription;
-  private _messageDeletedSub: Subscription;
-
-  private _chatAddedSub: Subscription;
-  private _chatChangedSub: Subscription;
-  private _chatDeletedSub: Subscription;
-
-  private _userAddedSub: Subscription;
-  private _userChangedSub: Subscription;
-  private _userDeletedSub: Subscription;
+  public currentUserUIDObservable = this.currentUserUIDSource.asObservable().pipe(filter(v => v !== null));
+  public targetUserUIDObservable = this.targetUserUIDSource.asObservable().pipe(filter(v => v !== null));
+  public currentUsernameObservable = this.currentUsernameSource.asObservable().pipe(filter(v => v !== null));
+  public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
+  public currentUser = this.currentUserSource.asObservable().pipe(filter(v => v !== null));
+  public targetUsers = this.targetUsersSource.asObservable().pipe(filter(v => v !== null));
+  public chats = this.chatsSource.asObservable().pipe(filter(v => v !== null));
+  public chatsAdded = this.chatsAddedSource.asObservable();
+  public chatsChanged = this.chatsChangedSource.asObservable();
+  public chatsDeleted = this.chatsDeletedSource.asObservable();
+  public messages = this.messagesSource.asObservable().pipe(filter(v => v !== null));
+  public messagesAdded = this.messagesAddedSource.asObservable();
+  public messagesChanged = this.messagesChangedSource.asObservable();
+  public messagesDeleted = this.messagesDeletedSource.asObservable();
 
   //////////////////////////// PUBLIC ATTRIBUTES ////////////////////////////
 
-  public currentUsernameObservable = this.currentUsernameSource.asObservable().pipe(filter(v => v !== null));
-  public targetUsernameObservable = this.targetUsernameSource.asObservable().pipe(filter(v => v !== null));
-  public targetUserDataObservable = this.targetUserDataSource.asObservable();
-  public loadedMessagesObservable = this.loadedMessagesSource.asObservable();
-  //public chatsObservable = this.chatsSource.asObservable();
-  public chatsUsersInfoObservable = this.chatsUsersInfoSource.asObservable();
-  public targetUserlastAccessObservable = this.targetUserlastAccessSource.asObservable();
-  public currentUserDataObservable = this.currentUserDataSource.asObservable();
-  public isLoadingObservable = this.isLoadingSource.asObservable();
-
   constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService,
-              private afStorage: AngularFireStorage) {
+              private afs: AngularFirestore, private afStorage: AngularFireStorage) {
 
-    this.messageAdded.subscribe(msg => {
-      this._messages.push(msg);
+    this.messagesAdded.subscribe(msgs => {
+      this._messages.push(...msgs);
       this.messagesSource.next(this._messages);
     });
-    this.messageChanged.subscribe(msg => {
-      const index = this._messages.findIndex(m => m.timestamp === msg.timestamp);
-      this._messages[index] = msg;
+    this.messagesChanged.subscribe(msgs => {
+      msgs.forEach(msg => {
+        const index = this._messages.findIndex(m => m.uid === msg.uid);
+        this._messages[index] = msg;
+      });
       this.messagesSource.next(this._messages);
     });
-    this.messageDeleted.subscribe(msg => {
-      this._messages.splice(this._messages.findIndex(m => m.timestamp === msg.timestamp), 1);
+    this.messagesDeleted.subscribe(msgs => {
+      msgs.forEach(msg => {
+        this._messages.splice(this._messages.findIndex(m => m.uid === msg.uid), 1);
+      });
       this.messagesSource.next(this._messages);
     });
 
-    this.getChats.pipe(first()).subscribe(chats => this._chats.push(...chats));
-    this.chatAdded.subscribe(chat => {
-      this._chats.push(chat);
-      this._unsubscribeToUsers();
-      this._getUsers();
-      this._subscribeToUsers();
+    this.chatsAdded.subscribe(chats => {
+      chats.forEach(chat => {
+        this._chats.push(chat);
+      });
+      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
       this.chatsSource.next(this._chats);
     });
-    this.chatChanged.subscribe(chat => {
-      const index = this._chats.findIndex(c => (c.username1 === chat.username1 && c.username2 === chat.username2));
-      this._chats[index] = chat;
+    this.chatsChanged.subscribe(chats => {
+      chats.forEach(chat => {
+        const index = this._chats.findIndex(c => chat.uid === c.uid);
+        if (index !== -1)
+          this._chats[index] = chat;
+        else
+          this._chats.push(chat);
+      });
       this.chatsSource.next(this._chats);
+      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
     });
-    this.chatDeleted.subscribe(chat => {
-      this._chats.splice(this._chats.findIndex(c => (c.username1 === chat.username1 && c.username2 === chat.username2)), 1);
+    this.chatsDeleted.subscribe(chats => {
+      chats.forEach(chat => {
+        this._chats.splice(this._chats.findIndex(c => chat.uid === c.uid), 1);
+      });
       this.chatsSource.next(this._chats);
+      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
     });
 
-    this.getUsers.pipe(first()).subscribe(users => this._users.push(...users));
-    this.userAdded.subscribe(user => {
-      this._users.push(user);
-      this.usersSource.next(this._users);
-    });
-    this.userChanged.subscribe(user => {
-      const index = this._users.findIndex(u => u.username === user.username)
-      this._users[index] = user;
-      this.usersSource.next(this._users);
-    });
-    this.userDeleted.subscribe(user => {
-      this._users.splice(this._users.findIndex(u => u.username === user.username), 1);
-      this.usersSource.next(this._users);
-    });
+    this.targetUsers.subscribe(users => this._targetUsers.push(...users));
 
+    this.currentUser.subscribe(user => this._currentUser = user);
 
-    this.isLoadingObservable.subscribe(isL => this._isLoading = isL);
-    //this.currentUserDataObservable.subscribe(userData => this._currentUserData = userData);
-    //this.targetUserlastAccessObservable.subscribe(tula => this._targetUserlastAccess = tula);
     console.log("CCS: service loaded");
-  }
-
-
-  //////////////////////////// PRIVATE METHODS ////////////////////////////
-
- /* private subscribeToCurrentChatUsersInfo(chatTargetUsernames: string[]): Subscription {
-    // Subscribes to the some info of the target users of the current list of chats
-
-    let usersQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_QUERY_USER_CHATSINFO,
-        variables: {
-          usernames: chatTargetUsernames
-        }
-      });
-
-    usersQuery.subscribeToMore({
-      document: GQL_SUB_USER_CHATSINFO,
-      variables: {
-        usernames: chatTargetUsernames
-      },
-      updateQuery: (prev, {subscriptionData}) => {
-        return subscriptionData.data
-      }
-    });
-
-    return usersQuery.valueChanges.subscribe(
-      response =>{
-        this.chatsUsersInfoSource.next(response.data["queryUser"]);
-        const newTargetUserData = response.data["queryUser"].find(user => user.username === this._targetUsername);
-        if (newTargetUserData != this._targetUserData)
-          this.targetUserDataSource.next(newTargetUserData);
-        console.log("CCS: chats users info received", {'usersInfo': response.data["queryUser"]});
-      }
-    );
-  }
-
-  private subscribeToChatMessages(): Subscription {
-    // Subscribes to the messages of the current chat
-
-    let messageQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_QUERY_MESSAGE,
-        variables: {
-          USER: this._currentUsername,
-          targetUser: this._targetUsername
-        }
-      });
-
-    messageQuery.subscribeToMore({
-      document: GQL_SUB_MESSAGE,
-      variables: {
-        USER: this._currentUsername,
-        targetUser: this._targetUsername
-      },
-      updateQuery: (prev, {subscriptionData}) => {
-        return subscriptionData.data
-      }
-    });
-
-    return messageQuery.valueChanges.subscribe(
-      response =>{
-        this.loadedMessagesSource.next(response.data["queryMessage"]);
-        console.log("CCS: messages received", {'messages': response.data["queryMessage"]});
-      }
-    );
 
   }
 
-  private subscribeToChats(): Subscription {
-    // Subscribes to the chats of the current user
+  //////////////////////////// PRIVATE MESSAGES SUBSCRIBERS ATTRIBUTES ////////////////////////////
 
-    this.isLoadingSource.next(true);
+  private _subscribeToMessagesAdded(): Subscription {
 
-    let chatQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_QUERY_CHATS,
-        variables: {
-          USER: this._currentUsername
-        }
-      });
-
-    chatQuery.subscribeToMore({
-      document: GQL_SUB_CHATS,
-      variables: {
-        USER: this._currentUsername
-      },
-      updateQuery: (prev, {subscriptionData}) => {
-        return subscriptionData.data
-      }
-    });
-
-    return chatQuery.valueChanges.subscribe(
-      response =>{
-        this.isLoadingSource.next(false);
-        this.chatsSource.next(response.data["queryChats"]);
-        console.log("CCS: chats received", {'chats': response.data["queryChats"]});
-        if(this.chatUsersInfoSubscription)
-          this.chatUsersInfoSubscription.unsubscribe();
-        let chatsList = response.data["queryChats"] ? response.data["queryChats"] : null;
-        if (chatsList) {
-          chatsList = chatsList.map(chatData => {
-            if (chatData.user1 === this._currentUsername)
-              return chatData.user2;
-            else
-              return chatData.user1;
-          });
-          if(chatsList.length){
-            this.chatUsersInfoSubscription = this.subscribeToCurrentChatUsersInfo(chatsList);
-            console.log('CCS: subscribed to data of target users', chatsList);
-          }
-        }
-      }
-    );
-
-  }
-*/
-
-  /*private subscribeToTargetUserLastAccess(): Subscription {
-    // Subscribes to the last access of the target user
-
-    let targetLastAccessQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_QUERY_USER_TARGETLASTACCESS,
-        variables: {
-          USER: this._targetUsername
-        }
-      });
-
-      targetLastAccessQuery.subscribeToMore({
-      document: GQL_SUB_USER_TARGETLASTACCESS,
-      variables: {
-        USER: this._targetUsername
-      },
-      updateQuery: (prev, {subscriptionData}) => {
-        return subscriptionData.data;
-      }
-    });
-
-    return targetLastAccessQuery.valueChanges.subscribe(
-      response =>{
-        this.targetUserlastAccessSource.next(response.data["queryUser"][0].lastAccess);
-        console.log("CCS: target last access received", {'target last access': response.data["queryUser"][0].lastAccess});
-      }
-    );
-
-  }*/
-
-  //////////////////////////// MESSAGES SUBSCRIBERS ATTRIBUTES ////////////////////////////
-
-  private _getMessages(): Subscription {
-
-    this.isLoadingSource.next(true);
+    const callback = messages => {
+      this.messagesAddedSource.next(messages);
+      console.log('CCS: messages added', {'messages': messages});
+    };
 
     const appSettings = JSON.parse(localStorage.getItem('appSettings'));
 
-    const messagesQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_GET_MESSAGES,
-        variables: {
-          targetUser: this._targetUsername,
-          currentUser: this._currentUsername,
-          limit: appSettings.maxNumOfChatMessages
-        },
-        fetchPolicy: 'no-cache'
-      });
+    const itemRef = this.afs.collection('messages', ref => ref
+      .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
+      .orderBy('timestamp', 'desc')
+      .limit(appSettings.maxNumOfChatMessages));
+    const sub = itemRef.stateChanges(['added']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
 
-    return messagesQuery.valueChanges.subscribe(
-      response =>{
-        this.isLoadingSource.next(false);
-        this.messagesSource.next(response.data["getMessages"]);
-        console.log("CCS: messages received", {'messages': response.data["getMessages"]});
+    return sub;
+
+  }
+
+  private _subscribeToMessagesChanged(): Subscription {
+
+    const callback = messages => {
+      if (messages.length > 0) {
+        this.messagesChangedSource.next(messages);
+        console.log("CCS: messages changed", {'message': messages});
       }
-    );
+    };
+
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+
+    const itemRef = this.afs.collection('messages', ref => ref
+      .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
+      .orderBy('timestamp', 'desc')
+      .limit(appSettings.maxNumOfChatMessages));
+    const sub = itemRef.stateChanges(['modified']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
+
+    return sub;
 
   }
 
-  private _subscribeToMessageAdded(): Subscription {
+  private _subscribeToMessagesDeleted(): Subscription {
 
-    const messageAddedSub = this.apollo.subscribe({
-      query: GQL_MESSAGE_ADDED,
-      variables: {
-        targetUser: this._targetUsername
+    const callback = messages => {
+      if (messages.length > 0) {
+        this.messagesDeletedSource.next(messages);
+        console.log("CCS: messages deleted", {'messages': messages});
       }
-    });
+    };
 
-    return messageAddedSub.subscribe(
-      response =>{
-        if (response.data["messageAdded"])
-          this.messageAddedSource.next(response.data["messageAdded"]);
-        console.log("CCS: message added", {'message': response.data["messageAdded"]});
+    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
+
+    const itemRef = this.afs.collection('messages', ref => ref
+      .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
+      .orderBy('timestamp', 'desc')
+      .limit(appSettings.maxNumOfChatMessages));
+    const sub = itemRef.stateChanges(['removed']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
+
+    return sub;
+
+  }
+
+  private _subscribeToMessages_all() {
+    if (this._messagesAddedSub) {
+      this._messagesAddedSub.unsubscribe();
+    }
+    if (this._messagesChangedSub) {
+      this._messagesChangedSub.unsubscribe();
+    }
+    if (this._messagesDeletedSub) {
+      this._messagesDeletedSub.unsubscribe();
+    }
+    this._messagesAddedSub = this._subscribeToMessagesAdded();
+    this._messagesChangedSub = this._subscribeToMessagesChanged();
+    this._messagesDeletedSub = this._subscribeToMessagesDeleted();
+  }
+
+  //////////////////////////// PRIVATE CHATS SUBSCRIBERS ATTRIBUTES ////////////////////////////
+
+  private _subscribeToChatsAdded(): Subscription {
+
+    const callback = chats => {
+      this.chatsAddedSource.next(chats);
+      console.log('CCS: chats added', {'chats': chats});
+    };
+
+    const listRef = this.afs.collection('chats', ref => ref
+      .where('users_uids', 'array-contains', this._currentUserUID));
+    const sub = listRef.stateChanges(['added']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
+
+    return sub;
+
+  }
+
+  private _subscribeToChatsChanged(): Subscription {
+
+    const callback = chats => {
+      if (chats.length > 0) {
+        this.chatsChangedSource.next(chats);
+        console.log("CCS: chats changed", {'chats': chats});
       }
-    );
+    };
+
+    const listRef = this.afs.collection('chats', ref => ref
+      .where('users_uids', 'array-contains', this._currentUserUID));
+    const sub = listRef.stateChanges(['modified']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
+
+    return sub;
 
   }
 
-  private _subscribeToMessageChanged(): Subscription {
+  private _subscribeToChatsDeleted(): Subscription {
 
-    const messageChangedSub = this.apollo.subscribe({
-      query: GQL_MESSAGE_CHANGED,
-      variables: {
-        targetUser: this._targetUsername
+    const callback = chats => {
+      if (chats.length > 0) {
+        this.chatsDeletedSource.next(chats);
+        console.log("CCS: chats deleted", {'chats': chats});
       }
-    });
+    };
 
-    return messageChangedSub.subscribe(
-      response =>{
-        if (response.data["messageChanged"])
-          this.messageChangedSource.next(response.data["messageChanged"]);
-        console.log("CCS: message changed", {'message': response.data["messageChanged"]});
+    const listRef = this.afs.collection('chats', ref => ref
+      .where('users_uids', 'array-contains', this._currentUserUID));
+    const sub = listRef.stateChanges(['removed']).pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
+
+    return sub;
+
+  }
+
+  private _subscribeToChats_all() {
+    if (this._chatsAddedSub) {
+      this._chatsAddedSub.unsubscribe();
+    }
+    if (this._chatsChangedSub) {
+      this._chatsChangedSub.unsubscribe();
+    }
+    if (this._chatsDeletedSub) {
+      this._chatsDeletedSub.unsubscribe();
+    }
+    this._chatsAddedSub = this._subscribeToChatsAdded();
+    this._chatsChangedSub = this._subscribeToChatsChanged();
+    this._chatsDeletedSub = this._subscribeToChatsDeleted();
+  }
+
+  //////////////////////////// PRIVATE USERS SUBSCRIBERS ATTRIBUTES ////////////////////////////
+
+  private _subscribeToTargetUsers(userUids: string[]): Subscription {
+
+    if (this._targetUsersSub)
+      this._targetUsersSub.unsubscribe()
+
+    const callback = response => {
+      if (response.length !== 0) {
+        this.targetUsersSource.next(response);
+        console.log("CCS: target users received", {'users': response });
       }
-    );
+    };
 
-  }
-
-  private _subscribeToMessageDeleted(): Subscription {
-
-    const messageDeletedSub = this.apollo.subscribe({
-      query: GQL_MESSAGE_DELETED,
-      variables: {
-        targetUser: this._targetUsername
-      }
-    });
-
-    return messageDeletedSub.subscribe(
-      response => {
-        if (response.data["messageDeleted"])
-          this.messageDeletedSource.next(response.data["messageDeleted"]);
-        console.log("CCS: message deleted", {'message': response.data["messageDeleted"]});
-      }
-    );
-
-  }
-
-  private _subscribeToMessages() {
-    this._messageAddedSub = this._subscribeToMessageAdded();
-    this._messageChangedSub = this._subscribeToMessageChanged();
-    this._messageDeletedSub = this._subscribeToMessageDeleted();
-  }
-
-  private _unsubscribeToMessages() {
-    if (this._messageAddedSub)
-      this._messageAddedSub.unsubscribe();
-    if (this._messageChangedSub)
-      this._messageChangedSub.unsubscribe();
-    if (this._messageDeletedSub)
-      this._messageDeletedSub.unsubscribe()
-  }
-
-  //////////////////////////// CHATS SUBSCRIBERS ATTRIBUTES ////////////////////////////
-
-  private _getChats(): Subscription {
-
-    this.isLoadingSource.next(true);
-
-    const chatsQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_GET_CHATS,
-        fetchPolicy: 'no-cache'
-      });
-
-    return chatsQuery.valueChanges.subscribe(
-      response =>{
-        this.isLoadingSource.next(false);
-        this.chatsSource.next(response.data["getChats"]);
-        console.log("CCS: chats received", {'chats': response.data["getChats"]});
-      }
-    );
-
-  }
-
-  private _subscribeToChatAdded(): Subscription {
-
-    const chatAddedSub = this.apollo.subscribe({
-      query: GQL_CHAT_ADDED
-    });
-
-    return chatAddedSub.subscribe(
-      response =>{
-        if (response.data["chatAdded"])
-          this.chatAddedSource.next(response.data["chatAdded"]);
-        console.log("CCS: chat added", {'chat': response.data["chatAdded"]});
-      }
-    );
-
-  }
-
-  private _subscribeToChatChanged(): Subscription {
-
-    const chatChangedSub = this.apollo.subscribe({
-      query: GQL_CHAT_CHANGED
-    });
-
-    return chatChangedSub.subscribe(
-      response =>{
-        if (response.data["chatChanged"])
-          this.chatChangedSource.next(response.data["chatChanged"]);
-        console.log("CCS: chat changed", {'chat': response.data["chatChanged"]});
-      }
-    );
-
-  }
-
-  private _subscribeToChatDeleted(): Subscription {
-
-    const userDeletedSub = this.apollo.subscribe({
-      query: GQL_CHAT_DELETED
-    });
-
-    return userDeletedSub.subscribe(
-      response =>{
-        if (response.data["chatDeleted"])
-          this.chatDeletedSource.next(response.data["chatDeleted"]);
-        console.log("CCS: chat deleted", {'user': response.data["chatDeleted"]});
-      }
-    );
-
-  }
-
-  private _subscribeToChats() {
-    this._chatAddedSub = this._subscribeToChatAdded();
-    this._chatChangedSub = this._subscribeToChatChanged();
-    this._chatDeletedSub = this._subscribeToChatDeleted();
-  }
-
-  private _unsubscribeToChats() {
-    if (this._chatAddedSub)
-      this._chatAddedSub.unsubscribe();
-    if (this._chatChangedSub)
-      this._chatChangedSub.unsubscribe();
-    if (this._chatDeletedSub)
-      this._chatDeletedSub.unsubscribe()
-  }
-
-  //////////////////////////// USERS SUBSCRIBERS ATTRIBUTES ////////////////////////////
-
-  private _getUsers(): Subscription {
-
-    this.isLoadingSource.next(true);
-
-    const usersQuery = this.apollo
-      .watchQuery<any[]>({
-        query: GQL_GET_USERS,
-        fetchPolicy: 'no-cache'
-      });
-
-    return usersQuery.valueChanges.subscribe(
-      response =>{
-        this.isLoadingSource.next(false);
-        this.usersSource.next(response.data["getUsers"]);
-        console.log("CCS: users received", {'users': response.data["getUsers"]});
-      }
-    );
-
-  }
-
-  private _subscribeToUserAdded(): Subscription {
-
-    const userAddedSub = this.apollo.subscribe({
-      query: GQL_USER_ADDED
-    });
-
-    return userAddedSub.subscribe(
-      response =>{
-        if (response.data["userAdded"])
-          this.userAddedSource.next(response.data["userAdded"]);
-        console.log("CCS: user added", {'user': response.data["userAdded"]});
-      }
-    );
-
-  }
-
-  private _subscribeToUserChanged(): Subscription {
-
-    const userChangedSub = this.apollo.subscribe({
-      query: GQL_USER_CHANGED
-    });
-
-    return userChangedSub.subscribe(
-      response =>{
-        if (response.data["userChanged"])
-          this.userChangedSource.next(response.data["userChanged"]);
-        console.log("CCS: user changed", {'user': response.data["userChanged"]});
-      }
-    );
-
-  }
-
-  private _subscribeToUserDeleted(): Subscription {
-
-    const userDeletedSub = this.apollo.subscribe({
-      query: GQL_USER_DELETED
-    });
-
-    return userDeletedSub.subscribe(
-      response =>{
-        if (response.data["userDeleted"])
-          this.userDeletedSource.next(response.data["userDeleted"]);
-        console.log("CCS: user deleted", {'user': response.data["userDeleted"]});
-      }
-    );
-
-  }
-
-  public _subscribeToUsers() {
-    this._userAddedSub = this._subscribeToUserAdded();
-    this._userChangedSub = this._subscribeToUserChanged();
-    this._userDeletedSub = this._subscribeToUserDeleted();
-  }
-
-  public _unsubscribeToUsers() {
-    if (this._userAddedSub)
-      this._userAddedSub.unsubscribe();
-    if (this._userChangedSub)
-      this._userChangedSub.unsubscribe();
-    if (this._userDeletedSub)
-      this._userDeletedSub.unsubscribe()
-  }
-
-
-
-
-  private addUser(username): Observable<any>{
-    // Adds an user with the given username
-
-    //this.isLoadingSource.next(true);
-
-    return this.apollo.mutate({
-      mutation: GQL_ADD_USER,
-      variables: {
-        USER: username,
-        name: '',
-        lastAccess: new Date().getTime(),
-        bio: '',
-        surname: '',
-        age: null,
-        sex: null
-      }
-    }).pipe(map(response => response.data['addUsers']));
-
-  }
-
-  private updateCurrentUserLastAccess(): Observable<any>{
-    // Updates to now the last access of the current user
-
-    //console.log("CCS: UPDATE");
-
-    return this.apollo.mutate({
-      mutation: GQL_UPDATE_USER,
-      variables: {
-        USER: this._currentUsername,
-        lastAccess: new Date().getTime()
-      }
-    }).pipe(map(response => response.data['editUsers']));
-
-  }
-
-
-  //////////////////////////// PUBLIC METHODS ////////////////////////////
-
-  /*
-    public setCurrentChatNotifyToTarget(): Observable<any> {
-      // Set the notify field of a chat to the target user. N.B. Used when the current user sends a message
-
-      return this.apollo.mutate({
-        mutation: GQL_UPDATE_CHAT,
-        variables: {
-          USER: this._currentUsername,
-          otherUser: this._targetUsername,
-          notify: this._targetUsername
-        }
-      }).pipe(map(response => response.data["updateChat"]));
-
+    if (userUids && userUids.length !== 0) {
+      const listRef = this.afs.collection('users', ref => ref.where(FieldPath.documentId(), 'in', userUids));
+      return listRef.snapshotChanges().pipe(
+        map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+        map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
+      ).subscribe(callback);
     }
 
-    public clearCurrentChatNotify(): Observable<any>{
-      // Set the notify field of a chat to 'none'
+  }
 
-      return this.apollo.mutate({
-        mutation: GQL_UPDATE_CHAT,
-        variables: {
-          USER: this._currentUsername,
-          otherUser: this._targetUsername,
-          notify: "none"
-        }
-      }).pipe(map(response => response.data["updateChat"]));
-    }*/
+  private _subscribeToCurrentUser(): Subscription {
 
-  private getFileStoringObs(file){
+    if (this._currentUserSub)
+      this._currentUserSub.unsubscribe()
+
+    const callback = response => {
+      if (response.length !== 0){
+        this.currentUserSource.next(response[0]);
+        console.log("CCS: current user received", {'user': response[0] });
+      }
+    };
+
+    const listRef = this.afs.collection('users', ref => ref.where(FieldPath.documentId(), '==', this._currentUserUID));
+    return listRef.snapshotChanges().pipe(
+      map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
+      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+    ).subscribe(callback);
+
+  }
+
+  //////////////////////////// OTHER PRIVATE METHODS ////////////////////////////
+
+  private _getFileStoringObs(file): { progressOb: Observable<number>, fileOb: Observable<any> }{
     const fileId = Math.trunc(Math.random()*1000000);
-    let ref = this.afStorage.ref('chats_files/' + this._currentUsername + '/' + this._targetUsername + '/' + fileId);
+    let ref = this.afStorage.ref('chats_files/' + this._currentUserUID + '/' + this._targetUserUID + '/' + fileId);
     let task = ref.put(file);
     const fileObservable = task.snapshotChanges().pipe(
       last(),  // emit the last element after task.snapshotChanges() completed
@@ -983,12 +355,37 @@ export class ChatCoreService {
     return progressAndObs;
   }
 
-  public sendMessage(message: any): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
+  private _updateCurrentUserLastAccess(): Observable<void> {
+    const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
+    return from(itemsRef.update({'last_access': new Date().getTime() }));
+  }
+
+  private addCurrentUser(username: string, userUID: string): Observable<void> {
+    // Adds an user with the given username
+
+    const user = {
+      username: username,
+      name: 'Name',
+      last_access: new Date().getTime(),
+      bio: 'sample bio',
+      surname: 'Surname',
+      age: null,
+      sex: null,
+    };
+
+    const itemsRef = this.afs.collection('users').doc(userUID);
+    return from(itemsRef.set(user));
+
+  }
+
+  //////////////////////////// PUBLIC METHODS ////////////////////////////
+
+  public sendMessage(message: Partial<Message>): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
 
     if(message.files.length) {
       let filesArray: any[] = [];
-      const storingFilesObsArray = message.files.map(file => this.getFileStoringObs(file));
+      const storingFilesObsArray = (message.files as any[]).map(file => this._getFileStoringObs(file));
       const progressObs: Observable<number>[] = storingFilesObsArray.map(x => x.progressOb);
       const fileObs: Observable<any>[] = storingFilesObsArray.map(x => x.fileOb);
       const sendMessageResponseOb = forkJoin(fileObs).pipe(map(obsResults => {
@@ -998,87 +395,91 @@ export class ChatCoreService {
         });
       })).pipe(concatMap(() => {
           console.log('CCS: All files stored. Linking URLs and types...');
-          return this.apollo.mutate({
-            mutation: GQL_ADD_MESSAGE,
-            variables: {
-              message: {
-                timestamp: message.timestamp,
-                type: message.type,
-                text: message.text,
-                sender_username: this._currentUsername,
-                receiver_username: this._targetUsername,
-                files: filesArray,
-                quote_message_id: message.quote ? message.quote.id : null
-              }
-            }
-          }).pipe(map(response => response.data["addMessages"]));
+          const messageToSend = {
+            timestamp: message.timestamp,
+            type: message.type,
+            text: message.text,
+            files: filesArray,
+            quote_message_uid: message.quote_message_uid,
+            users_uids: [this._currentUserUID, this._targetUserUID]
+          };
+          const itemsRef = this.afs.collection('messages');
+          return from(itemsRef.add(messageToSend));
         }
       ));
       return { progressObs: progressObs, sendMessageResponseOb: sendMessageResponseOb };
     } else {
-      const sendMessageResponseOb = this.apollo.mutate({
-        mutation: GQL_ADD_MESSAGE,
-        variables: {
-          message: {
-            timestamp: message.timestamp,
-            type: message.type,
-            text: message.text,
-            sender_username: this._currentUsername,
-            receiver_username: this._targetUsername,
-            quote_message_id: message.quote ? message.quote.id : null,
-          }
-        }
-      }).pipe(map(response => response.data["addMessages"]));
+      const messageToSend = {
+        timestamp: message.timestamp,
+        type: message.type,
+        text: message.text,
+        quote_message_uid: message.quote_message_uid,
+        users_uids: [this._currentUserUID, this._targetUserUID]
+      };
+      const itemsRef = this.afs.collection('messages');
+      const sendMessageResponseOb = from(itemsRef.add(messageToSend));
       return { sendMessageResponseOb: sendMessageResponseOb }
     }
 
 
   }
 
-  public setMessagesAsReaded(messagesToConfirm: any[]): Observable<any> {
-    // Updates the readed flag of the messages with the provided messagesId
+  public setMessageAsReaded(messageUid: string): Observable<void> {
+    // Updates the readed flag of the message with the provided messagesId
 
-    return this.apollo.mutate({
-      mutation: GQL_UPDATE_MESSAGES,
-      variables: {
-        messages: messagesToConfirm
-      }
-    }).pipe(map(response => response.data['editMessages']));
+    const batch = this.afs.firestore.batch()
+
+    const itemsRef = this.afs.collection('messages').doc(messageUid);
+    return from(batch.update(itemsRef.ref,{ readed: true }).commit());
 
   }
 
-  public getUser(username): Observable<any>{
+  public getUser(userUID: string): Observable<User>{
+    // Returns an observable containing an the User with the provided UID
+
+    const listRef = this.afs.collection('users').doc(userUID);
+    return listRef.snapshotChanges().pipe(
+      map(snapshot => {
+        const snapshotData = snapshot.payload.data();
+        return snapshotData ? { uid: snapshot.payload.id, ...snapshotData as {} } as User : null ;
+      }),
+      first()
+    );
+
+  }
+
+  public getUserByUsername(username: string): Observable<User>{
     // Returns an observable containing an the User with the provided username
 
-    return this.apollo.watchQuery<any[]>({
-      query: GQL_GET_USER,
-      variables: {
-        USER: username,
-        accessToAll: true
-      }
-    }).valueChanges.pipe(map(response => (response.data["getUsers"].length >= 1 ? response.data["getUsers"][0] : null)));
+    const listRef = this.afs.collection('users', ref => ref.where('username', '==', username));
+    return listRef.snapshotChanges().pipe(
+      map(snapshot => {
+        return snapshot.length !== 0 ? { uid: snapshot[0].payload.doc.id, ...snapshot[0].payload.doc.data() as {} } as User : null ;
+      }),
+      first()
+    );
 
   }
 
-  public updateCurrentUserData(newUserData): Observable<any>{
+  public updateCurrentUserData(newUserData: Partial<User>): Observable<void>{
     // Updates the current user data
 
-    return this.apollo.mutate({
-      mutation: GQL_UPDATE_USER,
-      variables: {
-        USER: this._currentUsername,
-        name: newUserData.name,
-        surname: newUserData.surname,
-        age: newUserData.age,
-        sex: newUserData.sex,
-        bio: newUserData.bio,
-      }
-    }).pipe(map(response => response.data["editUsers"]));
+    const userData: Partial<User> = {
+      username: this._currentUsername,
+      name: newUserData.name,
+      surname: newUserData.surname,
+      age: newUserData.age,
+      sex: newUserData.sex,
+      bio: newUserData.bio,
+    }
+
+    const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
+    return from(itemsRef.update(userData));
 
   }
 
   public updateCurrentUserProfileImage(newUserProfileImage: any): { progressOb: Observable<number>, updateCurrentUserProfileImgOb: Observable<any> } {
-    let ref = this.afStorage.ref('profile_images/' + this._currentUsername);
+    let ref = this.afStorage.ref('profile_images/' + this._currentUserUID);
     let task = ref.put(newUserProfileImage);
 
     const imageUploadingObs = task.snapshotChanges().pipe(
@@ -1086,13 +487,10 @@ export class ChatCoreService {
       switchMap(() => ref.getDownloadURL())
     ).pipe(concatMap(uploadedURL => {
           console.log('CCS: Profile image stored. Linking URL... (', uploadedURL, ')')
-          return this.apollo.mutate({
-            mutation: GQL_UPDATE_USER,
-            variables: {
-              USER: this._currentUsername,
-              profile_img: uploadedURL,
-            }
-          }).pipe(map(response => response.data["editUsers"]));
+
+          const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
+          return from(itemsRef.update({'profile_img_url': uploadedURL }));
+
         }
       ));
 
@@ -1100,75 +498,70 @@ export class ChatCoreService {
 
   }
 
-  public addChat(targetUsername: string): Observable<any> {
+  public addChat(targetUserUID: string): Observable<any> {
     // Adds the chat between the currentUser and the User with the provided targetUsername
 
-    return this.apollo.mutate({
-      mutation: GQL_ADD_CHAT,
-      variables: {
-        USER: this._currentUsername,
-        otherUser: targetUsername,
-      }
-    }).pipe(map(response => response.data["addChats"]));
+    const chat = {
+      updated_timestamp: new Date().getTime(),
+      users_uids: [this._currentUserUID, targetUserUID],
+      last_message_preview: 'No messages yet'
+    }
+
+    const itemsRef = this.afs.collection('chats');
+    return from(itemsRef.add(chat));
 
   }
 
-  public chatExists(targetUsername): boolean {
+  public chatExists(targetUserUID: string): boolean {
     // Returns true only if a chat with the given username already exists.
 
     let founded = false;
     this._chats.forEach(chat => {
-      if(chat.username1 == targetUsername || chat.username2 == targetUsername){
+      if(chat.users_uids.includes(targetUserUID)){
         founded = true;
       }
     });
     return founded;
   }
 
-  public setChat(targetUsername: string){
+  public setChat(targetUsername: string, targetUserUID: string) {
     // Sets as current chat the one with the user with the given username
 
-    if (this._targetUsername === targetUsername)
+    if (this._targetUserUID === targetUserUID)
       return;
 
+    this._targetUserUID = targetUserUID;
+    this.targetUserUIDSource.next(targetUserUID);
     this._targetUsername = targetUsername;
     this.targetUsernameSource.next(targetUsername);
 
-    this._unsubscribeToMessages();
-    this._getMessages();
-    this._subscribeToMessages();
+    this._subscribeToMessages_all();
 
-    this.getMessages.pipe(first()).subscribe(msgs => {
+    this.messages.pipe(first()).subscribe(msgs => {
       this._messages = [];
       this._messages.push(...msgs);
     });
 
-    //const newTargetUserData = this._chatsUsersInfo.find(user => user.username === targetUsername);
-    //this.targetUserDataSource.next(newTargetUserData);
-
-    //this.chatMessagesSubscription = this.subscribeToChatMessages();
-    //this.targetUserLastAccessSubscription = this.subscribeToTargetUserLastAccess();
-    console.log("CCS: setted current chat (", this._currentUsername, "->", this._targetUsername, ")");
+    console.log("CCS: setted current chat (", this._currentUserUID, "->", this._targetUserUID, ")");
 
   }
 
-  public init(currentUsername: string) {
+  public init(currentUsername: string, currentUserUID: string) {
     // Initializes the service setting as current user the one with the given username
-
-    if(currentUsername == this._currentUsername)
+    if(currentUserUID == this._currentUserUID)
       return;
 
-    this.isLoadingSource.next(true);
-
+    this._currentUserUID = currentUserUID;
+    this.currentUserUIDSource.next(currentUserUID);
     this._currentUsername = currentUsername;
     this.currentUsernameSource.next(currentUsername);
 
     // checking if the current user exists.
-    this.getUser(currentUsername).subscribe(result => {
-      if (!result){
+    this.getUser(currentUserUID).subscribe(user => {
+      if (!user){
         // if not, create a new user with the given username and name
         console.log("CCS: user first login. Created profile.");
-        this.addUser(currentUsername).subscribe(response => {
+        this.addCurrentUser(currentUsername, currentUserUID).subscribe(response => {
           console.log("CCS: user added");
           window.location.reload();
         },(error) => {
@@ -1176,27 +569,24 @@ export class ChatCoreService {
           window.location.reload();
         });
       }else{
-        this.isLoadingSource.next(false);
         // subscribing to chats of the current user
-        //this.subscribeToChats();
-        this._getChats();
-        this._subscribeToChats();
-        this._getUsers();
-        this._subscribeToUsers();
+        //this._subscribeToTargetUsers(null);
+        this._currentUserSub = this._subscribeToCurrentUser();
+        this._subscribeToChats_all();
         // updating last access of current user once every 10s
-        /*this.updateCurrentUserLastAccess().subscribe(response => {
+        this._updateCurrentUserLastAccess().subscribe(_ => {
           console.log("CCS: current user last access updated");
         },(error) => {
           console.log('CCS: ERROR while updating last access of the current user', error);
         });
         interval(10000).subscribe(() =>
-          this.updateCurrentUserLastAccess().subscribe(response => {
+          this._updateCurrentUserLastAccess().subscribe(_ => {
             console.log("CCS: current user last access updated");
           },(error) => {
             console.log('CCS: ERROR while updating last access of the current user', error);
           })
-        );*/
-        console.log("CCS: setted current user (", this._currentUsername, ")");
+        );
+        console.log("CCS: setted current user", user.uid);
       }
     });
 

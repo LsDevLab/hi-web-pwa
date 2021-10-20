@@ -10,25 +10,23 @@ const pnsUri = 'https://p74319.deta.dev';
 export class ChatNotificationsService {
 
   readonly VAPID_PUBLIC_KEY = "BP07KrtTn9S37-WusRWp-Y2OBWcFmo8rG0wb5hjhcYbArBd5xdNa2qkFLesxwKhidy0_t213r5ZEk0eeLO05Ol4";
-  
+
   username: string;
 
-  constructor(public swPush: SwPush, private http: HttpClient) { 
+  constructor(public swPush: SwPush, private http: HttpClient) {
 
   }
 
   unsubscribeToMessagesPushNotifications(){
     this.swPush.subscription.subscribe(currentSub => {
       if (currentSub){
-        //console.log("CNS: unsubscribed from push notifications service");
         let request = {'subscription_info': currentSub, 'username': this.username};
         let subJSON = JSON.stringify(request);
-        //console.log("CNS: requesting unsubscription with subBody", subJSON);
         this.http.post(pnsUri + "/messages/push/unsubscribe", JSON.parse(subJSON)).subscribe(data => {
           this.swPush.unsubscribe();
           console.log("CNS: unsubscribed from push notifications server with response", data);
         });
-      }      
+      }
     });
   }
 
@@ -43,7 +41,7 @@ export class ChatNotificationsService {
       this.http.post(pnsUri + "/messages/push/subscribe", JSON.parse(subJSON)).subscribe(data => {
         console.log("CNS: subscription request response from the server", data);
       });
-    })//this.newsletterService.addPushSubscriber(sub).subscribe())
+    })
     .catch(err => console.error("CNS: could not subscribe to message notifications server", err));
     }
 

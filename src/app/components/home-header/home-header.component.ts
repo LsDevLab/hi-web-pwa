@@ -1,9 +1,8 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import {ChatNotificationsService} from '../../services/chat-notifications.service';
-import {Router} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ChatNotificationsService } from '../../services/chat-notifications.service';
+import { Router} from '@angular/router';
+import firebase from 'firebase';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'unlogged-app-header',
@@ -12,21 +11,27 @@ import {Router} from '@angular/router';
 })
 export class HomeHeaderComponent implements OnInit {
 
-  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService,
-              public router: Router) { }
+  isAuthenticated = (localStorage.getItem('isAuth') === 'true');
+
+  constructor(private chatNotificationsService: ChatNotificationsService, public router: Router,
+              public afAuth: AngularFireAuth) {
+  }
 
   ngOnInit(): void {
+    this.afAuth.user.subscribe(usr => this.isAuthenticated = usr ? true : false);
   }
 
   logOut(){
-
     this.chatNotificationsService.unsubscribeToMessagesPushNotifications();
-
-    //console.log(localStorage.getItem('currentToken'));
     localStorage.setItem('isAuth', "false");
     localStorage.removeItem('currentToken');
-    this.auth.logout({ returnTo: document.location.origin });
+    this.afAuth.signOut().then(_ => window.location.reload())
+  }
 
+  signIn() {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'))
+      .catch(error => console.log('HHC Authentication failed with error: ', error));
   }
 
 }

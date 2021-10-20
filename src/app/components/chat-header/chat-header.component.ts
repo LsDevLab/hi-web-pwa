@@ -1,9 +1,4 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import {ChatNotificationsService} from '../../services/chat-notifications.service';
-import {NbMenuService} from '@nebular/theme';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'logged-app-header',
@@ -14,11 +9,10 @@ export class ChatHeaderComponent implements OnInit {
 
 
 
-  constructor(public auth: AuthService, private chatNotificationsService: ChatNotificationsService) {
+  constructor() {
   }
 
   ngOnInit(): void {
-
   }
 
 

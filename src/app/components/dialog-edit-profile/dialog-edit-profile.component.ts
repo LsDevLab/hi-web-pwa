@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
-import {first} from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { ChatUiService } from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-dialog-edit-profile',
@@ -12,27 +13,14 @@ export class DialogEditProfileComponent implements OnInit {
 
   loadingUserData: boolean = false;
   currentName: string;
-  userData: any = {
-    name: '',
-    surname: '',
-  };
   imgUploadingPercentage = null;
+  usersSub: Subscription;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
-              private toastrService: NbToastrService) {
+              private toastrService: NbToastrService, public chatUiService: ChatUiService) {
   }
 
   ngOnInit(): void {
-    this.chatCoreService.currentUsernameObservable.subscribe(currentUsername => {
-      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
-        const userData = users.find(u => u.username === currentUsername);
-        this.userData = userData ? userData : this.userData;
-      });
-      this.chatCoreService.userChanged.subscribe(user => {
-        if (user.username === currentUsername)
-          this.userData = user;
-      });
-    });
   }
 
   closeDialog(){
@@ -41,8 +29,8 @@ export class DialogEditProfileComponent implements OnInit {
 
   saveEdits(newUserData){
     this.loadingUserData = true;
-    this.chatCoreService.updateCurrentUserData(newUserData).subscribe(response => {
-      console.log("DEPC: current user data updated", response);
+    this.chatCoreService.updateCurrentUserData(newUserData).subscribe(_ => {
+      console.log("DEPC: current user data updated");
       this.toastrService.show("User profile updated", "Done", new NbToastrConfig({status:"success"}));
       this.loadingUserData = false;
       this.closeDialog();

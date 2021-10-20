@@ -3,7 +3,7 @@
     <img src="assets/img/logo_gif.gif" style="height: 100%; float: left;">
   </a>
   <div style="float: right;">
-    <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+    <ng-container *ngIf="isAuthenticated; else loggedOut">
       <button nbButton ghost status="control" (click)="router.navigateByUrl('/chat')">
         Vai alla chat
         <nb-icon icon="message-square-outline"></nb-icon>
@@ -14,7 +14,7 @@
       </button>
     </ng-container>
     <ng-template #loggedOut>
-      <button nbButton ghost status="control" (click)="auth.loginWithRedirect({ appState: { target: '/chat' }})">
+      <button nbButton ghost status="control" (click)="signIn()">
         Login
         <nb-icon icon="log-in-outline"></nb-icon>
       </button>

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {BreakpointObserver} from '@angular/cdk/layout';
-import {AuthService} from '@auth0/auth0-angular';
-import {Router} from '@angular/router';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/auth';
+import firebase from 'firebase';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-home-page',
@@ -11,20 +13,28 @@ import {Router} from '@angular/router';
 export class HomePageComponent implements OnInit {
 
   screenIsSmall = false;
-
   nameOfUser: string = '';
+  appName = environment.appName;
+  isAuthenticated = (localStorage.getItem('isAuth') === 'true');
 
-  constructor(private breakpointObserver: BreakpointObserver, public auth: AuthService, public router: Router,) {
+  constructor(private breakpointObserver: BreakpointObserver, public router: Router,
+              public afAuth: AngularFireAuth) {
   }
 
   ngOnInit(): void {
     this.breakpointObserver.observe('(max-width: 992px)').subscribe(r => {
       this.screenIsSmall = r.matches;
     });
-    this.auth.user$.subscribe(usr => {
+    this.afAuth.user.subscribe(usr => {
       if(usr)
-        this.nameOfUser = usr.given_name;
+        this.nameOfUser = usr.displayName;
+        this.isAuthenticated = usr ? true : false;
     });
+  }
+
+  signIn() {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
   }
 
 }

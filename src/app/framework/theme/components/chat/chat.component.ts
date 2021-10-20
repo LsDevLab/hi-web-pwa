@@ -168,9 +168,12 @@ import { NbChatMessageComponent } from './chat-message.component';
   styleUrls: ['./chat.component.scss'],
   template: `
     <div class="scrollable" #scrollable>
-      <div class="messages">
+      <div class="messages" *ngIf="!loading">
         <ng-content select="nb-chat-message"></ng-content>
         <p class="no-messages" *ngIf="!messages?.length">{{ noMessagesPlaceholder }}</p>
+      </div>
+      <div class="loading" *ngIf="loading">
+        <img src="assets/img/three_dots_loader.gif" class="loading-img" >
       </div>
     </div>
     <div class="form">
@@ -181,6 +184,8 @@ import { NbChatMessageComponent } from './chat-message.component';
 export class NbChatComponent implements OnChanges, AfterContentInit, AfterViewInit {
 
   @Input() title: string;
+
+  @Input() loading: string;
 
   /**
    * Chat size, available sizes:

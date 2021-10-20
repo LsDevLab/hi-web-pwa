@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {NbDialogRef, NbToastrService} from '@nebular/theme';
-import {ChatCoreService} from '../../services/chat-core.service';
+import { NbDialogRef } from '@nebular/theme';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dialog-about',
@@ -8,6 +8,8 @@ import {ChatCoreService} from '../../services/chat-core.service';
   styleUrls: ['./dialog-about.component.css']
 })
 export class DialogAboutComponent implements OnInit {
+
+  appVersion = environment.appVersion;
 
   constructor(protected dialogRef: NbDialogRef<DialogAboutComponent>) {
   }

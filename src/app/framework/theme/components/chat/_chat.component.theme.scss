@@ -52,6 +52,17 @@
       flex-direction: column;
     }
 
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+
+      .loading-img {
+        height: 20%;
+      }
+    }
+
     .no-messages {
       text-align: center;
     }
@@ -110,6 +121,12 @@
       padding: 0.4rem 1rem 0.4rem 1rem;
       color: nb-theme(chat-message-sender-text-color);
       font-size: 0.7rem;
+    }
+
+    .quote-message-handle-div {
+      nb-chat-message-file {
+        margin-top: 0.2rem;
+      }
     }
 
     nb-chat-message-text {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import { NbDialogService } from '@nebular/theme';
 import { DialogTargetInfoComponent } from '../dialog-target-info/dialog-target-info.component';
-import {first} from 'rxjs/operators';
+import { ChatUiService } from '../../services/chat-ui.service';
 
 @Component({
   selector: 'app-chat-user-info',
@@ -11,38 +11,16 @@ import {first} from 'rxjs/operators';
 })
 export class ChatUserInfoComponent implements OnInit {
 
-  targetUserLastAccess: Date;
-  targetUsername: string;
-  targetUserData: any;
 
-  constructor(private chatCoreService: ChatCoreService, private dialogService: NbDialogService) { }
+  constructor(private chatCoreService: ChatCoreService, private dialogService: NbDialogService,
+              public chatUiService: ChatUiService) {
+  }
 
   ngOnInit(): void {
-    this.chatCoreService.targetUsernameObservable.subscribe(targetUsername => {
-      this.chatCoreService.getUsers.pipe(first()).subscribe(users => {
-        this.targetUserData = users.find(u => u.username === targetUsername);
-      });
-      this.chatCoreService.userChanged.subscribe(user => {
-        if (user.username === targetUsername)
-          this.targetUserData = user;
-      });
-    });
   }
 
   openUserInfoDialog(){
     this.dialogService.open(DialogTargetInfoComponent);
-  }
-
-  getDateFormat() {
-    const appSettings = JSON.parse(localStorage.getItem('appSettings'));
-    switch (appSettings.dateFormat) {
-      case 12:
-        return 'short';
-        break;
-      case 24:
-        return 'dd/MM/yyyy, HH:mm';
-        break;
-    }
   }
 
 }

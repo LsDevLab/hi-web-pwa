@@ -1,20 +1,20 @@
-<nb-chat [title]="targetUser" style="height: 100%" scrollBottom="true" status="primary">
-  <nb-chat-message  *ngFor="let msg of messages"
+<nb-chat [title]="chatUiService.targetUsername" style="height: 100%" scrollBottom="true" status="primary" [loading]="chatUiService.messagesLoading">
+  <nb-chat-message  *ngFor="let msg of chatUiService.messages"
                     [type]="msg.type"
                     [message]="msg.text"
                     [reply]="msg.reply"
-                    [sender]="msg.user.name"
-                    [date]="toISODate(msg.timestamp)"
-                    [dateFormat]="getDateFormat()"
+                    [status]="msg.status"
+                    [date]="chatUiService.toISODate(msg.timestamp)"
+                    [dateFormat]="chatUiService.getTimeFormat()"
                     [files]="msg.files"
                     [quote]="msg.quote"
                     [latitude]="msg.latitude"
                     [longitude]="msg.longitude"
                     [firstOfTheDay]="msg.firstOfTheDay"
                     [lastOfAGroup]="msg.lastOfAGroup"
-                    (messageQuoted)="assignMessageQuoted(msg)"
+                    (messageQuoted)="chatUiService.assignMessageQuoted(msg)"
                     >
   </nb-chat-message>
-  <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="messageQuoted">
+  <nb-chat-form [loading]="chatUiService.messagesLoading" (send)="chatUiService.sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="chatUiService.messageQuoted">
   </nb-chat-form>
 </nb-chat>
