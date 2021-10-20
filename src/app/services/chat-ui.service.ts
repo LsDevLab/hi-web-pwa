@@ -97,28 +97,31 @@ export class ChatUiService {
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.currentUser.subscribe(currentUser => {
-      if (!this.currentUser){
+      const isFirstDataLoaded = !this.currentUser;
+      this.currentUser = currentUser;
+      if (isFirstDataLoaded){
         this.setFirstDataLoading()
       }
-      this.currentUser = currentUser;
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
-      if (!this.targetUsers){
-        this.setFirstDataLoading()
-      }
+      const isFirstDataLoaded = !this.targetUsers;
       this.targetUsers = targetUsers;
       if (this.chats)
         this.chats = this.formatChats(this.unformattedChats);
+      if (isFirstDataLoaded){
+        this.setFirstDataLoading()
+      }
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.chats.subscribe(chats => {
-      if (!this.chats) {
-        this.setFirstDataLoading()
-      }
+      const isFirstDataLoaded = !this.chats;
       this.unformattedChats = chats;
       if (this.targetUsers)
         this.chats = this.formatChats(chats);
+      if (isFirstDataLoaded) {
+        this.setFirstDataLoading()
+      }
     });
     this.subscriptions.push(s);
 
