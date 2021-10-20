@@ -32,6 +32,7 @@ export class ChatUiService {
   public isChatOpened = false;
   public firstDataLoadingStatus = 0
   public isFirstDataLoaded = false;
+  public isInitialized = false;
 
   private currentUsername: string;
   private currentUserUID: string;
@@ -141,6 +142,8 @@ export class ChatUiService {
         }, 2000);
       }
     }, 2000);
+
+    this.isInitialized = true;
 
   }
 

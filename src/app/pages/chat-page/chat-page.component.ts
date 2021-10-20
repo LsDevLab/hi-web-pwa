@@ -61,7 +61,8 @@ export class ChatPageComponent implements OnInit {
         }
       }
     });
-    this.chatUiService.initializeService();
+    if (!this.chatUiService.isInitialized)
+      this.chatUiService.initializeService();
   }
 
   ngOnDestroy(){
