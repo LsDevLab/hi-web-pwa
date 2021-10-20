@@ -14,6 +14,9 @@
                                           ? '#c7e2ff' : ''" style="cursor: pointer;">
     <div class="item-div">
       <nb-user [picture]="chat.profile_img_url ? chat.profile_img_url : 'assets/img/default_profile_img.png'"
+               [badgeDotMode]="chat.online"
+               badgeStatus="success"
+               badgePosition="top right"
                color="white"
                size="large"
                onlyPicture="true">

@@ -10,6 +10,8 @@
              size="medium"
              color="white"
              onlyPicture=true
+             badgeStatus="success"
+             [badgeDotMode]="chatUiService.currentUser.online"
              [name]="chatUiService.currentUser.username"
              [title]="chatUiService.currentUser.name + chatUiService.currentUser.surname"
              [picture]="chatUiService.currentUser.profile_img_url ? chatUiService.currentUser.profile_img_url : ''">

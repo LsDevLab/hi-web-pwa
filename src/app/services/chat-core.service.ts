@@ -363,7 +363,7 @@ export class ChatCoreService {
   private addCurrentUser(username: string, userUID: string): Observable<void> {
     // Adds an user with the given username
 
-    const user = {
+    const user: Partial<User> = {
       username: username,
       name: 'Name',
       last_access: new Date().getTime(),
@@ -371,6 +371,7 @@ export class ChatCoreService {
       surname: 'Surname',
       age: null,
       sex: null,
+      online: false
     };
 
     const itemsRef = this.afs.collection('users').doc(userUID);
