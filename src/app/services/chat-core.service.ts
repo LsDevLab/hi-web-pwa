@@ -360,6 +360,15 @@ export class ChatCoreService {
     return from(itemsRef.update({'last_access': new Date().getTime() }));
   }
 
+  public updateUserWritingInChat(chatUid: string): Observable<void> {
+    const indexOfCurrentUser = this._chats.find(c => c.uid === chatUid).users_uids.indexOf(this._currentUserUID);
+    const itemsRef = this.afs.collection('chats').doc(chatUid);
+    if (indexOfCurrentUser === 0)
+      return from(itemsRef.update({'user0_writing':  new Date().getTime(), 'user_writing_updated_by': 0}));
+    else
+      return from(itemsRef.update({'user1_writing':  new Date().getTime(), 'user_writing_updated_by': 1}));
+  }
+
   private addCurrentUser(username: string, userUID: string): Observable<void> {
     // Adds an user with the given username
 
@@ -502,10 +511,13 @@ export class ChatCoreService {
   public addChat(targetUserUID: string): Observable<any> {
     // Adds the chat between the currentUser and the User with the provided targetUsername
 
-    const chat = {
+    const chat: Partial<Chat> = {
       updated_timestamp: new Date().getTime(),
       users_uids: [this._currentUserUID, targetUserUID],
-      last_message_preview: 'No messages yet'
+      last_message_preview: 'No messages yet',
+      user0_writing: null,
+      user1_writing: null,
+      user_writing_updated_by: null
     }
 
     const itemsRef = this.afs.collection('chats');
@@ -544,6 +556,8 @@ export class ChatCoreService {
     });
 
     console.log("CCS: setted current chat (", this._currentUserUID, "->", this._targetUserUID, ")");
+
+
 
   }
 

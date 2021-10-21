@@ -9,7 +9,7 @@
              margin-right: auto;"></nb-icon>
   </nb-list-item>
   <nb-list-item *ngFor="let chat of chatUiService.chats"
-                (click)="chatUiService.selectChat(chat.targetUsername, chat.targetUserUID)"
+                (click)="chatUiService.selectChat(chat.targetUsername, chat.targetUserUID, chat.uid)"
                 [style.background-color]="chat.targetUsername===chatUiService.targetUsername
                                           ? '#c7e2ff' : ''" style="cursor: pointer;">
     <div class="item-div">

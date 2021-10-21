@@ -11,7 +11,7 @@ import { NbToastrConfig } from '../framework/theme/components/toastr/toastr-conf
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ChatNotificationsService } from './chat-notifications.service';
 import { NbToastrService } from '../framework/theme/components/toastr/toastr.service';
-import {Chat, Message, UIChat, UIUser, File, UIMessage} from '../interfaces/dataTypes';
+import { Chat, Message, UIChat, UIUser, File, UIMessage } from '../interfaces/dataTypes';
 
 
 @Injectable({
@@ -20,7 +20,7 @@ import {Chat, Message, UIChat, UIUser, File, UIMessage} from '../interfaces/data
 export class ChatUiService {
 
   public messages: any[] = [];
-  public chats: any[];
+  public chats: UIChat[];
   public currentUser: UIUser;
   public get targetUser(): any { return this.targetUsers.find(u => u.username === this.targetUsername) }
   public targetUsername: string;
@@ -224,8 +224,10 @@ export class ChatUiService {
     }
   }
 
-  public selectChat(username, userUID) {
+  public selectChat(username, userUID, chatUID) {
     this.chatCoreService.setChat(username, userUID);
+    setInterval(() => this.chatCoreService.updateUserWritingInChat(chatUID).subscribe(_ =>
+    console.log('updateChatUserWriting')), 4000);
     this.showChat();
   }
 
@@ -479,7 +481,7 @@ export class ChatUiService {
   private formatChats(unformattedChats: Chat[]): UIChat[] {
 
     let soundPlayed = false;
-    let chats = [];
+    let chats: UIChat[] = [];
     let notify;
     let isAtLeastOneToNotify = false;
     let chatUserUID;
@@ -504,7 +506,15 @@ export class ChatUiService {
         soundPlayed = true;
       }
 
+      let is_target_user_writing = false;
+      const targetUserIndex = chat.users_uids.indexOf(this.targetUserUID);
+      if (targetUserIndex === 0)
+        is_target_user_writing = chat.user0_writing ? true : false;
+      else
+        is_target_user_writing = chat.user1_writing ? true : false;
+
       chats.push({
+        uid: chat.uid,
         targetUserUID: chatUserUID,
         targetUsername: user.username,
         notify: notify,
@@ -513,8 +523,12 @@ export class ChatUiService {
         profile_img_url: user ? user.profile_img_url : null,
         messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
         updated_timestamp: chat.updated_timestamp,
-        last_message_preview: chat.last_message_preview,
-        online: user.online
+        last_message_preview: is_target_user_writing ? 'Is writing...' : chat.last_message_preview,
+        online: user.online,
+        users_uids: chat.users_uids,
+        user0_writing: chat.user0_writing,
+        user1_writing: chat.user1_writing,
+        user_writing_updated_by: chat.user_writing_updated_by
       });
 
     });

@@ -23,6 +23,9 @@ export interface Chat {
     updated_timestamp?: number;
     user_has_to_read?: string;
     users_uids: string[];
+    user0_writing?: number;
+    user1_writing?: number;
+    user_writing_updated_by?: number;
 }
 
 export interface Message {
@@ -52,13 +55,17 @@ export interface UIChat {
     messages_to_read?: number;
     updated_timestamp?: number;
     user_has_to_read?: string;
-    targetUserUID: string,
-    targetUsername: string,
-    notify: string,
-    name: string,
+    targetUserUID: string;
+    targetUsername: string;
+    notify: string;
+    name: string;
     surname: string,
-    profile_img_url: string,
-    online?: boolean
+    profile_img_url: string;
+    online?: boolean;
+    user0_writing?: number;
+    user1_writing?: number;
+    user_writing_updated_by?: number;
+    users_uids?: string[];
 }
 
 export interface UIMessage {
