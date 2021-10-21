@@ -34,6 +34,7 @@ export class ChatUiService {
   public isFirstDataLoaded = false;
   public isInitialized = false;
   public currentChatUID;
+  public targetUserWriting;
 
   private currentUsername: string;
   private currentUserUID: string;
@@ -524,6 +525,9 @@ export class ChatUiService {
       else
         is_target_user_writing = chat.user1_writing ? true : false;
 
+      if (chat.uid === this.currentChatUID)
+        this.targetUserWriting = is_target_user_writing;
+
       chats.push({
         uid: chat.uid,
         targetUserUID: chatUserUID,
@@ -534,7 +538,8 @@ export class ChatUiService {
         profile_img_url: user ? user.profile_img_url : null,
         messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
         updated_timestamp: chat.updated_timestamp,
-        last_message_preview: is_target_user_writing ? 'Is writing...' : chat.last_message_preview,
+        target_user_writing: is_target_user_writing,
+        last_message_preview: chat.last_message_preview,
         online: user.online,
         users_uids: chat.users_uids,
         user0_writing: chat.user0_writing,

@@ -32,7 +32,7 @@
         </div>
         <div class="chat-info-row-2">
           <div class="chat-info-row-2-col-1">
-            <p class="chat-info-msg-preview">{{chat.last_message_preview}}</p>
+            <p class="chat-info-msg-preview">{{chat.target_user_writing && chatUiService.screenIsSmall ? 'Is writing...' : chat.last_message_preview}}</p>
           </div>
           <div class="chat-info-row-2-col-2">
             <nb-badge class="notify-badge"

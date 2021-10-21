@@ -66,6 +66,7 @@ export interface UIChat {
     user1_writing?: number;
     user_writing_updated_by?: number;
     users_uids?: string[];
+    target_user_writing?: boolean;
 }
 
 export interface UIMessage {
