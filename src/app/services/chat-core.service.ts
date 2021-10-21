@@ -360,7 +360,7 @@ export class ChatCoreService {
     return from(itemsRef.update({'last_access': new Date().getTime() }));
   }
 
-  public updateUserWritingInChat(chatUid: string): Observable<void> {
+  public updateCurrentUserWritingInChat(chatUid: string): Observable<void> {
     const indexOfCurrentUser = this._chats.find(c => c.uid === chatUid).users_uids.indexOf(this._currentUserUID);
     const itemsRef = this.afs.collection('chats').doc(chatUid);
     if (indexOfCurrentUser === 0)

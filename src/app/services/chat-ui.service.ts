@@ -33,6 +33,7 @@ export class ChatUiService {
   public firstDataLoadingStatus = 0
   public isFirstDataLoaded = false;
   public isInitialized = false;
+  public currentChatUID;
 
   private currentUsername: string;
   private currentUserUID: string;
@@ -40,6 +41,7 @@ export class ChatUiService {
   private subscriptions: Subscription[] = [];
   private toConfirmReadedMessages: any[] = [];
   private unformattedChats: any = [];
+  private writingInfoAlreadySent = false;
 
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
@@ -226,8 +228,7 @@ export class ChatUiService {
 
   public selectChat(username, userUID, chatUID) {
     this.chatCoreService.setChat(username, userUID);
-    setInterval(() => this.chatCoreService.updateUserWritingInChat(chatUID).subscribe(_ =>
-    console.log('updateChatUserWriting')), 4000);
+    this.currentChatUID = chatUID;
     this.showChat();
   }
 
@@ -239,6 +240,16 @@ export class ChatUiService {
     this.isChatOpened = true;
     this.confirmMessagesAsReaded();
   }
+
+  public chatFormValueChanged() {
+    console.log('FormValueChanged');
+    if (!this.writingInfoAlreadySent) {
+      this.writingInfoAlreadySent = true;
+      this.chatCoreService.updateCurrentUserWritingInChat(this.currentChatUID).subscribe(_ => console.log('CUS: Current user writing sent.'));
+      setTimeout(() => this.writingInfoAlreadySent = false, 2000);
+    }
+  }
+
 
   private makeMessageToSend(formattedMessage): Partial<Message> {
 
@@ -546,6 +557,7 @@ export class ChatUiService {
         this.firstDataLoadingStatus += 33;
     }
   }
+
 
 
 }
