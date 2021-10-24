@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "hi-chat-bec8f": {
+      "hosting": {
+        "project-hi": [
+          "hi-chat-bec8f"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "hi-chat-bec8f"
+  }
+}
