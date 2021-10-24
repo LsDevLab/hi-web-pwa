@@ -116,6 +116,8 @@ export class NbUserComponent {
 
   imageBackgroundStyle: SafeStyle;
 
+  @Input() badgeDotMode: boolean = true;
+
   /**
    * Specifies a name to be shown on the right of a user picture
    * @type string

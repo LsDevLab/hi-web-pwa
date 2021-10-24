@@ -1,12 +1,15 @@
 <nb-user class="user-avatar" style="width: fit-content; float: left;"
-  size="medium"
-  color="white"
-  onlyPicture=true
-  [picture]="(chatUiService.targetUser && chatUiService.targetUser.profile_img_url) ?
-    chatUiService.targetUser.profile_img_url : 'assets/img/default_profile_img.png'"
-  (click)="openUserInfoDialog()" >
+         size="medium"
+         color="white"
+         onlyPicture=true
+         badgeStatus="success"
+         [badgeDotMode]="chatUiService.targetUser.online"
+         [picture]="(chatUiService.targetUser && chatUiService.targetUser.profile_img_url) ?
+                          chatUiService.targetUser.profile_img_url : 'assets/img/default_profile_img.png'"
+         (click)="openUserInfoDialog()" >
 </nb-user>
 <div style="color: white; width: fit-content; float: right;">
   <div class="user-name" style="font-weight: bold;">{{chatUiService.targetUser ? chatUiService.targetUser.name + ' ' + chatUiService.targetUser.surname : ''}}</div>
-  <div style="font-size: 8pt;">Last access on {{(chatUiService.targetUser ? chatUiService.targetUser.last_access : '') | date: chatUiService.getDateTimeFormat()}}</div>
+  <div *ngIf="chatUiService.targetUser.online" style="font-size: 8pt;">{{ chatUiService.targetUserWriting ? 'Is Writing...' : 'Online' }}</div>
+  <div *ngIf="!chatUiService.targetUser.online" style="font-size: 8pt;">Last access on {{(chatUiService.targetUser ? chatUiService.targetUser.last_access : '') | date: chatUiService.getDateTimeFormat()}}</div>
 </div>

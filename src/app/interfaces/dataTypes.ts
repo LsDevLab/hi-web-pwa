@@ -1,7 +1,7 @@
 
 // Raw data types
 
-import {NbChatMessageFile} from '../framework/theme/components/chat/chat-message-file.component';
+import { NbChatMessageFile } from '../framework/theme/components/chat/chat-message-file.component';
 
 export interface User {
     uid: string;
@@ -13,6 +13,7 @@ export interface User {
     bio?: string;
     last_access: number;
     profile_img_url?: string;
+    online?: boolean;
 }
 
 export interface Chat {
@@ -22,6 +23,9 @@ export interface Chat {
     updated_timestamp?: number;
     user_has_to_read?: string;
     users_uids: string[];
+    user0_writing?: number;
+    user1_writing?: number;
+    user_writing_updated_by?: number;
 }
 
 export interface Message {
@@ -51,12 +55,18 @@ export interface UIChat {
     messages_to_read?: number;
     updated_timestamp?: number;
     user_has_to_read?: string;
-    targetUserUID: string,
-    targetUsername: string,
-    notify: string,
-    name: string,
+    targetUserUID: string;
+    targetUsername: string;
+    notify: string;
+    name: string;
     surname: string,
-    profile_img_url: string
+    profile_img_url: string;
+    online?: boolean;
+    user0_writing?: number;
+    user1_writing?: number;
+    user_writing_updated_by?: number;
+    users_uids?: string[];
+    target_user_writing?: boolean;
 }
 
 export interface UIMessage {

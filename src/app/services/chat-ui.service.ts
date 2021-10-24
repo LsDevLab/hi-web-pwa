@@ -11,7 +11,7 @@ import { NbToastrConfig } from '../framework/theme/components/toastr/toastr-conf
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ChatNotificationsService } from './chat-notifications.service';
 import { NbToastrService } from '../framework/theme/components/toastr/toastr.service';
-import {Chat, Message, UIChat, UIUser, File, UIMessage} from '../interfaces/dataTypes';
+import { Chat, Message, UIChat, UIUser, File, UIMessage } from '../interfaces/dataTypes';
 
 
 @Injectable({
@@ -20,7 +20,7 @@ import {Chat, Message, UIChat, UIUser, File, UIMessage} from '../interfaces/data
 export class ChatUiService {
 
   public messages: any[] = [];
-  public chats: any[];
+  public chats: UIChat[];
   public currentUser: UIUser;
   public get targetUser(): any { return this.targetUsers.find(u => u.username === this.targetUsername) }
   public targetUsername: string;
@@ -32,6 +32,9 @@ export class ChatUiService {
   public isChatOpened = false;
   public firstDataLoadingStatus = 0
   public isFirstDataLoaded = false;
+  public isInitialized = false;
+  public currentChatUID;
+  public targetUserWriting;
 
   private currentUsername: string;
   private currentUserUID: string;
@@ -39,6 +42,7 @@ export class ChatUiService {
   private subscriptions: Subscription[] = [];
   private toConfirmReadedMessages: any[] = [];
   private unformattedChats: any = [];
+  private writingInfoAlreadySent = false;
 
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
@@ -97,28 +101,31 @@ export class ChatUiService {
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.currentUser.subscribe(currentUser => {
-      if (!this.currentUser){
+      const isFirstDataLoaded = !this.currentUser;
+      this.currentUser = currentUser;
+      if (isFirstDataLoaded){
         this.setFirstDataLoading()
       }
-      this.currentUser = currentUser;
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.targetUsers.subscribe(targetUsers => {
-      if (!this.targetUsers){
-        this.setFirstDataLoading()
-      }
+      const isFirstDataLoaded = !this.targetUsers;
       this.targetUsers = targetUsers;
       if (this.chats)
         this.chats = this.formatChats(this.unformattedChats);
+      if (isFirstDataLoaded){
+        this.setFirstDataLoading()
+      }
     });
     this.subscriptions.push(s);
     s = this.chatCoreService.chats.subscribe(chats => {
-      if (!this.chats) {
-        this.setFirstDataLoading()
-      }
+      const isFirstDataLoaded = !this.chats;
       this.unformattedChats = chats;
       if (this.targetUsers)
         this.chats = this.formatChats(chats);
+      if (isFirstDataLoaded) {
+        this.setFirstDataLoading()
+      }
     });
     this.subscriptions.push(s);
 
@@ -138,6 +145,8 @@ export class ChatUiService {
         }, 2000);
       }
     }, 2000);
+
+    this.isInitialized = true;
 
   }
 
@@ -218,8 +227,9 @@ export class ChatUiService {
     }
   }
 
-  public selectChat(username, userUID) {
+  public selectChat(username, userUID, chatUID) {
     this.chatCoreService.setChat(username, userUID);
+    this.currentChatUID = chatUID;
     this.showChat();
   }
 
@@ -231,6 +241,16 @@ export class ChatUiService {
     this.isChatOpened = true;
     this.confirmMessagesAsReaded();
   }
+
+  public chatFormValueChanged() {
+    console.log('FormValueChanged');
+    if (!this.writingInfoAlreadySent) {
+      this.writingInfoAlreadySent = true;
+      this.chatCoreService.updateCurrentUserWritingInChat(this.currentChatUID).subscribe(_ => console.log('CUS: Current user writing sent.'));
+      setTimeout(() => this.writingInfoAlreadySent = false, 2000);
+    }
+  }
+
 
   private makeMessageToSend(formattedMessage): Partial<Message> {
 
@@ -473,7 +493,7 @@ export class ChatUiService {
   private formatChats(unformattedChats: Chat[]): UIChat[] {
 
     let soundPlayed = false;
-    let chats = [];
+    let chats: UIChat[] = [];
     let notify;
     let isAtLeastOneToNotify = false;
     let chatUserUID;
@@ -498,7 +518,18 @@ export class ChatUiService {
         soundPlayed = true;
       }
 
+      let is_target_user_writing = false;
+      const targetUserIndex = chat.users_uids.indexOf(this.targetUserUID);
+      if (targetUserIndex === 0)
+        is_target_user_writing = chat.user0_writing ? true : false;
+      else
+        is_target_user_writing = chat.user1_writing ? true : false;
+
+      if (chat.uid === this.currentChatUID)
+        this.targetUserWriting = is_target_user_writing;
+
       chats.push({
+        uid: chat.uid,
         targetUserUID: chatUserUID,
         targetUsername: user.username,
         notify: notify,
@@ -507,7 +538,13 @@ export class ChatUiService {
         profile_img_url: user ? user.profile_img_url : null,
         messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
         updated_timestamp: chat.updated_timestamp,
-        last_message_preview: chat.last_message_preview
+        target_user_writing: is_target_user_writing,
+        last_message_preview: chat.last_message_preview,
+        online: user.online,
+        users_uids: chat.users_uids,
+        user0_writing: chat.user0_writing,
+        user1_writing: chat.user1_writing,
+        user_writing_updated_by: chat.user_writing_updated_by
       });
 
     });
@@ -525,6 +562,7 @@ export class ChatUiService {
         this.firstDataLoadingStatus += 33;
     }
   }
+
 
 
 }

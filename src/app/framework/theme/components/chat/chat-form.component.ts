@@ -94,6 +94,7 @@ import { NbComponentOrCustomStatus } from '../component-status';
              (mouseleave)="inputHover = false"
              [(ngModel)]="message"
              [class.with-button]="showButton"
+             (input)="valueChanged()"
              type="text"
              placeholder="{{ fileOver ? dropFilePlaceholder : messagePlaceholder }}"
              (keyup.enter)="sendMessage()">
@@ -212,6 +213,8 @@ export class NbChatFormComponent {
     }
   }
 
+  @Output() valueChange = new EventEmitter<any>();
+
   onAttachFileFromButton(event: any) {
     if (this.dropFiles) {
       this.fileOver = false;
@@ -298,5 +301,9 @@ export class NbChatFormComponent {
     }
 
     return this.status;
+  }
+
+  valueChanged() {
+    this.valueChange.emit();
   }
 }

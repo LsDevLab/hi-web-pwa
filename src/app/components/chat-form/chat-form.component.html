@@ -15,6 +15,10 @@
                     (messageQuoted)="chatUiService.assignMessageQuoted(msg)"
                     >
   </nb-chat-message>
-  <nb-chat-form [loading]="chatUiService.messagesLoading" (send)="chatUiService.sendMessage($event)" [dropFiles]="true" [(messageQuoted)]="chatUiService.messageQuoted">
+  <nb-chat-form [loading]="chatUiService.messagesLoading"
+                (send)="chatUiService.sendMessage($event)"
+                [dropFiles]="true"
+                [(messageQuoted)]="chatUiService.messageQuoted"
+                (valueChange)="chatUiService.chatFormValueChanged()">
   </nb-chat-form>
 </nb-chat>
