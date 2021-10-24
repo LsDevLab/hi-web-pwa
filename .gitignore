@@ -49,4 +49,3 @@ Thumbs.db
 .firebaserc
 firebase.json
 .firebase/*
-firebaseData.ts
