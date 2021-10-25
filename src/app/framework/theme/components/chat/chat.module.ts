@@ -20,6 +20,7 @@ import { NbChatMessageQuoteComponent } from './chat-message-quote.component';
 import { NbChatMessageMapComponent } from './chat-message-map.component';
 import { NbChatOptions } from './chat.options';
 import {CircleProgressComponent} from '../../../../components/circle-progress-bar/circle-progress-bar.component';
+import {NbContextMenuModule} from "../context-menu/context-menu.module";
 
 const NB_CHAT_COMPONENTS = [
   NbChatComponent,
@@ -38,6 +39,7 @@ const NB_CHAT_COMPONENTS = [
     NbIconModule,
     NbInputModule,
     NbButtonModule,
+    NbContextMenuModule
   ],
   declarations: [
     ...NB_CHAT_COMPONENTS,

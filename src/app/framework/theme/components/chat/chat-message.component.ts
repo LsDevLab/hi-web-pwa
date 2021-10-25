@@ -77,12 +77,12 @@ import moment from 'moment';
           <nb-chat-message-quote [status]="status" [date]="date" [dateFormat]="dateFormat"
                                  [message]="message" [quote]="quote" [reply]="reply"
                                  (messageQuoted)="messageQuoted.emit()"
-                                 (openOptions)="openOptions.emit()">
+                                 (optionsSelected)="optionsSelected.emit($event)">
           </nb-chat-message-quote>
           <nb-chat-message-file [status]='' [dateFormat]="dateFormat"
                                 [message]='' [files]="files" [reply]="reply"
                                 (messageQuoted)="messageQuoted.emit()"
-                                (openOptions)="openOptions.emit()">
+                                (optionsSelected)="optionsSelected.emit($event)">
           </nb-chat-message-file>
         </div>
 
@@ -90,28 +90,28 @@ import moment from 'moment';
                                [status]="status" [date]="date" [dateFormat]="dateFormat"
                                [message]="message" [quote]="quote" [reply]="reply"
                                (messageQuoted)="messageQuoted.emit()"
-                               (openOptions)="openOptions.emit()">
+                               (optionsSelected)="optionsSelected.emit($event)">
         </nb-chat-message-quote>
 
         <nb-chat-message-file *ngSwitchCase="'file'"
                               [status]="status" [dateFormat]="dateFormat" [date]="date"
                               [message]="message" [files]="files" [reply]="reply"
                               (messageQuoted)="messageQuoted.emit()"
-                              (openOptions)="openOptions.emit()">
+                              (optionsSelected)="optionsSelected.emit($event)">
         </nb-chat-message-file>
 
         <nb-chat-message-map *ngSwitchCase="'map'"
                              [status]="status" [date]="date" [reply]="reply"
                              [message]="message" [latitude]="latitude" [longitude]="longitude"
                              (messageQuoted)="messageQuoted.emit()"
-                             (openOptions)="openOptions.emit()">
+                             (optionsSelected)="optionsSelected.emit($event)">
         </nb-chat-message-map>
 
         <nb-chat-message-text *ngSwitchDefault
                               [status]="status" [date]="date" [dateFormat]="dateFormat"
                               [message]="message" [reply]="reply"
                               (messageQuoted)="messageQuoted.emit()" [isAQuote]="isAQuote"
-                              (openOptions)="openOptions.emit()">
+                              (optionsSelected)="optionsSelected.emit($event)">
         </nb-chat-message-text>
       </ng-container>
     </div>
@@ -194,7 +194,7 @@ export class NbChatMessageComponent {
    */
   @Output() messageQuoted = new EventEmitter<any>();
 
-  @Output() openOptions = new EventEmitter<any>();
+  @Output() optionsSelected = new EventEmitter<any>();
 
   /**
    * Determines if a message is a the first of the day

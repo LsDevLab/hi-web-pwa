@@ -12,8 +12,7 @@
                     [longitude]="msg.longitude"
                     [firstOfTheDay]="msg.firstOfTheDay"
                     [lastOfAGroup]="msg.lastOfAGroup"
-                    (messageQuoted)="chatUiService.assignMessageQuoted(msg)"
-                    (openOptions)="openOptions(msg)"
+                    (optionsSelected)="optionsSelected($event, msg)"
                     >
   </nb-chat-message>
   <nb-chat-form [loading]="chatUiService.messagesLoading"

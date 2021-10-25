@@ -13,7 +13,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
   selector: 'nb-chat-message-quote',
   template: `
     <nb-chat-message-text [status]="status" [date]="date" [dateFormat]="dateFormat" [message]="message"
-                          [reply]="reply" (messageQuoted)="messageQuoted.emit()" (openOptions)="openOptions.emit()">
+                          [reply]="reply" (messageQuoted)="messageQuoted.emit()" (optionsSelected)="optionsSelected.emit($event)">
       <div class="message-div" *ngIf="quote">
         <div class="status-time-div">
           <time class="time">{{ quote.date | date: dateFormat }}</time>
@@ -35,7 +35,7 @@ export class NbChatMessageQuoteComponent {
    */
   @Output() messageQuoted = new EventEmitter<any>();
 
-  @Output() openOptions = new EventEmitter<any>();
+  @Output() optionsSelected = new EventEmitter<any>();
 
   /**
    * Message reply

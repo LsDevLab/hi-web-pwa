@@ -5,6 +5,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import { NbMenuService } from '../menu/menu.service';
 
 /**
  * Chat message component.
@@ -13,7 +14,12 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
   selector: 'nb-chat-message-text',
   template: `
     <div class="message-div">
-      <div class="message-options-div" (click)="openOptions.emit()">
+      <div class="message-options-div"
+           [nbContextMenu]="optionsMenuItems"
+           [nbContextMenuTag]="message"
+           nbContextMenuTrigger="hover"
+           nbContextMenuPlacement="top"
+           nbContextMenuAdjustment="clockwise">
         <p></p>
       </div>
       <div class="message-body-status-time-div">
@@ -33,13 +39,25 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 })
 export class NbChatMessageTextComponent {
 
+  constructor(private menuService: NbMenuService) {
+    this.menuService.onItemClick().subscribe(menu => {
+      if (menu.tag === this.message) {
+        this.optionsSelected.emit(menu.item.title);
+      }
+    });
+  }
+
+  optionsMenuItems  = [
+    { title: 'Reply' }
+  ];
+
   /**
    * messageQuoted event
    * @type {EventEmitter}
    */
   @Output() messageQuoted = new EventEmitter<any>();
 
-  @Output() openOptions = new EventEmitter<any>();
+  @Output() optionsSelected = new EventEmitter<any>();
 
   /**
    * Message status
