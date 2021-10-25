@@ -1,8 +1,8 @@
 {
   "hosting": [
     {
-      "target": "project-hi",
-      "public": "dist/project-hi",
+      "target": "hi-web-pwa",
+      "public": "dist/hi-web-pwa",
       "ignore": [
         "**/.*"
       ],
