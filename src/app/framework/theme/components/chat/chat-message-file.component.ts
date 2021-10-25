@@ -29,7 +29,7 @@ export type NbChatMessageFile = NbChatMessageFileIconPreview | NbChatMessageFile
   selector: 'nb-chat-message-file',
   template: `
     <nb-chat-message-text [status]="status" [date]="date" [dateFormat]="dateFormat" [reply]="reply"
-                          (messageQuoted)="messageQuoted.emit()" (optionsSelected)="optionsSelected.emit($event)">
+                          (optionsSelected)="optionsSelected.emit($event)">
       <ng-container>
         <div class="files-div">
           <a class="file-div" *ngFor="let file of readyFiles" [href]="file.url" target="_blank">

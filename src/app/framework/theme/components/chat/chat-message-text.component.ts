@@ -26,7 +26,6 @@ import { NbMenuService } from '../menu/menu.service';
         <div class="status-time-div">
         <p class="sender" *ngIf="status">{{ status }}</p>
         <time class="time">{{ date | date: dateFormat }}</time>
-          <!--<nb-icon class="reply-button" *ngIf="!reply && !isAQuote" icon="corner-up-right-outline" (click)="messageQuoted.emit()"></nb-icon>-->
       </div>
       <div class="message-body">
         <ng-content></ng-content>
@@ -48,14 +47,8 @@ export class NbChatMessageTextComponent {
   }
 
   optionsMenuItems  = [
-    { title: 'Reply' }
+    { title: 'Reply' },
   ];
-
-  /**
-   * messageQuoted event
-   * @type {EventEmitter}
-   */
-  @Output() messageQuoted = new EventEmitter<any>();
 
   @Output() optionsSelected = new EventEmitter<any>();
 
