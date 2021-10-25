@@ -14,7 +14,7 @@ import { NbChatOptions } from './chat.options';
   selector: 'nb-chat-message-map',
   template: `
     <nb-chat-message-file [files]="[file]" [message]="message" [status]="status" [date]="date"
-     [dateFormat]="dateFormat" [reply]="reply" (messageQuoted)="messageQuoted.emit()"></nb-chat-message-file>
+     [dateFormat]="dateFormat" [reply]="reply" (messageQuoted)="messageQuoted.emit()" (openOptions)="openOptions.emit()"></nb-chat-message-file>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -25,6 +25,8 @@ export class NbChatMessageMapComponent {
    * @type {EventEmitter}
    */
   @Output() messageQuoted = new EventEmitter<any>();
+
+  @Output() openOptions = new EventEmitter<any>();
 
   /**
    * Message reply

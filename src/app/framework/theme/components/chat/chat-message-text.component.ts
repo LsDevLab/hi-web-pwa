@@ -13,14 +13,19 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
   selector: 'nb-chat-message-text',
   template: `
     <div class="message-div">
-      <div class="status-time-div">
+      <div class="message-options-div" (click)="openOptions.emit()">
+        <p></p>
+      </div>
+      <div class="message-body-status-time-div">
+        <div class="status-time-div">
         <p class="sender" *ngIf="status">{{ status }}</p>
         <time class="time">{{ date | date: dateFormat }}</time>
-        <nb-icon class="reply-button" *ngIf="!reply && !isAQuote" icon="corner-up-right-outline" (click)="messageQuoted.emit()"></nb-icon>
+          <!--<nb-icon class="reply-button" *ngIf="!reply && !isAQuote" icon="corner-up-right-outline" (click)="messageQuoted.emit()"></nb-icon>-->
       </div>
       <div class="message-body">
         <ng-content></ng-content>
         <p class="text" *ngIf="message">{{ message }}</p>
+      </div>
       </div>
     </div>
   `,
@@ -33,6 +38,8 @@ export class NbChatMessageTextComponent {
    * @type {EventEmitter}
    */
   @Output() messageQuoted = new EventEmitter<any>();
+
+  @Output() openOptions = new EventEmitter<any>();
 
   /**
    * Message status
@@ -69,5 +76,6 @@ export class NbChatMessageTextComponent {
    * @type {string}
    */
   @Input() isAQuote: boolean;
+
 
 }

@@ -13,6 +13,7 @@
                     [firstOfTheDay]="msg.firstOfTheDay"
                     [lastOfAGroup]="msg.lastOfAGroup"
                     (messageQuoted)="chatUiService.assignMessageQuoted(msg)"
+                    (openOptions)="openOptions(msg)"
                     >
   </nb-chat-message>
   <nb-chat-form [loading]="chatUiService.messagesLoading"
