@@ -142,12 +142,12 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
   protected scrollableContainerOverflowOldValue: string;
   protected layoutPaddingOldValue: { left: string; right: string };
 
-  centerValue: boolean = false;
-  restoreScrollTopValue: boolean = true;
+  centerValue = false;
+  restoreScrollTopValue = true;
 
-  @HostBinding('class.window-mode') windowModeValue: boolean = false;
-  @HostBinding('class.with-scroll') withScrollValue: boolean = false;
-  @HostBinding('class.with-subheader') withSubheader: boolean = false;
+  @HostBinding('class.window-mode') windowModeValue = false;
+  @HostBinding('class.with-scroll') withScrollValue = false;
+  @HostBinding('class.with-subheader') withSubheader = false;
 
   /**
    * Defines whether the layout columns will be centered after some width
@@ -260,12 +260,12 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
         this.renderer.removeClass(this.elementRef.nativeElement, className);
       });
 
-    this.spinnerService.registerLoader(new Promise((resolve, reject) => {
+    this.spinnerService.registerLoader(new Promise((resolve, _) => {
       this.afterViewInit$
         .pipe(
           takeUntil(this.destroy$),
         )
-        .subscribe((_) => resolve());
+        .subscribe((_) => resolve(null));
     }));
     this.spinnerService.load();
 
@@ -302,7 +302,7 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.scrollService.onGetPosition()
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ listener }) => {
@@ -328,19 +328,19 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
     this.afterViewInit$.next(true);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
     this.unregisterAsOverlayContainer();
   }
 
   @HostListener('window:scroll', ['$event'])
-  onScroll($event) {
+  onScroll($event): void {
     this.scrollService.fireScrollChange($event);
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event) {
+  onResize(event): void {
     this.themeService.changeWindowWidth(event.target.innerWidth);
   }
 
@@ -405,19 +405,19 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
     return { x, y };
   }
 
-  protected registerAsOverlayContainer() {
+  protected registerAsOverlayContainer(): void {
     if (this.overlayContainer.setContainer) {
       this.overlayContainer.setContainer(this.elementRef.nativeElement);
     }
   }
 
-  protected unregisterAsOverlayContainer() {
+  protected unregisterAsOverlayContainer(): void {
     if (this.overlayContainer.clearContainer) {
       this.overlayContainer.clearContainer();
     }
   }
 
-  private scroll(x: number = null, y: number = null) {
+  private scroll(x: number = null, y: number = null): void {
     const { x: currentX, y: currentY } = this.getScrollPosition();
     x = x == null ? currentX : x;
     y = y == null ? currentY : y;
@@ -439,7 +439,7 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
   }
 
   // TODO: Extract into block scroll strategy
-  protected blockScroll() {
+  protected blockScroll(): void {
     if (this.isScrollBlocked) {
       return;
     }
@@ -473,7 +473,7 @@ export class NbLayoutComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private enableScroll() {
+  private enableScroll(): void {
     if (this.isScrollBlocked) {
       this.isScrollBlocked = false;
 
