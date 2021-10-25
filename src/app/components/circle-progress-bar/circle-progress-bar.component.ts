@@ -1,7 +1,6 @@
 import {
   Component,
-  Input,
-  OnInit
+  Input
 } from '@angular/core';
 
 @Component({
@@ -9,7 +8,7 @@ import {
   templateUrl: './circle-progress-bar.component.html',
   styleUrls: ['./circle-progress-bar.component.css']
 })
-export class CircleProgressComponent implements OnInit {
+export class CircleProgressComponent {
 
   @Input()
   progress: number;
@@ -28,9 +27,5 @@ export class CircleProgressComponent implements OnInit {
 
   constructor() {
   }
-
-  ngOnInit() {
-  }
-
 
 }

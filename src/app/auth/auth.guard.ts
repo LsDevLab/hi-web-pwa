@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
   }
 
   checkLogin(_: string): true|UrlTree {
-    if (localStorage.getItem('isAuth')==='true') { return true; }
+    if (localStorage.getItem('isAuth') === 'true') { return true; }
     // Redirect to the login page
     return this.router.parseUrl('/home');
   }

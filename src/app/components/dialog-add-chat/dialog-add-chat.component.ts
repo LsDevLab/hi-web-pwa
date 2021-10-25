@@ -10,12 +10,12 @@ import { ChatUiService } from '../../services/chat-ui.service';
 })
 export class DialogAddChatComponent implements OnInit {
 
-  userExists: boolean = false;
+  userExists = false;
   username: string;
   name: string;
   surname: string;
   profileImg: string;
-  loadingUserImg: boolean = false;
+  loadingUserImg = false;
 
   constructor(protected dialogRef: NbDialogRef<DialogAddChatComponent>, private chatCoreService: ChatCoreService,
               private toastrService: NbToastrService, public chatUiService: ChatUiService) {
@@ -24,11 +24,11 @@ export class DialogAddChatComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  closeDialog(){
+  closeDialog(): void {
     this.dialogRef.close();
   }
 
-  verifyAddChat(username, alsoAdd){
+  verifyAddChat(username, alsoAdd): void {
     this.loadingUserImg = true;
 
     if (username === null){
@@ -47,32 +47,32 @@ export class DialogAddChatComponent implements OnInit {
         if (alsoAdd){
           // verifying if a chat with the given user already exists
           if (username === this.chatUiService.currentUser.username){
-            console.log("DACC: this is your username")
-            this.toastrService.show("Can't create a chat with your username", "Error", new NbToastrConfig({status:"danger"}));
+            console.log('DACC: this is your username');
+            this.toastrService.show('Can\'t create a chat with your username', 'Error', new NbToastrConfig({status: 'danger'}));
             this.userExists = false;
             this.loadingUserImg = false;
             return;
           }
           if (this.chatCoreService.chatExists(user.uid)){
-            console.log("DACC: a chat with this user already exists.")
-            this.toastrService.show("Chat already exists", "Error", new NbToastrConfig({status:"danger"}));
+            console.log('DACC: a chat with this user already exists.');
+            this.toastrService.show('Chat already exists', 'Error', new NbToastrConfig({status: 'danger'}));
             this.userExists = false;
             this.loadingUserImg = false;
             return;
           }
-          console.log("DACC: adding chat with", this.username);
+          console.log('DACC: adding chat with', this.username);
           this.chatCoreService.addChat(user.uid).subscribe(_ => {
-            console.log("DACC: chat with", this.username, "added");
-            this.toastrService.show("User added", "Done", new NbToastrConfig({status:"success"}));
+            console.log('DACC: chat with', this.username, 'added');
+            this.toastrService.show('User added', 'Done', new NbToastrConfig({status: 'success'}));
             this.dialogRef.close();
-          },(error) => {
+          }, (error) => {
             console.log('DACC: ERROR while adding chat', error);
-            this.toastrService.show("Error while adding chat", "Error", new NbToastrConfig({status:"danger"}));
+            this.toastrService.show('Error while adding chat', 'Error', new NbToastrConfig({status: 'danger'}));
           });
         }
       }else{
-        console.log("DACC: user not exists")
-        this.toastrService.show("User not exists", "Error", new NbToastrConfig({status:"danger"}));
+        console.log('DACC: user not exists');
+        this.toastrService.show('User not exists', 'Error', new NbToastrConfig({status: 'danger'}));
         this.userExists = false;
       }
       this.loadingUserImg = false;

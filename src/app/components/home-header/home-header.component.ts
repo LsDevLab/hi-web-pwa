@@ -18,18 +18,18 @@ export class HomeHeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.afAuth.user.subscribe(usr => this.isAuthenticated = usr ? true : false);
+    this.afAuth.user.subscribe(usr => this.isAuthenticated = !!usr);
   }
 
-  logOut(){
+  logOut(): void {
     this.chatNotificationsService.unsubscribeToMessagesPushNotifications();
-    localStorage.setItem('isAuth', "false");
+    localStorage.setItem('isAuth', 'false');
     localStorage.removeItem('currentToken');
-    this.afAuth.signOut().then(_ => window.location.reload())
+    this.afAuth.signOut().then(_ => window.location.reload());
   }
 
-  signIn() {
-    const provider = new firebase.auth.GoogleAuthProvider()
+  signIn(): void {
+    const provider = new firebase.auth.GoogleAuthProvider();
     this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'))
       .catch(error => console.log('HHC Authentication failed with error: ', error));
   }

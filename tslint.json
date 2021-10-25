@@ -1,7 +1,7 @@
 {
   "extends": "tslint:recommended",
   "exclude": [
-    "src/app/framework"
+    "src/app/framework/*"
   ],
   "rules": {
     "align": {
@@ -12,7 +12,6 @@
     },
     "array-type": false,
     "arrow-return-shorthand": true,
-    "curly": true,
     "deprecation": {
       "severity": "warning"
     },
@@ -22,13 +21,11 @@
     "directive-selector": [
       true,
       "attribute",
-      "app",
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      "app",
       "kebab-case"
     ],
     "eofline": true,
@@ -45,7 +42,7 @@
     "max-classes-per-file": false,
     "max-line-length": [
       true,
-      140
+      180
     ],
     "member-ordering": [
       true,
@@ -117,13 +114,6 @@
           "property-declaration": "onespace",
           "variable-declaration": "onespace"
         }
-      ]
-    },
-    "variable-name": {
-      "options": [
-        "ban-keywords",
-        "check-format",
-        "allow-pascal-case"
       ]
     },
     "whitespace": {

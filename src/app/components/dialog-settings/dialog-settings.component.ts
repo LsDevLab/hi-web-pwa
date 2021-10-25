@@ -20,13 +20,13 @@ export class DialogSettingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.dialogRef.close();
   }
 
-  saveSettings(){
+  saveSettings(): void {
     localStorage.setItem('appSettings', JSON.stringify(this.settings));
-    this.toastrService.show("Settings saved. Some changes require to reload the page.", "Done", new NbToastrConfig({status:"success"}));
+    this.toastrService.show('Settings saved. Some changes require to reload the page.', 'Done', new NbToastrConfig({status: 'success'}));
   }
 
 }

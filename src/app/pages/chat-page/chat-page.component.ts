@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { NbDialogService, NbMenuService } from '@nebular/theme';
 import { Subscription } from 'apollo-client/util/Observable';
 import { DialogEditProfileComponent } from '../../components/dialog-edit-profile/dialog-edit-profile.component';
@@ -12,7 +12,7 @@ import { ChatUiService } from '../../services/chat-ui.service';
   templateUrl: './chat-page.component.html',
   styleUrls: ['./chat-page.component.css']
 })
-export class ChatPageComponent implements OnInit {
+export class ChatPageComponent implements OnInit, OnDestroy {
 
   userContextMenuItems = [
     {
@@ -47,7 +47,7 @@ export class ChatPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.menuSub = this.nbMenuService.onItemClick().subscribe(menu => {
-      if(menu.tag === 'user-context-menu-small') {
+      if (menu.tag === 'user-context-menu-small') {
         switch (menu.item.title) {
           case 'Edit profile':
             this.dialogService.open(DialogEditProfileComponent);
@@ -65,7 +65,7 @@ export class ChatPageComponent implements OnInit {
       this.chatUiService.initializeService();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy(): void{
     this.menuSub.unsubscribe();
   }
 

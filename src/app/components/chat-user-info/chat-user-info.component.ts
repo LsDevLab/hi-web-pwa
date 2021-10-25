@@ -19,7 +19,7 @@ export class ChatUserInfoComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openUserInfoDialog(){
+  openUserInfoDialog(): void{
     this.dialogService.open(DialogTargetInfoComponent);
   }
 

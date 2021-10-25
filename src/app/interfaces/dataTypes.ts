@@ -59,7 +59,7 @@ export interface UIChat {
     targetUsername: string;
     notify: string;
     name: string;
-    surname: string,
+    surname: string;
     profile_img_url: string;
     online?: boolean;
     user0_writing?: number;

@@ -11,7 +11,4 @@ export class ChatFormComponent {
   constructor(public chatUiService: ChatUiService) {
   }
 
-  ngOnInit() {
-  }
-
 }

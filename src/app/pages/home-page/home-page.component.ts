@@ -13,7 +13,7 @@ import {environment} from '../../../environments/environment';
 export class HomePageComponent implements OnInit {
 
   screenIsSmall = false;
-  nameOfUser: string = '';
+  nameOfUser = '';
   appName = environment.appName;
   isAuthenticated = (localStorage.getItem('isAuth') === 'true');
 
@@ -26,14 +26,15 @@ export class HomePageComponent implements OnInit {
       this.screenIsSmall = r.matches;
     });
     this.afAuth.user.subscribe(usr => {
-      if(usr)
+      if (usr) {
         this.nameOfUser = usr.displayName;
-        this.isAuthenticated = usr ? true : false;
+        this.isAuthenticated = !!usr;
+      }
     });
   }
 
-  signIn() {
-    const provider = new firebase.auth.GoogleAuthProvider()
+  signIn(): void {
+    const provider = new firebase.auth.GoogleAuthProvider();
     this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
   }
 
