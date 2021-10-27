@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import firebase from 'firebase';
-import {environment} from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
+import { NbDialogService } from '../../framework/theme/components/dialog/dialog.service';
+import { DialogLoginComponent } from '../../components/dialog-login/dialog-login.component';
 
 @Component({
   selector: 'app-home-page',
@@ -18,7 +19,7 @@ export class HomePageComponent implements OnInit {
   isAuthenticated = (localStorage.getItem('isAuth') === 'true');
 
   constructor(private breakpointObserver: BreakpointObserver, public router: Router,
-              public afAuth: AngularFireAuth) {
+              public afAuth: AngularFireAuth, private dialogService: NbDialogService) {
   }
 
   ngOnInit(): void {
@@ -34,8 +35,9 @@ export class HomePageComponent implements OnInit {
   }
 
   signIn(): void {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
+    // const provider = new firebase.auth.GoogleAuthProvider();
+    // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
+    this.dialogService.open(DialogLoginComponent);
   }
 
 }
