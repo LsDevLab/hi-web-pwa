@@ -1,23 +1,36 @@
-<div class="row" style="height: inherit;">
-  <a href='/home' >
-    <img src="assets/img/logo_gif.gif" style="height: 100%; float: left;">
-  </a>
-  <div style="float: right;">
+<div class="row">
+  <img class="logo-img" src="assets/img/logo_gif.gif">
+  <div class="nav-buttons-div">
     <ng-container *ngIf="isAuthenticated; else loggedOut">
-      <button nbButton ghost status="control" (click)="router.navigateByUrl('/chat')">
-        Vai alla chat
+      <button nbButton status="control" shape="round" (click)="router.navigateByUrl('/chat')">
+        Go to Hi Web
         <nb-icon icon="message-square-outline"></nb-icon>
       </button>
-      <button nbButton ghost status="control" (click)="logOut()">
+      <button nbButton status="control" shape="round" (click)="logOut()">
         Logout
         <nb-icon icon="log-out-outline"></nb-icon>
       </button>
     </ng-container>
     <ng-template #loggedOut>
-      <button nbButton ghost status="control" (click)="signIn()">
-        Login
+      <button nbButton status="control" shape="round" (click)="signIn()">
+        Hi Web Login
         <nb-icon icon="log-in-outline"></nb-icon>
       </button>
     </ng-template>
+    <button nbButton ghost status="control" (click)="router.navigateByUrl('/download-apps')">
+      Download Hi mobile apps
+      <nb-icon icon="smartphone-outline"></nb-icon>
+    </button>
+    <button nbButton ghost status="control" (click)="router.navigateByUrl('/help')">
+      Help center
+      <nb-icon icon="question-mark-circle-outline"></nb-icon>
+    </button>
+  </div>
+  <div class="languages-selector-div">
+    <button nbButton status="control" shape="semi-round" [nbContextMenu]="languagesContextMenu">
+      <nb-icon icon="globe-2-outline"></nb-icon>
+      EN
+      <nb-icon icon="arrow-ios-downward-outline"></nb-icon>
+    </button>
   </div>
 </div>

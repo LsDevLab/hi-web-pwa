@@ -1,1 +1,17 @@
+.row{
+  padding: 20px;
+  background-color: #3366ff;
+  height: 76px;
+  display: flex;
+  justify-content: space-between;
+}
 
+.logo-img{
+  height: 100%;
+}
+
+.nav-buttons-div {
+  display: flex;
+  flex-direction: row;
+  gap: 15px
+}

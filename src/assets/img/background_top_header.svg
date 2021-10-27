@@ -1,0 +1,36 @@
+<svg width="1440" height="780.0000000000001" xmlns="http://www.w3.org/2000/svg" version="1.1" stroke="null">
+ <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+ <title stroke="null">Background Shades</title>
+ <desc stroke="null">Created with Sketch.</desc>
+ <defs stroke="null">
+  <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" gradientTransform="translate(0.500000,0.000000),scale(0.541291,1.000000),rotate(90.000000),translate(-0.500000,-0.000000)" id="radialGradient-1" stroke="null">
+   <stop stop-color="#FFFFFF" offset="0%" stroke="null"/>
+   <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%" stroke="null"/>
+  </radialGradient>
+  <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" gradientTransform="translate(0.500000,0.000000),scale(0.540849,1.000000),rotate(90.000000),translate(-0.500000,-0.000000)" id="radialGradient-2" stroke="null">
+   <stop stop-color="#FFFFFF" offset="0%" stroke="null"/>
+   <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%" stroke="null"/>
+  </radialGradient>
+  <radialGradient cx="50%" cy="30.541746%" fx="50%" fy="30.541746%" r="69.458254%" gradientTransform="translate(0.500000,0.305417),scale(0.374565,1.000000),rotate(90.000000),scale(1.000000,1.973933),translate(-0.500000,-0.305417)" id="radialGradient-3" stroke="null">
+   <stop stop-color="#FFFFFF" offset="0%" stroke="null"/>
+   <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%" stroke="null"/>
+  </radialGradient>
+  <radialGradient cx="51.0111235%" cy="53.6770501%" fx="51.0111235%" fy="53.6770501%" r="69.458254%" gradientTransform="translate(0.510111,0.536771),scale(0.331005,1.000000),rotate(90.000000),scale(1.000000,1.973933),translate(-0.510111,-0.536771)" id="radialGradient-4" stroke="null">
+   <stop stop-color="#FFFFFF" offset="0%" stroke="null"/>
+   <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%" stroke="null"/>
+  </radialGradient>
+ </defs>
+ <g stroke="null">
+  <title stroke="null">Layer 1</title>
+  <g id="Page-1" fill="none" fill-rule="evenodd" stroke="null">
+   <g id="Nebular-Landing-2.2" stroke="null">
+    <g id="Background-Shades" stroke="null">
+     <path d="m1253.97543,279.28736c0,-226.44738 -977.32443,-49.39606 -1329.17059,-295.28211c-43.04839,0.21339 -258.21997,0.21339 -645.51476,0l0,789.33031l1973.24456,0c0.96052,-288.4162 1.44079,-453.09892 1.44079,-494.0482z" id="Path-5" fill="url(#radialGradient-1)" opacity="0.1" stroke="null"/>
+     <path d="m1253.9456,321.22781c-20.50203,-360.49769 -1356.62423,186.12861 -1823.38739,-337.22256c-43.04774,0.21339 -93.47045,0.21339 -151.26813,0l0,789.33031l1973.21476,0c3.55416,-255.79966 4.03442,-406.50224 1.44077,-452.10775l-0.00001,0z" id="Path-5" fill="url(#radialGradient-2)" opacity="0.1" stroke="null"/>
+     <path d="m1253.97543,427.27804c-76.21321,-553.57665 -1048.80179,242.19022 -1974.68519,-12.24127c-1.82736,207.16113 -1.82736,326.59406 0,358.29879l1973.2444,0c0.96052,-189.75928 1.44079,-305.11178 1.44079,-346.05752z" id="Path-5" fill="url(#radialGradient-3)" opacity="0.1" stroke="null"/>
+     <path d="m1253.97543,507.44213c-151.92174,-630.76782 -604.18637,331.83949 -1974.68522,169.0258c-0.0001,24.09985 -0.00014,56.38159 -0.00012,96.84521l1973.21474,0c0.98039,-136.34391 1.4706,-224.96758 1.4706,-265.87101z" id="Path-5" fill="url(#radialGradient-4)" opacity="0.08" stroke="null"/>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>

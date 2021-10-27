@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -13,6 +13,7 @@ import { DialogLoginComponent } from '../../components/dialog-login/dialog-login
 })
 export class HomePageComponent implements OnInit {
 
+  navbarfixed = false;
   screenIsSmall = false;
   nameOfUser = '';
   appName = environment.appName;
@@ -38,6 +39,14 @@ export class HomePageComponent implements OnInit {
     // const provider = new firebase.auth.GoogleAuthProvider();
     // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
     this.dialogService.open(DialogLoginComponent);
+  }
+
+  @HostListener('window:scroll', ['$event']) onscroll(): void{
+    if (window.scrollY > 150) {
+      this.navbarfixed = true;
+    } else if (window.scrollY < 50) {
+      this.navbarfixed = false;
+    }
   }
 
 }

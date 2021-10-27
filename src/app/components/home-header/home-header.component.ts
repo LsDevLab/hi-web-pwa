@@ -12,6 +12,11 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class HomeHeaderComponent implements OnInit {
 
   isAuthenticated = (localStorage.getItem('isAuth') === 'true');
+  languagesContextMenu = [
+    { title: 'EN' },
+    { title: 'IT' },
+    { title: 'ES' },
+  ];
 
   constructor(private chatNotificationsService: ChatNotificationsService, public router: Router,
               public afAuth: AngularFireAuth) {

@@ -1,7 +1,5 @@
 <!-- Header component -->
-<nb-layout-header style="min-height: 10px; background-color: #36f;">
-  <unlogged-app-header style="height: 100%; width: 100%;"></unlogged-app-header>
-</nb-layout-header>
+<unlogged-app-header [ngClass]="navbarfixed ? 'nav-bar-fixed' : 'nav-bar-no-fixed'"></unlogged-app-header>
 
 <div class="home-page-main-div">
   <div class="top-banner">
