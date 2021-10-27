@@ -54,14 +54,8 @@
   height: 80px;
 }
 
-.login-button{
+.signin-button{
   margin: 2px 16px 2px 0px;
-  width: 100px;
-  height: 45px;
-}
-
-.signing-button{
-  margin: 2px 0px 2px 0px;
   width: 100px;
   height: 45px;
 }

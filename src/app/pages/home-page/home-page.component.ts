@@ -38,7 +38,7 @@ export class HomePageComponent implements OnInit {
   signIn(): void {
     // const provider = new firebase.auth.GoogleAuthProvider();
     // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
-    this.dialogService.open(DialogLoginComponent);
+    // this.dialogService.open(DialogSigninComponent);
   }
 
   @HostListener('window:scroll', ['$event']) onscroll(): void{

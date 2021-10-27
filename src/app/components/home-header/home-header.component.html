@@ -1,33 +1,22 @@
 <div class="row">
   <img class="logo-img" src="assets/img/logo_gif.gif">
-  <div class="nav-buttons-div">
-    <ng-container *ngIf="isAuthenticated; else loggedOut">
-      <button nbButton status="control" shape="round" (click)="router.navigateByUrl('/chat')">
-        Go to Hi Web
-        <nb-icon icon="message-square-outline"></nb-icon>
-      </button>
-      <button nbButton status="control" shape="round" (click)="logOut()">
-        Logout
-        <nb-icon icon="log-out-outline"></nb-icon>
-      </button>
-    </ng-container>
-    <ng-template #loggedOut>
-      <button nbButton status="control" shape="round" (click)="signIn()">
-        Hi Web Login
-        <nb-icon icon="log-in-outline"></nb-icon>
-      </button>
-    </ng-template>
-    <button nbButton ghost status="control" (click)="router.navigateByUrl('/download-apps')">
-      Download Hi mobile apps
-      <nb-icon icon="smartphone-outline"></nb-icon>
-    </button>
-    <button nbButton ghost status="control" (click)="router.navigateByUrl('/help')">
-      Help center
-      <nb-icon icon="question-mark-circle-outline"></nb-icon>
+  <div class="center-div" *ngIf="!screenIsSmall">
+    <button *ngFor="let navButton of navButtonsContextMenu; index as i"
+            nbButton status="control"
+            [ghost]="navButton.title!=='Logout' && navButton.title!=='Hi Web Login' && navButton.title!=='Go to Hi Web'"
+            (click)="navButtonsContextMenuActions[i]()"
+            shape="round">
+      {{ navButton.title }}
+      <nb-icon [icon]="navButton.icon"></nb-icon>
     </button>
   </div>
-  <div class="languages-selector-div">
-    <button nbButton status="control" shape="semi-round" [nbContextMenu]="languagesContextMenu">
+  <div class="right-div">
+    <div class="nav-buttons-div-small" *ngIf="screenIsSmall">
+      <button nbButton ghost status="control" shape="semi-round" nbContextMenuTag="navButtons" [nbContextMenu]="navButtonsContextMenu" nbButtonToggle='hover'>
+        <nb-icon icon="menu-outline"></nb-icon>
+      </button>
+    </div>
+    <button nbButton ghost status="control" shape="semi-round" nbContextMenuTag="languages" [nbContextMenu]="languagesContextMenu">
       <nb-icon icon="globe-2-outline"></nb-icon>
       EN
       <nb-icon icon="arrow-ios-downward-outline"></nb-icon>

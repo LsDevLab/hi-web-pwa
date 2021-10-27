@@ -10,8 +10,14 @@
   height: 100%;
 }
 
-.nav-buttons-div {
+.center-div {
   display: flex;
   flex-direction: row;
   gap: 15px
+}
+
+.right-div {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }

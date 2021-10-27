@@ -17,9 +17,7 @@
               <p class="action-div-card-text" *ngIf="!screenIsSmall">
                 <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
               </p>
-              <button nbButton status="primary" class="login-button"
-                      (click)="signIn()">Login</button>
-              <button nbButton status="success" class="signing-button"
+              <button nbButton status="primary" class="signin-button"
                       (click)="signIn()">Signup</button>
             </nb-card-body>
             <nb-card-body class="action-card-body" *ngIf="isAuthenticated">
@@ -28,7 +26,7 @@
               </p>
               <button nbButton status="primary" class="gotochat-button"
                       (click)="this.router.navigateByUrl('/chat');">
-                Vai alla chat
+                Vai a Hi Web
                 <nb-icon icon="message-square-outline"></nb-icon>
               </button>
             </nb-card-body>
