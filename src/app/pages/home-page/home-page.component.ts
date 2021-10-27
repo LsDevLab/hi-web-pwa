@@ -35,7 +35,13 @@ export class HomePageComponent implements OnInit {
     });
   }
 
-  signIn(): void {
+  signInWithGoogle(): void {
+    // const provider = new firebase.auth.GoogleAuthProvider();
+    // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
+    // this.dialogService.open(DialogSigninComponent);
+  }
+
+  signInWithEmailPassword(): void {
     // const provider = new firebase.auth.GoogleAuthProvider();
     // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
     // this.dialogService.open(DialogSigninComponent);

@@ -55,22 +55,27 @@
 }
 
 .signin-button{
-  margin: 2px 16px 2px 0px;
-  width: 100px;
   height: 45px;
 }
 
 .action-div-card-text{
-  width: 50%;
   margin: 5px 20px 5px 0px;
   font-size: 90%;
 }
 
 .action-card-body{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.action-div-card-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 .top-banner-bottom{
