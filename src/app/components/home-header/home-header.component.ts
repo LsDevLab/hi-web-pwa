@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatNotificationsService } from '../../services/chat-notifications.service';
 import { Router} from '@angular/router';
-import firebase from 'firebase';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NbMenuItem, NbMenuService } from '../../framework/theme/components/menu/menu.service';

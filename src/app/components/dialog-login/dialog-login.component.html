@@ -1,1 +1,38 @@
-<p>dialog-login works!</p>
+<nb-card>
+  <nb-card-body>
+    <div class="login-header">
+      <img class="login-header-logo" src="assets/img/logo_img_colorized_b.png">
+      <p class="login-header-title">Login to Hi Web</p>
+      <p  class="login-header-subtitle">Log to Hi Web with <strong>email and password</strong>
+        or with your <strong>Google account</strong>.</p>
+    </div>
+    <div class="login-fields">
+      <nb-form-field>
+        <input type="text" shape="semi-round" nbInput placeholder="Email">
+        <button nbSuffix nbButton ghost>
+          <nb-icon icon="email-outline" pack="eva"></nb-icon>
+        </button>
+      </nb-form-field>
+      <nb-form-field>
+        <input [type]="getInputType()" shape="semi-round" nbInput placeholder="Password">
+        <button nbSuffix  nbButton ghost (click)="toggleShowPassword()">
+          <nb-icon [icon]="showPassword ? 'eye-outline' : 'eye-off-2-outline'"
+                   pack="eva"
+                   [attr.aria-label]="showPassword ? 'hide password' : 'show password'">
+          </nb-icon>
+        </button>
+      </nb-form-field>
+      <p class="forgot-password-link">Forgot password?</p>
+    </div>
+    <div class="login-buttons">
+      <button class="email-password-login-button" nbButton status="primary" shape="semi-round">
+        Login
+      </button>
+      <p class="divider line one-line">OR</p>
+      <button class="google-login-button" outline nbButton status="basic" shape="semi-round" (click)="loginWithGoogle()">
+        Login with Google
+        <img class="google-logo-img" src="assets/img/google_logo.svg">
+      </button>
+    </div>
+  </nb-card-body>
+</nb-card>
