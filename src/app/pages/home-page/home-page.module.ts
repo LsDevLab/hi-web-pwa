@@ -12,6 +12,7 @@ import {
 } from '@nebular/theme';
 import { HomeHeaderComponent } from '../../components/home-header/home-header.component';
 import { DialogLoginComponent } from '../../components/dialog-login/dialog-login.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,17 +20,18 @@ import { DialogLoginComponent } from '../../components/dialog-login/dialog-login
     HomeHeaderComponent,
     DialogLoginComponent
   ],
-    imports: [
-      CommonModule,
-      NbCardModule,
-      NbButtonModule,
-      NbLayoutModule,
-      NbIconModule,
-      NbUserModule,
-      NbContextMenuModule,
-      NbInputModule,
-      NbFormFieldModule
-    ],
+  imports: [
+    CommonModule,
+    NbCardModule,
+    NbButtonModule,
+    NbLayoutModule,
+    NbIconModule,
+    NbUserModule,
+    NbContextMenuModule,
+    NbInputModule,
+    NbFormFieldModule,
+    FormsModule
+  ],
   exports: [
     HomePageComponent
   ]

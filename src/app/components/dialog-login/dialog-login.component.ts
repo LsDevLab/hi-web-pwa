@@ -12,7 +12,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./dialog-login.component.css']
 })
 export class DialogLoginComponent implements OnInit {
-  showPassword = true;
+  showPassword = false;
+  email = '';
+  password = '';
+  loging = false;
+  logingErrorMessage;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private afAuth: AngularFireAuth,
               private router: Router) { }
@@ -39,7 +43,19 @@ export class DialogLoginComponent implements OnInit {
     this.dialogRef.close();
     const provider = new firebase.auth.GoogleAuthProvider();
     this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'))
-      .catch(error => console.log('HHC Authentication failed with error: ', error));
+      .catch(error => console.log('DLC Authentication failed with error: ', error));
+  }
+
+  loginWithEmailPassword(): void{
+    this.loging = true;
+    this.afAuth.signInWithEmailAndPassword(this.email, this.password).then(_ => {
+      this.dialogRef.close();
+      this.router.navigateByUrl('/chat');
+    }).catch(error => {
+        console.log('DLC Authentication failed with error: ', error);
+        this.loging = false;
+        this.logingErrorMessage = error;
+      });
   }
 
 }
