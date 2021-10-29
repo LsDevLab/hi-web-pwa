@@ -533,7 +533,7 @@ export class ChatUiService {
         surname: user ? user.surname : '',
         profile_img_url: user ? user.profile_img_url : null,
         messages_to_read: isAtLeastOneToNotify ? chat.messages_to_read : null,
-        updated_timestamp: chat.updated_timestamp,
+        updated_timestamp: chat.last_message_preview === 'No messages yet' ? null : chat.updated_timestamp,
         target_user_writing: is_target_user_writing,
         last_message_preview: chat.last_message_preview,
         online: user.online,

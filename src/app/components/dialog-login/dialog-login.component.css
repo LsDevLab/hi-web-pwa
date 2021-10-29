@@ -74,6 +74,14 @@ nb-card-body{
   color: indianred;
 }
 
+.reset-message{
+  text-align: center;
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #3366ff;
+}
+
 .login-header-logo{
   height: 50px;
 }

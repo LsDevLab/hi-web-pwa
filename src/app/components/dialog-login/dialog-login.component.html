@@ -45,9 +45,10 @@
             </nb-icon>
           </button>
         </nb-form-field>
-        <p class="forgot-password-link">Forgot password?</p>
+        <p class="forgot-password-link" (click)="sendResetPasswordMail()">Forgot password?</p>
       </div>
       <div class="login-buttons">
+        <p *ngIf="resetEmailMessage" class="reset-message">{{ resetEmailMessage }}</p>
         <p *ngIf="logingErrorMessage" class="login-error">{{ logingErrorMessage }}</p>
         <button [disabled]="loging || !loginForm.valid"
                 type="submit"

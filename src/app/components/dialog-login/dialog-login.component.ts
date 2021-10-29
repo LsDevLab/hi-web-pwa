@@ -17,6 +17,7 @@ export class DialogLoginComponent implements OnInit {
   password = '';
   loging = false;
   logingErrorMessage;
+  resetEmailMessage;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private afAuth: AngularFireAuth,
               private router: Router) { }
@@ -48,14 +49,30 @@ export class DialogLoginComponent implements OnInit {
 
   loginWithEmailPassword(): void{
     this.loging = true;
+    this.logingErrorMessage = null;
+    this.resetEmailMessage = null;
     this.afAuth.signInWithEmailAndPassword(this.email, this.password).then(_ => {
       this.dialogRef.close();
       this.router.navigateByUrl('/chat');
     }).catch(error => {
-        console.log('DLC Authentication failed with error: ', error);
-        this.loging = false;
-        this.logingErrorMessage = error;
-      });
+      console.log('DLC Authentication failed with error: ', error);
+      this.loging = false;
+      this.logingErrorMessage = error;
+    });
+  }
+
+  sendResetPasswordMail(): void {
+    this.loging = true;
+    this.logingErrorMessage = null;
+    this.resetEmailMessage = null;
+    this.afAuth.sendPasswordResetEmail(this.email).then(_ => {
+      this.resetEmailMessage = 'Password reset instruction sent to ' + this.email;
+      this.loging = false;
+    }).catch(error => {
+      console.log('DLC Sending reset password failed with error: ', error);
+      this.loging = false;
+      this.logingErrorMessage = error;
+    });
   }
 
 }
