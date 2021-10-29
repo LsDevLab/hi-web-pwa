@@ -8,17 +8,20 @@ import {
   NbIconModule,
   NbInputModule,
   NbLayoutModule,
+  NbStepperModule,
   NbUserModule
 } from '@nebular/theme';
 import { HomeHeaderComponent } from '../../components/home-header/home-header.component';
 import { DialogLoginComponent } from '../../components/dialog-login/dialog-login.component';
 import { FormsModule } from '@angular/forms';
+import { DialogSignupComponent } from '../../components/dialog-signup/dialog-signup.component';
 
 @NgModule({
   declarations: [
     HomePageComponent,
     HomeHeaderComponent,
-    DialogLoginComponent
+    DialogLoginComponent,
+    DialogSignupComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +33,8 @@ import { FormsModule } from '@angular/forms';
     NbContextMenuModule,
     NbInputModule,
     NbFormFieldModule,
-    FormsModule
+    FormsModule,
+    NbStepperModule
   ],
   exports: [
     HomePageComponent

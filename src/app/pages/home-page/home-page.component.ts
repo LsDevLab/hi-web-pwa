@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { environment } from '../../../environments/environment';
 import { NbDialogService } from '../../framework/theme/components/dialog/dialog.service';
-import { DialogLoginComponent } from '../../components/dialog-login/dialog-login.component';
+import { DialogSignupComponent } from '../../components/dialog-signup/dialog-signup.component';
 
 @Component({
   selector: 'app-home-page',
@@ -44,7 +44,7 @@ export class HomePageComponent implements OnInit {
   signInWithEmailPassword(): void {
     // const provider = new firebase.auth.GoogleAuthProvider();
     // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
-    // this.dialogService.open(DialogSigninComponent);
+    this.dialogService.open(DialogSignupComponent);
   }
 
   @HostListener('window:scroll', ['$event']) onscroll(): void{
