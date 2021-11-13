@@ -12,10 +12,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./dialog-login.component.css']
 })
 export class DialogLoginComponent implements OnInit {
-  showPassword = false;
+
   email = '';
   password = '';
-  loging = false;
+  logging = false;
   logingErrorMessage;
   resetEmailMessage;
 
@@ -29,17 +29,6 @@ export class DialogLoginComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  getInputType(): string {
-    if (this.showPassword) {
-      return 'text';
-    }
-    return 'password';
-  }
-
-  toggleShowPassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-
   loginWithGoogle(): void {
     this.dialogRef.close();
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -47,30 +36,30 @@ export class DialogLoginComponent implements OnInit {
       .catch(error => console.log('DLC Authentication failed with error: ', error));
   }
 
-  loginWithEmailPassword(): void{
-    this.loging = true;
+  loginWithEmailPassword(email, password): void {
+    this.logging = true;
     this.logingErrorMessage = null;
     this.resetEmailMessage = null;
-    this.afAuth.signInWithEmailAndPassword(this.email, this.password).then(_ => {
+    this.afAuth.signInWithEmailAndPassword(email, password).then(_ => {
       this.dialogRef.close();
       this.router.navigateByUrl('/chat');
     }).catch(error => {
       console.log('DLC Authentication failed with error: ', error);
-      this.loging = false;
+      this.logging = false;
       this.logingErrorMessage = error;
     });
   }
 
-  sendResetPasswordMail(): void {
-    this.loging = true;
+  sendResetPasswordMail(email): void {
+    this.logging = true;
     this.logingErrorMessage = null;
     this.resetEmailMessage = null;
-    this.afAuth.sendPasswordResetEmail(this.email).then(_ => {
-      this.resetEmailMessage = 'Password reset instruction sent to ' + this.email;
-      this.loging = false;
+    this.afAuth.sendPasswordResetEmail(email).then(_ => {
+      this.resetEmailMessage = 'Password reset instruction sent to ' + email;
+      this.logging = false;
     }).catch(error => {
       console.log('DLC Sending reset password failed with error: ', error);
-      this.loging = false;
+      this.logging = false;
       this.logingErrorMessage = error;
     });
   }

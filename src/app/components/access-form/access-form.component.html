@@ -1,0 +1,88 @@
+<form (ngSubmit)="formSubmit.emit({ email: email, password: password })" #formRef="ngForm">
+  <div class="login-fields">
+    <nb-form-field>
+      <input type="email"
+             id="email"
+             name="email"
+             #emailField="ngModel"
+             required="required"
+             shape="semi-round"
+             [disabled]="loading"
+             [status]="(!emailField.valid && formRef.submitted) ? 'danger' : 'basic'"
+             nbInput
+             placeholder="Email"
+             [(ngModel)]="email">
+      <button nbSuffix
+              nbButton
+              ghost
+              type="button">
+        <nb-icon icon="email-outline" pack="eva"></nb-icon>
+      </button>
+    </nb-form-field>
+    <nb-card class="password-validity-card"
+             *ngIf="signingMode && !passwordField.pristine"
+             [accent]="passwordField.valid ? 'success' : 'danger'">
+      <nb-card-body class="password-validity-card-body">
+        A password must be:
+        <ul>
+          <li>
+            At least 6 characters long
+            <img class="password-criteria-ok-img" src="assets/img/check.png" *ngIf="password.length >= 6">
+            <img class="password-criteria-nok-img" src="assets/img/cancel.png" *ngIf="password.length < 6">
+          </li>
+          <li>
+            Max 15 characters long
+            <img class="password-criteria-ok-img" src="assets/img/check.png" *ngIf="password.length <= 15">
+            <img class="password-criteria-nok-img" src="assets/img/cancel.png" *ngIf="password.length > 15">
+          </li>
+        </ul>
+      </nb-card-body>
+    </nb-card>
+    <nb-form-field>
+      <input [type]="getInputType()"
+             id="password"
+             name="password"
+             #passwordField="ngModel"
+             required="required"
+             minlength="6"
+             maxlength="15"
+             shape="semi-round"
+             [disabled]="loading"
+             [status]="(!passwordField.valid && formRef.submitted) ? 'danger' : 'basic'"
+             nbInput
+             placeholder="Password"
+             [(ngModel)]="password">
+      <button type="button" nbSuffix  nbButton ghost (click)="toggleShowPassword()">
+        <nb-icon [icon]="showPassword ? 'eye-outline' : 'eye-off-2-outline'"
+                 pack="eva"
+                 [attr.aria-label]="showPassword ? 'hide password' : 'show password'">
+        </nb-icon>
+      </button>
+    </nb-form-field>
+    <p *ngIf="!signingMode" class="forgot-password-link" (click)="sendResetPasswordMail.emit(email)">Forgot password?</p>
+  </div>
+  <div class="login-buttons">
+    <p *ngIf="!signingMode && resetEmailMessage" class="reset-message">{{ resetEmailMessage }}</p>
+    <p *ngIf="accessErrorMessage" class="access-error">{{ accessErrorMessage }}</p>
+    <button [disabled]="loading || !formRef.valid"
+            type="submit"
+            class="form-submit-button"
+            nbButton
+            status="primary"
+            shape="semi-round">
+      {{ signingMode ? 'Next step' : 'Login'}}
+    </button>
+    <p class="divider line one-line" *ngIf="!signingMode">OR</p>
+    <button class="google-login-button"
+            *ngIf="!signingMode"
+            type="button"
+            outline
+            nbButton
+            status="basic"
+            shape="semi-round"
+            (click)="loginWithGoogle.emit()">
+      Login with Google
+      <img class="google-logo-img" src="assets/img/google_logo.svg">
+    </button>
+  </div>
+</form>

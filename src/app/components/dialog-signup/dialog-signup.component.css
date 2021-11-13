@@ -50,7 +50,7 @@ form {
   gap: 25px;
 }
 
-.signup-fields{
+.signup-userdata-fields, signup-accessdata-fields{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -58,7 +58,7 @@ form {
   width: 100%;
 }
 
-.signup-buttons{
+.signup-userdata-buttons, signup-accessdata-buttons{
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -71,13 +71,49 @@ nb-stepper{
   display: flex;
   flex-direction: column;
   gap: 25px;
+  width: 100%;
 }
 
-.signup-error{
+.signup-header-subtitle{
   text-align: center;
   font-family: Raleway;
   margin: 0;
   font-size: 13px;
-  color: indianred;
+  color: #343434;
 }
 
+.signup-details-subheader{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.signup-details-subheader-captions{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.signup-details-caption{
+  font-family: Raleway;
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  color: #343434;
+  margin: 0.4rem 0rem;
+}
+
+.signup-details-caption-subtitle{
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #343434;
+}
+
+.signup-details-logo{
+  height: 55px;
+}

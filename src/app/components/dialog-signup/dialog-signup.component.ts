@@ -13,11 +13,9 @@ import { NbStepperComponent } from '../../framework/theme/components/stepper/ste
 export class DialogSignupComponent implements OnInit {
 
   loading = false;
-  password;
-  email;
   user: User;
-  showPassword = false;
-  signingErrorMessage;
+  signupErrorMessage;
+  isAtDataStep = false;
 
 
   constructor(private dialogRef: NbDialogRef<DialogSignupComponent>, private afAuth: AngularFireAuth,
@@ -26,45 +24,34 @@ export class DialogSignupComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  @Input()
-  googleSigning = false;
-
   closeDialog(): void {
     this.dialogRef.close();
   }
 
-  getInputType(): string {
-    if (this.showPassword) {
-      return 'text';
-    }
-    return 'password';
-  }
-
-  toggleShowPassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  goToAccessDataStep(stepper: NbStepperComponent): void {
+  goToAccessDataStep(stepper: NbStepperComponent, email: string, password: string): void {
+    stepper.next();
+    return;
     this.loading = true;
-    this.signingErrorMessage = null;
-    this.afAuth.createUserWithEmailAndPassword(this.email, this.password).then(credential => {
-      this.loading = false;
+    this.signupErrorMessage = null;
+    this.afAuth.createUserWithEmailAndPassword(email, password).then(credential => {
+      console.log('DSC User access data created');
       this.user = {
+        username: email,
+        uid: credential.user.uid,
         last_access: null,
         name: '',
-        surname: '',
-        username: this.email,
-        uid: credential.user.uid
+        surname: ''
       };
+      this.loading = false;
       stepper.next();
     }).catch(error => {
-      console.log('DSC Creation failed with error: ', error);
+      console.log('DSC User access data creation failed with error: ', error);
       this.loading = false;
-      this.signingErrorMessage = error;
+      this.signupErrorMessage = error;
     });
   }
 
-  goToConfirmStep(stepper: NbStepperComponent): void {
+  goToUserAvatarStep(stepper: NbStepperComponent): void {
     stepper.next();
   }
 

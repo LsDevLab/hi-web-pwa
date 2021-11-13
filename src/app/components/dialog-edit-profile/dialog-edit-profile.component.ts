@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef, NbToastrConfig, NbToastrService } from '@nebular/theme';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
 import { Subscription } from 'rxjs';
@@ -15,6 +15,9 @@ export class DialogEditProfileComponent implements OnInit {
   currentName: string;
   imgUploadingPercentage = null;
   usersSub: Subscription;
+
+  @Input()
+  showHeader = true;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private chatCoreService: ChatCoreService,
               private toastrService: NbToastrService, public chatUiService: ChatUiService) {

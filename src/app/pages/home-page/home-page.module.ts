@@ -15,13 +15,15 @@ import { HomeHeaderComponent } from '../../components/home-header/home-header.co
 import { DialogLoginComponent } from '../../components/dialog-login/dialog-login.component';
 import { FormsModule } from '@angular/forms';
 import { DialogSignupComponent } from '../../components/dialog-signup/dialog-signup.component';
+import { AccessFormComponent } from '../../components/access-form/access-form.component';
 
 @NgModule({
   declarations: [
     HomePageComponent,
     HomeHeaderComponent,
     DialogLoginComponent,
-    DialogSignupComponent
+    DialogSignupComponent,
+    AccessFormComponent
   ],
   imports: [
     CommonModule,

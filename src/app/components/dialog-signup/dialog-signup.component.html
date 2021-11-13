@@ -3,68 +3,29 @@
     <div class="signup-header">
       <img class="signup-header-logo" src="assets/img/logo_img_colorized_b.png">
       <p class="signup-header-title">Signup to Hi Web</p>
+      <p  class="signup-header-subtitle">Signup to Hi Web with email and password
+        or with your Google account</p>
     </div>
     <nb-stepper orientation="horizontal" disableStepNavigation #stepper>
       <nb-step [label]="labelOne">
         <ng-template #labelOne>Access data</ng-template>
-        <form (ngSubmit)="goToAccessDataStep(stepper)" #accessDataForm="ngForm">
-          <div class="signup-fields">
-            <nb-form-field>
-              <input type="email"
-                     id="email"
-                     name="email"
-                     #emailField="ngModel"
-                     required="required"
-                     shape="semi-round"
-                     [disabled]="loading"
-                     [status]="(!emailField.valid && passwordField.touched) ? 'danger' : 'basic'"
-                     nbInput
-                     placeholder="Email"
-                     [(ngModel)]="email">
-              <button nbSuffix
-                      nbButton
-                      ghost>
-                <nb-icon icon="email-outline" pack="eva"></nb-icon>
-              </button>
-            </nb-form-field>
-            <nb-form-field>
-              <input [type]="getInputType()"
-                     id="password"
-                     name="password"
-                     #passwordField="ngModel"
-                     required="required"
-                     shape="semi-round"
-                     [disabled]="loading"
-                     [status]="(!passwordField.valid && passwordField.touched) ? 'danger' : 'basic'"
-                     nbInput
-                     placeholder="Password"
-                     [(ngModel)]="password">
-              <button nbSuffix  nbButton ghost (click)="toggleShowPassword()">
-                <nb-icon [icon]="showPassword ? 'eye-outline' : 'eye-off-2-outline'"
-                         pack="eva"
-                         [attr.aria-label]="showPassword ? 'hide password' : 'show password'">
-                </nb-icon>
-              </button>
-            </nb-form-field>
-          </div>
-          <div class="signup-buttons">
-            <p *ngIf="signingErrorMessage" class="signup-error">{{ signingErrorMessage }}</p>
-            <button [disabled]="loading || !accessDataForm.valid"
-                    type="submit"
-                    class="email-password-login-button"
-                    nbButton
-                    status="primary"
-                    shape="semi-round">
-              Next step
-            </button>
-          </div>
-        </form>
+        <app-access-form [signingMode]="true"
+                         (formSubmit)="goToAccessDataStep(stepper, $event.email, $event.password)"
+                         [loading]="loading"
+                         [accessErrorMessage]="signupErrorMessage"
+        ></app-access-form>
       </nb-step>
       <nb-step [label]="labelTwo">
-        <ng-template #labelTwo>User data</ng-template>
-
+        <ng-template #labelTwo>User details</ng-template>
+        <div class="signup-details-subheader">
+          <img class="signup-details-logo" src="assets/img/checked.png">
+          <div class="signup-details-subheader-captions">
+            <p class="signup-details-caption">You successfully registered your account!</p>
+            <p class="signup-details-caption-subtitle">Complete your user details now.</p>
+          </div>
+        </div>
       </nb-step>
-      <nb-step label="Confirm">
+      <nb-step label="Avatar">
         <h4>Step content #3</h4>
 
       </nb-step>

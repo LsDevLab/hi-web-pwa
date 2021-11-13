@@ -1,0 +1,135 @@
+.login-fields{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.login-buttons{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.google-login-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-buttons > *{
+  width: 100%;
+}
+
+.access-error{
+  text-align: center;
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: indianred;
+  width: 100%;
+}
+
+.reset-message{
+  text-align: center;
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #3366ff;
+  width: 100%;
+}
+
+nb-form-field {
+  width: 100%;
+}
+
+input {
+  width: 100%;
+}
+
+.forgot-password-link{
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #3366ff;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.divider {
+  display: flex;
+  font-family: Raleway;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #343434;
+}
+
+.divider:before, .divider:after {
+  content: "";
+  flex: 1;
+}
+
+.line {
+  align-items: center;
+}
+
+.line:before, .line:after {
+  height: 1px;
+  margin: 0 0.5em;
+}
+
+.one-line:before, .one-line:after {
+  background: #343434;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+}
+
+.password-validity-card{
+  width: 100%;
+  margin: 0;
+}
+
+li{
+  margin: 0.2rem 0rem;
+  font-family: Raleway;
+  margin: 0;
+  font-size: 11px;
+  color: #343434;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+
+ul{
+  margin: 0.2rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.password-validity-card-body {
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #343434;
+  padding: 1rem;
+}
+
+.password-criteria-ok-img, .password-criteria-nok-img{
+  height: 11px;
+}
