@@ -4,7 +4,7 @@
       <img class="signup-header-logo" src="assets/img/logo_img_colorized_b.png">
       <p class="signup-header-title">Signup to Hi Web</p>
       <p  class="signup-header-subtitle">Signup to Hi Web with email and password
-        or with your Google account</p>
+        and complete your user details and avatar</p>
     </div>
     <nb-stepper orientation="horizontal" disableStepNavigation #stepper>
       <nb-step [label]="labelOne">
@@ -24,9 +24,12 @@
             <p class="signup-details-caption-subtitle">Complete your user details now.</p>
           </div>
         </div>
+        <app-user-data-form (formSubmit)="goToUserAvatarStep(stepper, $event)"
+                            [loading]="loading"
+        ></app-user-data-form>
       </nb-step>
-      <nb-step label="Avatar">
-        <h4>Step content #3</h4>
+      <nb-step [label]="labelThree">
+        <ng-template #labelThree>Avatar</ng-template>
 
       </nb-step>
     </nb-stepper>

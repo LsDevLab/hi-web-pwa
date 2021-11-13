@@ -105,6 +105,7 @@ export class ChatUiService {
       this.currentUser = currentUser;
       if (isFirstDataLoaded){
         this.setFirstDataLoading();
+        console.log('FIRST LOADING CURRENT USER');
       }
     });
     this.subscriptions.push(s);
@@ -115,6 +116,7 @@ export class ChatUiService {
         this.chats = this.formatChats(this.unformattedChats);
       if (isFirstDataLoaded){
         this.setFirstDataLoading();
+        console.log('FIRST LOADING TARGET USERS');
       }
     });
     this.subscriptions.push(s);
@@ -125,6 +127,7 @@ export class ChatUiService {
         this.chats = this.formatChats(chats);
       if (isFirstDataLoaded) {
         this.setFirstDataLoading();
+        console.log('FIRST LOADING CHATS');
       }
     });
     this.subscriptions.push(s);

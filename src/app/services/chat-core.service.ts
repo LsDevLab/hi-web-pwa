@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Apollo} from 'apollo-angular';
 import {BehaviorSubject, forkJoin, from, interval, Observable, Subject, Subscription} from 'rxjs';
 import {ChatNotificationsService} from './chat-notifications.service';
 import {concatMap, filter, first, last, map, switchMap} from 'rxjs/operators';
@@ -72,7 +71,7 @@ export class ChatCoreService {
 
   //////////////////////////// PUBLIC ATTRIBUTES ////////////////////////////
 
-  constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService,
+  constructor(public chatNotificationsService: ChatNotificationsService,
               private afs: AngularFirestore, private afStorage: AngularFireStorage) {
 
     this.messagesAdded.subscribe(msgs => {
@@ -357,15 +356,15 @@ export class ChatCoreService {
       return from(itemsRef.update({user1_writing:  new Date().getTime(), user_writing_updated_by: 1}));
   }
 
-  private addCurrentUser(username: string, userUID: string): Observable<void> {
+  public addCurrentUser(username: string, userUID: string): Observable<void> {
     // Adds an user with the given username
 
     const user: Partial<User> = {
       username,
-      name: 'Name',
+      name: '',
       last_access: new Date().getTime(),
-      bio: 'sample bio',
-      surname: 'Surname',
+      bio: '',
+      surname: '',
       age: null,
       sex: null,
       online: false
@@ -566,10 +565,10 @@ export class ChatCoreService {
         console.log('CCS: user first login. Created profile.');
         this.addCurrentUser(currentUsername, currentUserUID).subscribe(_ => {
           console.log('CCS: user added');
-          window.location.reload();
+          // window.location.reload();
         }, (error) => {
           console.log('CCS: ERROR while adding user', error);
-          window.location.reload();
+          // window.location.reload();
         });
       }else{
         // subscribing to chats of the current user

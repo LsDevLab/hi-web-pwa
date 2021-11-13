@@ -4,6 +4,7 @@ import { DialogEditProfileComponent } from '../dialog-edit-profile/dialog-edit-p
 import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase';
 import { Router } from '@angular/router';
+import { ChatCoreService } from '../../services/chat-core.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class DialogLoginComponent implements OnInit {
   resetEmailMessage;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private afAuth: AngularFireAuth,
-              private router: Router) { }
+              private router: Router, private chatCoreService: ChatCoreService) { }
 
   ngOnInit(): void {
   }
@@ -32,15 +33,16 @@ export class DialogLoginComponent implements OnInit {
   loginWithGoogle(): void {
     this.dialogRef.close();
     const provider = new firebase.auth.GoogleAuthProvider();
-    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'))
-      .catch(error => console.log('DLC Authentication failed with error: ', error));
+    this.afAuth.signInWithPopup(provider).then(credential => {
+      this.router.navigateByUrl('/chat');
+    }).catch(error => console.log('DLC Authentication failed with error: ', error));
   }
 
   loginWithEmailPassword(email, password): void {
     this.logging = true;
     this.logingErrorMessage = null;
     this.resetEmailMessage = null;
-    this.afAuth.signInWithEmailAndPassword(email, password).then(_ => {
+    this.afAuth.signInWithEmailAndPassword(email, password).then(credential => {
       this.dialogRef.close();
       this.router.navigateByUrl('/chat');
     }).catch(error => {

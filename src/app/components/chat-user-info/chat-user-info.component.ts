@@ -17,6 +17,7 @@ export class ChatUserInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
   openUserInfoDialog(): void{

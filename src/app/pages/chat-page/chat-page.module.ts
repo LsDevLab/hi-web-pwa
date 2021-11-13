@@ -63,7 +63,6 @@ import { NgxHowlerService } from 'ngx-howler';
     ChatPageComponent
   ],
   providers: [
-    ChatCoreService,
     ChatUiService,
     NgxHowlerService
   ]

@@ -7,7 +7,7 @@ import {
   NbContextMenuModule, NbFormFieldModule,
   NbIconModule,
   NbInputModule,
-  NbLayoutModule,
+  NbLayoutModule, NbSelectModule,
   NbStepperModule,
   NbUserModule
 } from '@nebular/theme';
@@ -16,6 +16,8 @@ import { DialogLoginComponent } from '../../components/dialog-login/dialog-login
 import { FormsModule } from '@angular/forms';
 import { DialogSignupComponent } from '../../components/dialog-signup/dialog-signup.component';
 import { AccessFormComponent } from '../../components/access-form/access-form.component';
+import { UserDataFormComponent } from '../../components/user-data-form/user-data-form.component';
+import { UserAvatarFormComponent } from '../../components/user-avatar-form/user-avatar-form.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { AccessFormComponent } from '../../components/access-form/access-form.co
     HomeHeaderComponent,
     DialogLoginComponent,
     DialogSignupComponent,
-    AccessFormComponent
+    AccessFormComponent,
+    UserDataFormComponent,
+    UserAvatarFormComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +40,8 @@ import { AccessFormComponent } from '../../components/access-form/access-form.co
     NbInputModule,
     NbFormFieldModule,
     FormsModule,
-    NbStepperModule
+    NbStepperModule,
+    NbSelectModule
   ],
   exports: [
     HomePageComponent

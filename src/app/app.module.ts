@@ -19,6 +19,8 @@ import { AngularFireModule } from '@angular/fire';
 import { angularFireModuleData } from '../../firebaseData';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { ChatCoreService } from './services/chat-core.service';
+import { ChatUiService } from './services/chat-ui.service';
 
 @NgModule({
   declarations: [
@@ -58,6 +60,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
   ],
   bootstrap: [AppComponent],
   providers: [
+    ChatCoreService,
     ChatNotificationsService,
     Title
   ]

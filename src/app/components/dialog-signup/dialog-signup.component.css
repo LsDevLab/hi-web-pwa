@@ -1,6 +1,7 @@
 nb-card {
   max-width: 22rem;
   margin: 1rem;
+  max-height: 90vh;
 }
 
 nb-card-body{
@@ -33,40 +34,6 @@ nb-card-body{
   height: 50px;
 }
 
-nb-form-field {
-  width: 100%;
-}
-
-input {
-  width: 100%;
-}
-
-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 25px;
-}
-
-.signup-userdata-fields, signup-accessdata-fields{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  width: 100%;
-}
-
-.signup-userdata-buttons, signup-accessdata-buttons{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
 nb-stepper{
   display: flex;
   flex-direction: column;
@@ -89,6 +56,7 @@ nb-stepper{
   justify-content: center;
   align-items: center;
   gap: 20px;
+  margin: 0rem 0rem 2rem 0rem;
 }
 
 .signup-details-subheader-captions{
