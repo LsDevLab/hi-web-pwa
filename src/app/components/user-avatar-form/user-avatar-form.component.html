@@ -1,0 +1,21 @@
+<div class="profile-img-div">
+  <h5 class="name-surname-label">{{chatUiService.currentUser.name}} {{chatUiService.currentUser?.surname}}</h5>
+  <p class="username-label">{{chatUiService.currentUser.username}}</p>
+  <div class="profile-img-container">
+    <img class="profile-img"
+         [src]="chatUiService.currentUser.profile_img_url ? chatUiService.currentUser?.profile_img_url : 'assets/img/default_profile_img.png'"
+         (click)="imageFileInput.click()">
+    <circle-progress-bar class="img-uploading-progress-bar" *ngIf="imgUploadingPercentage !== null && imgUploadingPercentage !== 100"
+                         [progress]="imgUploadingPercentage"
+                         [radius]="7"
+                         [trackWeight]="2"
+                         [trackColor]="'#ffffff'"
+                         [trackEndShape]="'round'"
+    ></circle-progress-bar>
+  </div>
+  <div class="profile-img-info-div">
+    <p class="profile-img-loading-info">Premi sull'immagine per caricare</p>
+    <img class="profile-img-loading-icon" src="assets/img/upload.png">
+  </div>
+  <input #imageFileInput type="file" (change)="editProfileImage($event)" accept=".png,.jpg" style="display: none"/>
+</div>

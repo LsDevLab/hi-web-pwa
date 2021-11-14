@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { NbDialogRef } from '../../framework/theme/components/dialog/dialog-ref';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
@@ -11,17 +11,24 @@ import { ChatCoreService } from '../../services/chat-core.service';
   templateUrl: './dialog-signup.component.html',
   styleUrls: ['./dialog-signup.component.css']
 })
-export class DialogSignupComponent implements OnInit {
+export class DialogSignupComponent implements OnInit, AfterViewInit {
 
   loading = false;
   signupErrorMessage;
   isAtDataStep = false;
 
+  @ViewChild(NbStepperComponent) stepper: NbStepperComponent;
 
   constructor(private dialogRef: NbDialogRef<DialogSignupComponent>, private afAuth: AngularFireAuth,
-              private chatCoreService: ChatCoreService) { }
+              private chatCoreService: ChatCoreService, private router: Router) {
+  }
 
   ngOnInit(): void {
+  }
+
+  async ngAfterViewInit(): Promise<void> {
+    if (await this.afAuth.user)
+      this.stepper.next();
   }
 
   closeDialog(): void {
@@ -37,7 +44,8 @@ export class DialogSignupComponent implements OnInit {
         console.log('DSC User details data initialized');
         this.chatCoreService.init(email, credential.user.uid);
         this.loading = false;
-        stepper.next();
+        this.closeDialog();
+        this.router.navigateByUrl('/chat');
       }, error => {
         console.log('DSC User access data initialization failed with error:', error);
         this.loading = false;
@@ -65,6 +73,11 @@ export class DialogSignupComponent implements OnInit {
       console.log('DSC User details data update failed with error:', error);
       this.closeDialog();
     });
+  }
+
+  concludeSigning(): void{
+    this.closeDialog();
+    this.router.navigateByUrl('/chat');
   }
 
 }

@@ -58,12 +58,11 @@
         <nb-icon icon="text-outline" pack="eva"></nb-icon>
       </button>
     </nb-form-field>
-    <nb-select #sexField="ngModel"
-               placeholder="Sex"
+    <nb-select placeholder="Sex"
                fullWidth
                [disabled]="loading"
                shape="semi-round"
-               [(ngModel)]="sex">
+               [(selected)]="sex">
       <nb-option value="">No sex specified</nb-option>
       <nb-option value="M">M</nb-option>
       <nb-option value="F">F</nb-option>
@@ -88,7 +87,7 @@
             nbButton
             status="primary"
             shape="semi-round">
-      Next step
+      Save
     </button>
   </div>
 </form>

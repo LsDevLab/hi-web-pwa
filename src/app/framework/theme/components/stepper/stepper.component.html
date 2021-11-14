@@ -1,5 +1,5 @@
 <ng-template><ng-content select="nb-step"></ng-content></ng-template>
-<div class="header">
+<div class="header" style="padding: 0px 30px">
   <ng-container *ngFor="let step of steps; let index = index; let first = first">
 
     <div *ngIf="!first && !step.hidden"

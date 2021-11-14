@@ -20,7 +20,8 @@ import { NbChatMessageQuoteComponent } from './chat-message-quote.component';
 import { NbChatMessageMapComponent } from './chat-message-map.component';
 import { NbChatOptions } from './chat.options';
 import {CircleProgressComponent} from '../../../../components/circle-progress-bar/circle-progress-bar.component';
-import {NbContextMenuModule} from "../context-menu/context-menu.module";
+import {NbContextMenuModule} from '../context-menu/context-menu.module';
+import { NbProgressBarModule } from '../progress-bar/progress-bar.module';
 
 const NB_CHAT_COMPONENTS = [
   NbChatComponent,
@@ -29,8 +30,7 @@ const NB_CHAT_COMPONENTS = [
   NbChatMessageTextComponent,
   NbChatMessageFileComponent,
   NbChatMessageQuoteComponent,
-  NbChatMessageMapComponent,
-  CircleProgressComponent
+  NbChatMessageMapComponent
 ];
 
 @NgModule({
@@ -39,7 +39,8 @@ const NB_CHAT_COMPONENTS = [
     NbIconModule,
     NbInputModule,
     NbButtonModule,
-    NbContextMenuModule
+    NbContextMenuModule,
+    NbProgressBarModule
   ],
   declarations: [
     ...NB_CHAT_COMPONENTS,

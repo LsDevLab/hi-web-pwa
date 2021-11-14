@@ -9,28 +9,42 @@
     <nb-stepper orientation="horizontal" disableStepNavigation #stepper>
       <nb-step [label]="labelOne">
         <ng-template #labelOne>Access data</ng-template>
-        <app-access-form [signingMode]="true"
-                         (formSubmit)="goToAccessDataStep(stepper, $event.email, $event.password)"
-                         [loading]="loading"
-                         [accessErrorMessage]="signupErrorMessage"
-        ></app-access-form>
+        <div class="access-form-div">
+          <app-access-form [signingMode]="true"
+                           (formSubmit)="goToAccessDataStep(stepper, $event.email, $event.password)"
+                           [loading]="loading"
+                           [accessErrorMessage]="signupErrorMessage"
+          ></app-access-form>
+        </div>
       </nb-step>
       <nb-step [label]="labelTwo">
         <ng-template #labelTwo>User details</ng-template>
-        <div class="signup-details-subheader">
-          <img class="signup-details-logo" src="assets/img/checked.png">
-          <div class="signup-details-subheader-captions">
-            <p class="signup-details-caption">You successfully registered your account!</p>
-            <p class="signup-details-caption-subtitle">Complete your user details now.</p>
+        <div class="user-data-form-div">
+          <div class="signup-details-subheader">
+            <img class="signup-details-logo" src="assets/img/checked.png">
+            <div class="signup-details-subheader-captions">
+              <p class="signup-details-caption">You successfully registered your account!</p>
+              <p class="signup-details-caption-subtitle">Complete your user details now.</p>
+            </div>
           </div>
+          <app-user-data-form (formSubmit)="goToUserAvatarStep(stepper, $event)"
+                              [loading]="loading"
+          ></app-user-data-form>
         </div>
-        <app-user-data-form (formSubmit)="goToUserAvatarStep(stepper, $event)"
-                            [loading]="loading"
-        ></app-user-data-form>
       </nb-step>
       <nb-step [label]="labelThree">
         <ng-template #labelThree>Avatar</ng-template>
-
+        <div class="user-avatar-form-div">
+          <app-user-avatar-form [(loadingUserData)]="loading"></app-user-avatar-form>
+          <button [disabled]="loading"
+                  (click)="concludeSigning()"
+                  class="next-step-signup-button"
+                  nbButton
+                  status="primary"
+                  shape="semi-round">
+            Close
+          </button>
+        </div>
       </nb-step>
     </nb-stepper>
   </nb-card-body>

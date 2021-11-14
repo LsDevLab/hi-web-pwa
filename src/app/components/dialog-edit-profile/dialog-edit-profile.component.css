@@ -1,4 +1,17 @@
 
+nb-card{
+  max-width: 600px;
+  min-width: 300px;
+  width: 25vw;
+  height: auto;
+  max-height: 90vh;
+  border: none;
+}
+
+nb-card-body{
+  padding: 0px;
+}
+
 .loading-user-data{
   height: 40px;
 }
@@ -9,16 +22,6 @@
 
 }
 
-.profile-img-div{
-  background-color: #3366ff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-image: url("src/assets/img/home_back_top.svg");
-  background-size: cover;
-}
-
 .profile-inputs-div{
   padding: 10px 24px 24px 24px;
 }
@@ -27,66 +30,7 @@
   padding-top: 14px;
 }
 
-.profile-img-container{
-  position: relative;
-  border-radius: 50%;
-  height: 25vh;
-  width: 25vh;
-  border: 6px solid #ffff;
-  background: white;
+app-user-data-form{
+  padding: 1rem;
 }
 
-.name-surname-label{
-  margin: 15px;
-  color: white;
-  margin: 10px 10px 0px 10px;
-  font-family: Raleway;
-}
-
-.username-label{
-  color: white;
-  font-size: 11px;
-  margin: 0px 10px 10px 10px;
-  font-family: Raleway;
-}
-
-.profile-img-loading-info{
-  font-size: 10px;
-  margin: 0px 5px;
-  color: white;
-  font-family: Raleway;
-}
-
-.profile-img{
-  border-radius: 50%;
-  height: 100%;
-  width: 100%;
-  background: #fffe;
-  object-fit: cover;
-  transition: .5s ease;
-
-}
-
-.profile-img:hover{
-  opacity: 0.6;
-  cursor: pointer;
-}
-
-.profile-img-info-div{
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin: 5px 10px 10px 10px;
-}
-
-.profile-img-loading-icon{
-  height: 12px;
-  width: 12px;
-  margin: 4px;
-}
-
-.img-uploading-progress-bar {
-  position: absolute;
-  bottom: 0.1rem;
-  right: 0.1rem;
-}

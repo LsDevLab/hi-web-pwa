@@ -5,6 +5,7 @@ import { DialogEditProfileComponent } from '../../components/dialog-edit-profile
 import { DialogAboutComponent } from '../../components/dialog-about/dialog-about.component';
 import { DialogSettingsComponent } from '../../components/dialog-settings/dialog-settings.component';
 import { ChatUiService } from '../../services/chat-ui.service';
+import { DialogSignupComponent } from '../../components/dialog-signup/dialog-signup.component';
 
 
 @Component({

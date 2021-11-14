@@ -21,6 +21,7 @@ import { DialogSettingsComponent } from '../../components/dialog-settings/dialog
 import { ChatUiService } from '../../services/chat-ui.service';
 import { ChatLoadingComponent } from '../../components/chat-loading/chat-loading.component';
 import { NgxHowlerService } from 'ngx-howler';
+import { HomePageModule } from '../home-page/home-page.module';
 
 @NgModule({
   declarations: [
@@ -37,28 +38,29 @@ import { NgxHowlerService } from 'ngx-howler';
     DialogSettingsComponent,
     ChatLoadingComponent
   ],
-  imports: [
-    ChatPageRoutingModule,
-    CommonModule,
-    NbThemeModule,
-    NbLayoutModule,
-    NbChatModule,
-    NbListModule,
-    NbCardModule,
-    NbUserModule,
-    NbDatepickerModule,
-    NbInputModule,
-    NbBadgeModule,
-    NbSelectModule,
-    NbButtonModule,
-    NbMenuModule,
-    NbContextMenuModule,
-    NbIconModule,
-    NbFormFieldModule,
-    NbDialogModule.forChild(),
-    NbTabsetModule,
-    NbProgressBarModule,
-  ],
+    imports: [
+        ChatPageRoutingModule,
+        CommonModule,
+        NbThemeModule,
+        NbLayoutModule,
+        NbChatModule,
+        NbListModule,
+        NbCardModule,
+        NbUserModule,
+        NbDatepickerModule,
+        NbInputModule,
+        NbBadgeModule,
+        NbSelectModule,
+        NbButtonModule,
+        NbMenuModule,
+        NbContextMenuModule,
+        NbIconModule,
+        NbFormFieldModule,
+        NbDialogModule.forChild(),
+        NbTabsetModule,
+        NbProgressBarModule,
+        HomePageModule,
+    ],
   exports: [
     ChatPageComponent
   ],

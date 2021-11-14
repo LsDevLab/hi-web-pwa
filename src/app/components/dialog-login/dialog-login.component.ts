@@ -21,7 +21,7 @@ export class DialogLoginComponent implements OnInit {
   resetEmailMessage;
 
   constructor(protected dialogRef: NbDialogRef<DialogEditProfileComponent>, private afAuth: AngularFireAuth,
-              private router: Router, private chatCoreService: ChatCoreService) { }
+              private router: Router) { }
 
   ngOnInit(): void {
   }

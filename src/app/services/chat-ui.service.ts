@@ -12,6 +12,8 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {ChatNotificationsService} from './chat-notifications.service';
 import {NbToastrService} from '../framework/theme/components/toastr/toastr.service';
 import {Chat, File, Message, UIChat, UIMessage, UIUser} from '../interfaces/dataTypes';
+import { DialogSignupComponent } from '../components/dialog-signup/dialog-signup.component';
+import { NbDialogService } from '../framework/theme/components/dialog/dialog.service';
 
 
 @Injectable({
@@ -47,7 +49,8 @@ export class ChatUiService {
   constructor(private chatCoreService: ChatCoreService, private router: Router,
               private http: HttpClient, public howl: NgxHowlerService,
               private breakpointObserver: BreakpointObserver, private afAuth: AngularFireAuth,
-              private chatNotificationsService: ChatNotificationsService, private toastrService: NbToastrService) {
+              private chatNotificationsService: ChatNotificationsService, private toastrService: NbToastrService,
+              private dialogService: NbDialogService) {
     this.howl.register('newMessageSound', {
       src: ['assets/sounds/newMessageSound.mp3'],
       html5: true
@@ -105,7 +108,8 @@ export class ChatUiService {
       this.currentUser = currentUser;
       if (isFirstDataLoaded){
         this.setFirstDataLoading();
-        console.log('FIRST LOADING CURRENT USER');
+        if (currentUser && currentUser.name === '')
+          this.dialogService.open(DialogSignupComponent, { closeOnBackdropClick: false, closeOnEsc: false });
       }
     });
     this.subscriptions.push(s);
@@ -116,7 +120,6 @@ export class ChatUiService {
         this.chats = this.formatChats(this.unformattedChats);
       if (isFirstDataLoaded){
         this.setFirstDataLoading();
-        console.log('FIRST LOADING TARGET USERS');
       }
     });
     this.subscriptions.push(s);
@@ -127,7 +130,6 @@ export class ChatUiService {
         this.chats = this.formatChats(chats);
       if (isFirstDataLoaded) {
         this.setFirstDataLoading();
-        console.log('FIRST LOADING CHATS');
       }
     });
     this.subscriptions.push(s);

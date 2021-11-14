@@ -2,6 +2,7 @@ nb-card {
   max-width: 22rem;
   margin: 1rem;
   max-height: 90vh;
+  border: none;
 }
 
 nb-card-body{
@@ -10,7 +11,7 @@ nb-card-body{
   justify-content: space-between;
   align-items: center;
   gap: 25px;
-  padding: 30px;
+  padding: 0px;
 }
 
 .signup-header{
@@ -20,6 +21,7 @@ nb-card-body{
   align-items: center;
   justify-content: center;
   gap: 15px;
+  padding: 30px 30px 0px 30px;
 }
 
 .signup-header-title{
@@ -84,4 +86,21 @@ nb-stepper{
 
 .signup-details-logo{
   height: 55px;
+}
+
+.access-form-div, .user-data-form-div{
+  padding: 0px 30px 30px 30px;
+}
+
+.user-avatar-form-div{
+  padding: 0px 0px 30px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+app-user-avatar-form{
+  width: 100%;
 }

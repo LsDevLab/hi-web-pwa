@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomePageComponent } from './home-page.component';
 import {
-  NbButtonModule,
-  NbCardModule,
-  NbContextMenuModule, NbFormFieldModule,
-  NbIconModule,
-  NbInputModule,
-  NbLayoutModule, NbSelectModule,
-  NbStepperModule,
-  NbUserModule
+    NbButtonModule,
+    NbCardModule,
+    NbContextMenuModule, NbFormFieldModule,
+    NbIconModule,
+    NbInputModule,
+    NbLayoutModule, NbProgressBarModule, NbSelectModule,
+    NbStepperModule,
+    NbUserModule
 } from '@nebular/theme';
 import { HomeHeaderComponent } from '../../components/home-header/home-header.component';
 import { DialogLoginComponent } from '../../components/dialog-login/dialog-login.component';
@@ -29,22 +29,25 @@ import { UserAvatarFormComponent } from '../../components/user-avatar-form/user-
     UserDataFormComponent,
     UserAvatarFormComponent
   ],
-  imports: [
-    CommonModule,
-    NbCardModule,
-    NbButtonModule,
-    NbLayoutModule,
-    NbIconModule,
-    NbUserModule,
-    NbContextMenuModule,
-    NbInputModule,
-    NbFormFieldModule,
-    FormsModule,
-    NbStepperModule,
-    NbSelectModule
-  ],
-  exports: [
-    HomePageComponent
-  ]
+    imports: [
+        CommonModule,
+        NbCardModule,
+        NbButtonModule,
+        NbLayoutModule,
+        NbIconModule,
+        NbUserModule,
+        NbContextMenuModule,
+        NbInputModule,
+        NbFormFieldModule,
+        FormsModule,
+        NbStepperModule,
+        NbSelectModule,
+        NbProgressBarModule
+    ],
+    exports: [
+        HomePageComponent,
+        UserAvatarFormComponent,
+        UserDataFormComponent
+    ]
 })
 export class HomePageModule { }
