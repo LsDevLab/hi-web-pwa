@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ChatNotificationsService } from 'src/app/services/chat-notifications.service';
 import { NbDialogService, NbMenuService } from '@nebular/theme';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -14,7 +14,7 @@ import { ChatUiService } from '../../services/chat-ui.service';
   templateUrl: './chat-logger.component.html',
   styleUrls: ['./chat-logger.component.css']
 })
-export class ChatLoggerComponent implements OnInit {
+export class ChatLoggerComponent implements OnInit, OnDestroy {
 
   screenIsSmall: boolean;
   userContextMenuItems = [
@@ -52,7 +52,7 @@ export class ChatLoggerComponent implements OnInit {
       this.screenIsSmall = r.matches;
     });
     this.menuSub = this.nbMenuService.onItemClick().subscribe(menu => {
-      if(menu.tag === 'user-context-menu') {
+      if (menu.tag === 'user-context-menu') {
         switch (menu.item.title) {
           case 'Edit profile':
             this.dialogService.open(DialogEditProfileComponent);
@@ -68,14 +68,14 @@ export class ChatLoggerComponent implements OnInit {
     });
   }
 
-  logOut(){
+  logOut(): void {
     this.chatNotificationsService.unsubscribeToMessagesPushNotifications();
-    localStorage.setItem('isAuth', "false");
+    localStorage.setItem('isAuth', 'false');
     localStorage.removeItem('currentToken');
     this.afAuth.signOut().then(_ => window.location.reload());
   }
 
-  ngOnDestroy(){
+  ngOnDestroy(): void {
     this.menuSub.unsubscribe();
   }
 

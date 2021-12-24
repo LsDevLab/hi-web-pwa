@@ -11,7 +11,7 @@ import { ChatUiService } from '../../services/chat-ui.service';
 })
 export class ContactsListComponent implements OnInit {
 
-  size = "medium";
+  size = 'medium';
 
   @Output()
   selectedUser: EventEmitter<string> = new EventEmitter<string>();
@@ -22,7 +22,7 @@ export class ContactsListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openAddChatDialog(){
+  openAddChatDialog(): void{
     this.dialogService.open(DialogAddChatComponent);
   }
 

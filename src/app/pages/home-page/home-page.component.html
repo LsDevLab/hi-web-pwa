@@ -1,7 +1,5 @@
 <!-- Header component -->
-<nb-layout-header style="min-height: 10px; background-color: #36f;">
-  <unlogged-app-header style="height: 100%; width: 100%;"></unlogged-app-header>
-</nb-layout-header>
+<unlogged-app-header [ngClass]="navbarfixed ? 'nav-bar-fixed' : 'nav-bar-no-fixed'"></unlogged-app-header>
 
 <div class="home-page-main-div">
   <div class="top-banner">
@@ -16,13 +14,19 @@
         <div class="top-banner-action-div">
           <nb-card class="action-div-card">
             <nb-card-body class="action-card-body" *ngIf="!isAuthenticated">
-              <p class="action-div-card-text" *ngIf="!screenIsSmall">
-                <strong>Accedi</strong> o <strong>registrati</strong> se non sei ancora registrato
+              <p class="action-div-card-text">
+                <strong>Signup</strong> with Google or with email and password if you are not registered yet.
               </p>
-              <button nbButton status="primary" class="login-button"
-                      (click)="signIn()">Login</button>
-              <button nbButton status="success" class="signing-button"
-                      (click)="signIn()">Signup</button>
+              <div class="action-div-card-buttons">
+                <button nbButton status="primary" class="signin-button" (click)="signInWithGoogle()">
+                  Signup with
+                  <nb-icon icon="google-outline"></nb-icon>
+                </button>
+                <button nbButton status="primary" class="signin-button" (click)="signInWithEmailPassword()">
+                  Signup with
+                  <nb-icon icon="email-outline"></nb-icon>
+                </button>
+              </div>
             </nb-card-body>
             <nb-card-body class="action-card-body" *ngIf="isAuthenticated">
               <p class="action-div-card-text" *ngIf="!screenIsSmall" style="font-size: 120%">
@@ -30,7 +34,7 @@
               </p>
               <button nbButton status="primary" class="gotochat-button"
                       (click)="this.router.navigateByUrl('/chat');">
-                Vai alla chat
+                Vai a Hi Web
                 <nb-icon icon="message-square-outline"></nb-icon>
               </button>
             </nb-card-body>

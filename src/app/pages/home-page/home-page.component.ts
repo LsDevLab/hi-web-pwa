@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import firebase from 'firebase';
-import {environment} from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
+import { NbDialogService } from '../../framework/theme/components/dialog/dialog.service';
+import { DialogSignupComponent } from '../../components/dialog-signup/dialog-signup.component';
 
 @Component({
   selector: 'app-home-page',
@@ -12,13 +13,14 @@ import {environment} from '../../../environments/environment';
 })
 export class HomePageComponent implements OnInit {
 
+  navbarfixed = false;
   screenIsSmall = false;
-  nameOfUser: string = '';
+  nameOfUser = '';
   appName = environment.appName;
   isAuthenticated = (localStorage.getItem('isAuth') === 'true');
 
   constructor(private breakpointObserver: BreakpointObserver, public router: Router,
-              public afAuth: AngularFireAuth) {
+              public afAuth: AngularFireAuth, private dialogService: NbDialogService) {
   }
 
   ngOnInit(): void {
@@ -26,15 +28,31 @@ export class HomePageComponent implements OnInit {
       this.screenIsSmall = r.matches;
     });
     this.afAuth.user.subscribe(usr => {
-      if(usr)
+      if (usr) {
         this.nameOfUser = usr.displayName;
-        this.isAuthenticated = usr ? true : false;
+        this.isAuthenticated = !!usr;
+      }
     });
   }
 
-  signIn() {
-    const provider = new firebase.auth.GoogleAuthProvider()
-    this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
+  signInWithGoogle(): void {
+    // const provider = new firebase.auth.GoogleAuthProvider();
+    // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
+    // this.dialogService.open(DialogSigninComponent);
+  }
+
+  signInWithEmailPassword(): void {
+    // const provider = new firebase.auth.GoogleAuthProvider();
+    // this.afAuth.signInWithPopup(provider).then(_ => this.router.navigateByUrl('/chat'));
+    this.dialogService.open(DialogSignupComponent);
+  }
+
+  @HostListener('window:scroll', ['$event']) onscroll(): void{
+    if (window.scrollY > 150) {
+      this.navbarfixed = true;
+    } else if (window.scrollY < 50) {
+      this.navbarfixed = false;
+    }
   }
 
 }

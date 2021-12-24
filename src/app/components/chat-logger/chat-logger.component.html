@@ -11,17 +11,17 @@
              color="white"
              onlyPicture=true
              badgeStatus="success"
-             [badgeDotMode]="chatUiService.currentUser.online"
-             [name]="chatUiService.currentUser.username"
-             [title]="chatUiService.currentUser.name + chatUiService.currentUser.surname"
-             [picture]="chatUiService.currentUser.profile_img_url ? chatUiService.currentUser.profile_img_url : ''">
+             [badgeDotMode]="chatUiService.currentUser?.online"
+             [name]="chatUiService.currentUser?.username"
+             [title]="chatUiService.currentUser?.name + chatUiService.currentUser?.surname"
+             [picture]="chatUiService.currentUser?.profile_img_url ? chatUiService.currentUser.profile_img_url : ''">
     </nb-user>
     <div style="color: white; width: fit-content">
-      <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{chatUiService.currentUser.name}} {{chatUiService.currentUser.surname}}</div>
-      <div style="font-size: 8pt;">{{chatUiService.currentUser.username}}</div>
+      <div class="user-name" style="font-weight: bold; font-size: 11pt;">{{chatUiService.currentUser?.name}} {{chatUiService.currentUser?.surname}}</div>
+      <div style="font-size: 8pt;">{{chatUiService.currentUser?.username}}</div>
     </div>
   </div>
-  <button nbButton ghost class="log-out-btn"
+  <button nbButton class="log-out-btn" shape="round"
           status="control"
           (click)="logOut()">
     {{screenIsSmall ? '' : 'Logout'}}

@@ -7,14 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ChatHeaderComponent implements OnInit {
 
-
-
   constructor() {
   }
 
   ngOnInit(): void {
   }
-
-
 
 }

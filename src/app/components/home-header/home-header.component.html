@@ -1,23 +1,25 @@
-<div class="row" style="height: inherit;">
-  <a href='/home' >
-    <img src="assets/img/logo_gif.gif" style="height: 100%; float: left;">
-  </a>
-  <div style="float: right;">
-    <ng-container *ngIf="isAuthenticated; else loggedOut">
-      <button nbButton ghost status="control" (click)="router.navigateByUrl('/chat')">
-        Vai alla chat
-        <nb-icon icon="message-square-outline"></nb-icon>
+<div class="row">
+  <img class="logo-img" src="assets/img/logo_gif.gif">
+  <div class="center-div" *ngIf="!screenIsSmall">
+    <button *ngFor="let navButton of navButtonsContextMenu; index as i"
+            nbButton status="control"
+            [ghost]="navButton.title!=='Logout' && navButton.title!=='Hi Web Login' && navButton.title!=='Go to Hi Web'"
+            (click)="navButtonsContextMenuActions[i]()"
+            shape="round">
+      {{ navButton.title }}
+      <nb-icon [icon]="navButton.icon"></nb-icon>
+    </button>
+  </div>
+  <div class="right-div">
+    <div class="nav-buttons-div-small" *ngIf="screenIsSmall">
+      <button nbButton ghost status="control" shape="semi-round" nbContextMenuTag="navButtons" [nbContextMenu]="navButtonsContextMenu" nbButtonToggle='hover'>
+        <nb-icon icon="menu-outline"></nb-icon>
       </button>
-      <button nbButton ghost status="control" (click)="logOut()">
-        Logout
-        <nb-icon icon="log-out-outline"></nb-icon>
-      </button>
-    </ng-container>
-    <ng-template #loggedOut>
-      <button nbButton ghost status="control" (click)="signIn()">
-        Login
-        <nb-icon icon="log-in-outline"></nb-icon>
-      </button>
-    </ng-template>
+    </div>
+    <button nbButton ghost status="control" shape="semi-round" nbContextMenuTag="languages" [nbContextMenu]="languagesContextMenu">
+      <nb-icon icon="globe-2-outline"></nb-icon>
+      EN
+      <nb-icon icon="arrow-ios-downward-outline"></nb-icon>
+    </button>
   </div>
 </div>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { ChatCoreService } from 'src/app/services/chat-core.service';
-import { ChatPageComponent } from './chat-page.component'
+import { ChatPageComponent } from './chat-page.component';
 
 
 const routes: Routes = [

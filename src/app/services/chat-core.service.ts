@@ -1,15 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, forkJoin, from, interval, Subject, Subscription } from 'rxjs';
-import { ChatNotificationsService } from './chat-notifications.service';
-import { filter, first, last, map, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { AngularFireStorage } from '@angular/fire/storage';
-import { concatMap } from 'rxjs/operators';
-import { AngularFirestore } from '@angular/fire/firestore';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, forkJoin, from, interval, Observable, Subject, Subscription} from 'rxjs';
+import {ChatNotificationsService} from './chat-notifications.service';
+import {concatMap, filter, first, last, map, switchMap} from 'rxjs/operators';
+import {AngularFireStorage} from '@angular/fire/storage';
+import {AngularFirestore} from '@angular/fire/firestore';
 import firebase from 'firebase';
+import {Chat, Message, User} from '../interfaces/dataTypes';
 import FieldPath = firebase.firestore.FieldPath;
-import { Chat, Message, User } from '../interfaces/dataTypes';
 
 @Injectable({
   providedIn: 'root'
@@ -74,7 +71,7 @@ export class ChatCoreService {
 
   //////////////////////////// PUBLIC ATTRIBUTES ////////////////////////////
 
-  constructor(private apollo: Apollo, public chatNotificationsService: ChatNotificationsService,
+  constructor(public chatNotificationsService: ChatNotificationsService,
               private afs: AngularFirestore, private afStorage: AngularFireStorage) {
 
     this.messagesAdded.subscribe(msgs => {
@@ -99,7 +96,8 @@ export class ChatCoreService {
       chats.forEach(chat => {
         this._chats.push(chat);
       });
-      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
+      this._targetUsersSub = this._subscribeToTargetUsers(
+        this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
       this.chatsSource.next(this._chats);
     });
     this.chatsChanged.subscribe(chats => {
@@ -111,21 +109,23 @@ export class ChatCoreService {
           this._chats.push(chat);
       });
       this.chatsSource.next(this._chats);
-      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
+      this._targetUsersSub = this._subscribeToTargetUsers(
+        this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
     });
     this.chatsDeleted.subscribe(chats => {
       chats.forEach(chat => {
         this._chats.splice(this._chats.findIndex(c => chat.uid === c.uid), 1);
       });
       this.chatsSource.next(this._chats);
-      this._targetUsersSub = this._subscribeToTargetUsers(this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
+      this._targetUsersSub = this._subscribeToTargetUsers(
+        this._chats.map(chat => chat.users_uids.find(uid => uid !== this._currentUserUID)));
     });
 
     this.targetUsers.subscribe(users => this._targetUsers.push(...users));
 
     this.currentUser.subscribe(user => this._currentUser = user);
 
-    console.log("CCS: service loaded");
+    console.log('CCS: service loaded');
 
   }
 
@@ -135,7 +135,7 @@ export class ChatCoreService {
 
     const callback = messages => {
       this.messagesAddedSource.next(messages);
-      console.log('CCS: messages added', {'messages': messages});
+      console.log('CCS: messages added', { messages });
     };
 
     const appSettings = JSON.parse(localStorage.getItem('appSettings'));
@@ -144,12 +144,10 @@ export class ChatCoreService {
       .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
       .orderBy('timestamp', 'desc')
       .limit(appSettings.maxNumOfChatMessages));
-    const sub = itemRef.stateChanges(['added']).pipe(
+    return itemRef.stateChanges(['added']).pipe(
       map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
     ).subscribe(callback);
-
-    return sub;
 
   }
 
@@ -158,7 +156,7 @@ export class ChatCoreService {
     const callback = messages => {
       if (messages.length > 0) {
         this.messagesChangedSource.next(messages);
-        console.log("CCS: messages changed", {'message': messages});
+        console.log('CCS: messages changed', { messages });
       }
     };
 
@@ -168,12 +166,10 @@ export class ChatCoreService {
       .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
       .orderBy('timestamp', 'desc')
       .limit(appSettings.maxNumOfChatMessages));
-    const sub = itemRef.stateChanges(['modified']).pipe(
+    return itemRef.stateChanges(['modified']).pipe(
       map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
     ).subscribe(callback);
-
-    return sub;
 
   }
 
@@ -182,7 +178,7 @@ export class ChatCoreService {
     const callback = messages => {
       if (messages.length > 0) {
         this.messagesDeletedSource.next(messages);
-        console.log("CCS: messages deleted", {'messages': messages});
+        console.log('CCS: messages deleted', { messages });
       }
     };
 
@@ -192,16 +188,14 @@ export class ChatCoreService {
       .where('users_uids', 'in', [[this._currentUserUID, this._targetUserUID], [this._targetUserUID, this._currentUserUID]])
       .orderBy('timestamp', 'desc')
       .limit(appSettings.maxNumOfChatMessages));
-    const sub = itemRef.stateChanges(['removed']).pipe(
+    return itemRef.stateChanges(['removed']).pipe(
       map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
     ).subscribe(callback);
-
-    return sub;
 
   }
 
-  private _subscribeToMessages_all() {
+  private _subscribeToMessages_all(): void {
     if (this._messagesAddedSub) {
       this._messagesAddedSub.unsubscribe();
     }
@@ -222,17 +216,15 @@ export class ChatCoreService {
 
     const callback = chats => {
       this.chatsAddedSource.next(chats);
-      console.log('CCS: chats added', {'chats': chats});
+      console.log('CCS: chats added', {chats});
     };
 
     const listRef = this.afs.collection('chats', ref => ref
       .where('users_uids', 'array-contains', this._currentUserUID));
-    const sub = listRef.stateChanges(['added']).pipe(
+    return listRef.stateChanges(['added']).pipe(
       map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
     ).subscribe(callback);
-
-    return sub;
 
   }
 
@@ -241,18 +233,16 @@ export class ChatCoreService {
     const callback = chats => {
       if (chats.length > 0) {
         this.chatsChangedSource.next(chats);
-        console.log("CCS: chats changed", {'chats': chats});
+        console.log('CCS: chats changed', {chats});
       }
     };
 
     const listRef = this.afs.collection('chats', ref => ref
       .where('users_uids', 'array-contains', this._currentUserUID));
-    const sub = listRef.stateChanges(['modified']).pipe(
+    return listRef.stateChanges(['modified']).pipe(
       map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
     ).subscribe(callback);
-
-    return sub;
 
   }
 
@@ -261,22 +251,20 @@ export class ChatCoreService {
     const callback = chats => {
       if (chats.length > 0) {
         this.chatsDeletedSource.next(chats);
-        console.log("CCS: chats deleted", {'chats': chats});
+        console.log('CCS: chats deleted', {chats});
       }
     };
 
     const listRef = this.afs.collection('chats', ref => ref
       .where('users_uids', 'array-contains', this._currentUserUID));
-    const sub = listRef.stateChanges(['removed']).pipe(
+    return listRef.stateChanges(['removed']).pipe(
       map(snapshot => snapshot.filter(mSnapshot => !mSnapshot.payload.doc.metadata.hasPendingWrites && !mSnapshot.payload.doc.metadata.fromCache)),
-      map(snapshot => snapshot.map(mSnapshot => ({ uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {} })))
+      map(snapshot => snapshot.map(mSnapshot => ({uid: mSnapshot.payload.doc.id, ...mSnapshot.payload.doc.data() as {}})))
     ).subscribe(callback);
-
-    return sub;
 
   }
 
-  private _subscribeToChats_all() {
+  private _subscribeToChats_all(): void {
     if (this._chatsAddedSub) {
       this._chatsAddedSub.unsubscribe();
     }
@@ -296,12 +284,12 @@ export class ChatCoreService {
   private _subscribeToTargetUsers(userUids: string[]): Subscription {
 
     if (this._targetUsersSub)
-      this._targetUsersSub.unsubscribe()
+      this._targetUsersSub.unsubscribe();
 
     const callback = response => {
       if (response.length !== 0) {
         this.targetUsersSource.next(response);
-        console.log("CCS: target users received", {'users': response });
+        console.log('CCS: target users received', {users: response });
       }
     };
 
@@ -318,12 +306,12 @@ export class ChatCoreService {
   private _subscribeToCurrentUser(): Subscription {
 
     if (this._currentUserSub)
-      this._currentUserSub.unsubscribe()
+      this._currentUserSub.unsubscribe();
 
     const callback = response => {
       if (response.length !== 0){
         this.currentUserSource.next(response[0]);
-        console.log("CCS: current user received", {'user': response[0] });
+        console.log('CCS: current user received', {user: response[0] });
       }
     };
 
@@ -338,46 +326,45 @@ export class ChatCoreService {
   //////////////////////////// OTHER PRIVATE METHODS ////////////////////////////
 
   private _getFileStoringObs(file): { progressOb: Observable<number>, fileOb: Observable<any> }{
-    const fileId = Math.trunc(Math.random()*1000000);
-    let ref = this.afStorage.ref('chats_files/' + this._currentUserUID + '/' + this._targetUserUID + '/' + fileId);
-    let task = ref.put(file);
+    const fileId = Math.trunc(Math.random() * 1000000);
+    const ref = this.afStorage.ref('chats_files/' + this._currentUserUID + '/' + this._targetUserUID + '/' + fileId);
+    const task = ref.put(file);
     const fileObservable = task.snapshotChanges().pipe(
       last(),  // emit the last element after task.snapshotChanges() completed
       switchMap(() => ref.getDownloadURL())
     ).pipe(map(url => {
       return {
-        url: url,
+        url,
         type: file.type,
         title: file.name
-      };//url + '%%%' + file.type + '%%%' + file.name;
+      }; // url + '%%%' + file.type + '%%%' + file.name;
     }));
-    const progressAndObs = { progressOb: task.percentageChanges(), fileOb: fileObservable };
-    return progressAndObs;
+    return { progressOb: task.percentageChanges(), fileOb: fileObservable };
   }
 
   private _updateCurrentUserLastAccess(): Observable<void> {
     const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
-    return from(itemsRef.update({'last_access': new Date().getTime() }));
+    return from(itemsRef.update({last_access: new Date().getTime() }));
   }
 
   public updateCurrentUserWritingInChat(chatUid: string): Observable<void> {
     const indexOfCurrentUser = this._chats.find(c => c.uid === chatUid).users_uids.indexOf(this._currentUserUID);
     const itemsRef = this.afs.collection('chats').doc(chatUid);
     if (indexOfCurrentUser === 0)
-      return from(itemsRef.update({'user0_writing':  new Date().getTime(), 'user_writing_updated_by': 0}));
+      return from(itemsRef.update({user0_writing:  new Date().getTime(), user_writing_updated_by: 0}));
     else
-      return from(itemsRef.update({'user1_writing':  new Date().getTime(), 'user_writing_updated_by': 1}));
+      return from(itemsRef.update({user1_writing:  new Date().getTime(), user_writing_updated_by: 1}));
   }
 
-  private addCurrentUser(username: string, userUID: string): Observable<void> {
+  public addCurrentUser(username: string, userUID: string): Observable<void> {
     // Adds an user with the given username
 
     const user: Partial<User> = {
-      username: username,
-      name: 'Name',
+      username,
+      name: '',
       last_access: new Date().getTime(),
-      bio: 'sample bio',
-      surname: 'Surname',
+      bio: '',
+      surname: '',
       age: null,
       sex: null,
       online: false
@@ -393,8 +380,8 @@ export class ChatCoreService {
   public sendMessage(message: Partial<Message>): { progressObs?: Observable<number>[], sendMessageResponseOb: Observable<any> } {
     // Sends a message to the current target user
 
-    if(message.files.length) {
-      let filesArray: any[] = [];
+    if (message.files.length) {
+      const filesArray: any[] = [];
       const storingFilesObsArray = (message.files as any[]).map(file => this._getFileStoringObs(file));
       const progressObs: Observable<number>[] = storingFilesObsArray.map(x => x.progressOb);
       const fileObs: Observable<any>[] = storingFilesObsArray.map(x => x.fileOb);
@@ -417,7 +404,7 @@ export class ChatCoreService {
           return from(itemsRef.add(messageToSend));
         }
       ));
-      return { progressObs: progressObs, sendMessageResponseOb: sendMessageResponseOb };
+      return { progressObs, sendMessageResponseOb };
     } else {
       const messageToSend = {
         timestamp: message.timestamp,
@@ -428,7 +415,7 @@ export class ChatCoreService {
       };
       const itemsRef = this.afs.collection('messages');
       const sendMessageResponseOb = from(itemsRef.add(messageToSend));
-      return { sendMessageResponseOb: sendMessageResponseOb }
+      return { sendMessageResponseOb };
     }
 
 
@@ -437,10 +424,10 @@ export class ChatCoreService {
   public setMessageAsReaded(messageUid: string): Observable<void> {
     // Updates the readed flag of the message with the provided messagesId
 
-    const batch = this.afs.firestore.batch()
+    const batch = this.afs.firestore.batch();
 
     const itemsRef = this.afs.collection('messages').doc(messageUid);
-    return from(batch.update(itemsRef.ref,{ readed: true }).commit());
+    return from(batch.update(itemsRef.ref, { readed: true }).commit());
 
   }
 
@@ -481,7 +468,7 @@ export class ChatCoreService {
       age: newUserData.age,
       sex: newUserData.sex,
       bio: newUserData.bio,
-    }
+    };
 
     const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
     return from(itemsRef.update(userData));
@@ -489,17 +476,17 @@ export class ChatCoreService {
   }
 
   public updateCurrentUserProfileImage(newUserProfileImage: any): { progressOb: Observable<number>, updateCurrentUserProfileImgOb: Observable<any> } {
-    let ref = this.afStorage.ref('profile_images/' + this._currentUserUID);
-    let task = ref.put(newUserProfileImage);
+    const ref = this.afStorage.ref('profile_images/' + this._currentUserUID);
+    const task = ref.put(newUserProfileImage);
 
     const imageUploadingObs = task.snapshotChanges().pipe(
       last(),  // emit the last element after task.snapshotChanges() completed
       switchMap(() => ref.getDownloadURL())
     ).pipe(concatMap(uploadedURL => {
-          console.log('CCS: Profile image stored. Linking URL... (', uploadedURL, ')')
+          console.log('CCS: Profile image stored. Linking URL... (', uploadedURL, ')');
 
           const itemsRef = this.afs.collection('users').doc(this._currentUserUID);
-          return from(itemsRef.update({'profile_img_url': uploadedURL }));
+          return from(itemsRef.update({profile_img_url: uploadedURL }));
 
         }
       ));
@@ -518,7 +505,7 @@ export class ChatCoreService {
       user0_writing: null,
       user1_writing: null,
       user_writing_updated_by: null
-    }
+    };
 
     const itemsRef = this.afs.collection('chats');
     return from(itemsRef.add(chat));
@@ -530,14 +517,14 @@ export class ChatCoreService {
 
     let founded = false;
     this._chats.forEach(chat => {
-      if(chat.users_uids.includes(targetUserUID)){
+      if (chat.users_uids.includes(targetUserUID)){
         founded = true;
       }
     });
     return founded;
   }
 
-  public setChat(targetUsername: string, targetUserUID: string) {
+  public setChat(targetUsername: string, targetUserUID: string): void {
     // Sets as current chat the one with the user with the given username
 
     if (this._targetUserUID === targetUserUID)
@@ -555,15 +542,15 @@ export class ChatCoreService {
       this._messages.push(...msgs);
     });
 
-    console.log("CCS: setted current chat (", this._currentUserUID, "->", this._targetUserUID, ")");
+    console.log('CCS: setted current chat (', this._currentUserUID, '->', this._targetUserUID, ')');
 
 
 
   }
 
-  public init(currentUsername: string, currentUserUID: string) {
+  public init(currentUsername: string, currentUserUID: string): void {
     // Initializes the service setting as current user the one with the given username
-    if(currentUserUID == this._currentUserUID)
+    if (currentUserUID === this._currentUserUID)
       return;
 
     this._currentUserUID = currentUserUID;
@@ -575,33 +562,33 @@ export class ChatCoreService {
     this.getUser(currentUserUID).subscribe(user => {
       if (!user){
         // if not, create a new user with the given username and name
-        console.log("CCS: user first login. Created profile.");
-        this.addCurrentUser(currentUsername, currentUserUID).subscribe(response => {
-          console.log("CCS: user added");
-          window.location.reload();
-        },(error) => {
+        console.log('CCS: user first login. Created profile.');
+        this.addCurrentUser(currentUsername, currentUserUID).subscribe(_ => {
+          console.log('CCS: user added');
+          // window.location.reload();
+        }, (error) => {
           console.log('CCS: ERROR while adding user', error);
-          window.location.reload();
+          // window.location.reload();
         });
       }else{
         // subscribing to chats of the current user
-        //this._subscribeToTargetUsers(null);
+        // this._subscribeToTargetUsers(null);
         this._currentUserSub = this._subscribeToCurrentUser();
         this._subscribeToChats_all();
         // updating last access of current user once every 10s
         this._updateCurrentUserLastAccess().subscribe(_ => {
-          console.log("CCS: current user last access updated");
-        },(error) => {
+          console.log('CCS: current user last access updated');
+        }, (error) => {
           console.log('CCS: ERROR while updating last access of the current user', error);
         });
         interval(10000).subscribe(() =>
           this._updateCurrentUserLastAccess().subscribe(_ => {
-            console.log("CCS: current user last access updated");
-          },(error) => {
+            console.log('CCS: current user last access updated');
+          }, (error) => {
             console.log('CCS: ERROR while updating last access of the current user', error);
           })
         );
-        console.log("CCS: setted current user", user.uid);
+        console.log('CCS: setted current user', user.uid);
       }
     });
 

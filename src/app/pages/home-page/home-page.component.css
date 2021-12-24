@@ -4,10 +4,9 @@
 }
 
 .top-banner{
-  height: 623px;
   width: 100%;
   background-color: #3366ff;
-  background-image: url("src/assets/img/home_back_top.svg");
+  background-image: url("src/assets/img/background_top_header.svg");
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -55,29 +54,28 @@
   height: 80px;
 }
 
-.login-button{
-  margin: 2px 16px 2px 0px;
-  width: 100px;
-  height: 45px;
-}
-
-.signing-button{
-  margin: 2px 0px 2px 0px;
-  width: 100px;
+.signin-button{
   height: 45px;
 }
 
 .action-div-card-text{
-  width: 50%;
   margin: 5px 20px 5px 0px;
   font-size: 90%;
 }
 
 .action-card-body{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.action-div-card-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 .top-banner-bottom{
@@ -85,13 +83,13 @@
 }
 
 .top-banner-top{
-  padding: 50px 10% 0% 10%;
+  padding: 0 10% 0% 10%;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  align-items: self-start;
+  justify-content: center;
+  align-items: center;
   width: inherit;
-  gap: 100px
+  gap: 10vw;
 }
 
 .top-banner-top-left {
@@ -102,14 +100,11 @@
 }
 
 .top-banner-top-right {
-  width: 30vh;
 }
 
 .phone-img {
-  position: absolute;
-  height: 80vh;
-  right: 15vw;
-  bottom: 3vh;
+  height: 75vh;
+  transform: translateY(5vw);
 }
 
 
@@ -319,3 +314,18 @@ h2{
   margin: 0px 10px 0px 10px;
 }
 
+.nav-bar-fixed {
+  position: fixed;
+  transition: 0.5s linear;
+  top: 0px;
+}
+
+.nav-bar-no-fixed {
+  position: static;
+  transition: 0.2s linear;
+}
+
+unlogged-app-header {
+  width: 100%;
+  z-index: 1;
+}

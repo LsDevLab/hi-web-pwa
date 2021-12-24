@@ -1,74 +1,19 @@
-<nb-card size="medium" style="max-width: 600px; min-width: 300px; width: 25vw; height: auto; max-height: 90vh; border: none" >
+<nb-card>
   <nb-card-header>
     Edit profile
     <nb-icon icon="person-outline"></nb-icon>
   </nb-card-header>
-  <nb-card-body style="padding: 0px">
+  <nb-card-body>
     <div class="body-div">
-      <div class="profile-img-div">
-        <h5 class="name-surname-label">{{chatUiService.currentUser.name}} {{chatUiService.currentUser.surname}}</h5>
-        <p class="username-label">{{chatUiService.currentUser.username}}</p>
-        <div class="profile-img-container">
-          <img class="profile-img"
-               [src]="chatUiService.currentUser.profile_img_url ? chatUiService.currentUser.profile_img_url : 'assets/img/default_profile_img.png'"
-               (click)="imageFileInput.click()">
-          <circle-progress-bar class="img-uploading-progress-bar" *ngIf="imgUploadingPercentage !== null && imgUploadingPercentage !== 100"
-                               [progress]="imgUploadingPercentage"
-                               [radius]="7"
-                               [trackWeight]="2"
-                               [trackColor]="'#ffffff'"
-                               [trackEndShape]="'round'"
-          ></circle-progress-bar>
-        </div>
-        <div class="profile-img-info-div">
-          <p class="profile-img-loading-info">Premi sull'immagine per caricare</p>
-          <img class="profile-img-loading-icon" src="assets/img/upload.png">
-        </div>
-        <input #imageFileInput type="file" (change)="editProfileImage($event)" accept=".png,.jpg" style="display: none"/>
-      </div>
-      <div class="profile-inputs-div">
-        <nb-form-field class="profile-input-field">
-          <input #bioInput type="text" fieldSize="small" placeholder="Bio"
-                 nbInput fullWidth status="basic" [value]="chatUiService.currentUser.bio" [disabled]="this.loadingUserData">
-        </nb-form-field>
-        <nb-form-field class="profile-input-field">
-          <nb-icon nbPrefix icon="person-outline" pack="eva"></nb-icon>
-          <input #nameInput type="text" placeholder="Name"
-                 nbInput fullWidth [value]="chatUiService.currentUser.name" [disabled]="this.loadingUserData">
-        </nb-form-field>
-        <nb-form-field class="profile-input-field">
-          <nb-icon nbPrefix icon="person-outline" pack="eva"></nb-icon>
-          <input #surnameInput type="text" placeholder="Surname"
-                 nbInput fullWidth [value]="chatUiService.currentUser.surname" [disabled]="this.loadingUserData">
-        </nb-form-field>
-        <nb-select #sexSelect placeholder="Sex" class="profile-input-field"
-                   fullWidth [selected]="chatUiService.currentUser.sex" [disabled]="this.loadingUserData">
-          <nb-option value="">No sex specified</nb-option>
-          <nb-option value="M">M</nb-option>
-          <nb-option value="F">F</nb-option>
-          <nb-option value="Other">Other</nb-option>
-        </nb-select>
-        <nb-form-field class="profile-input-field">
-          <nb-icon nbPrefix icon="hash-outline" pack="eva"></nb-icon>
-          <input #ageInput type="text" placeholder="Age"
-                 nbInput fullWidth [value]="chatUiService.currentUser.age" [disabled]="this.loadingUserData">
-        </nb-form-field>
-      </div>
-
+      <app-user-avatar-form [(loadingUserData)]="loadingUserData"></app-user-avatar-form>
+      <app-user-data-form [loading]="loadingUserData"
+                          (formSubmit)="saveEdits($event)"
+                          [name]="chatUiService.currentUser.name"
+                          [surname]="chatUiService.currentUser.surname"
+                          [sex]="chatUiService.currentUser.sex"
+                          [age]="chatUiService.currentUser.age"
+                          [bio]="chatUiService.currentUser.bio"
+      ></app-user-data-form>
     </div>
-
   </nb-card-body>
-  <nb-card-footer style="clear: both;">
-    <button nbButton style="float: left;" (click)="closeDialog()">Close</button>
-    <button nbButton style="float: right;" (click)="saveEdits(
-      {
-                  bio: bioInput.value,
-                  name: nameInput.value,
-                  surname: surnameInput.value,
-                  sex: sexSelect.selected,
-                  age: +ageInput.value
-                }
-      )" status="primary">Save</button>
-    <img src="assets/img/three_dots_loader.gif" class="loading-user-data" *ngIf="loadingUserData" style="float: right; padding-right: 10px" >
-  </nb-card-footer>
 </nb-card>

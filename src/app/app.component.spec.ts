@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'project-hi'`, () => {
+  it(`should have as title 'hi-web-pwa'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('project-hi');
+    expect(app.title).toEqual('hi-web-pwa');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('project-hi app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('hi-web-pwa app is running!');
   });
 });

@@ -1,0 +1,106 @@
+nb-card {
+  max-width: 22rem;
+  margin: 1rem;
+  max-height: 90vh;
+  border: none;
+}
+
+nb-card-body{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  padding: 0px;
+}
+
+.signup-header{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 30px 30px 0px 30px;
+}
+
+.signup-header-title{
+  font-family: Raleway;
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+  color: #343434;
+}
+
+.signup-header-logo{
+  height: 50px;
+}
+
+nb-stepper{
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  width: 100%;
+}
+
+.signup-header-subtitle{
+  text-align: center;
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #343434;
+}
+
+.signup-details-subheader{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 0rem 0rem 2rem 0rem;
+}
+
+.signup-details-subheader-captions{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.signup-details-caption{
+  font-family: Raleway;
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+  color: #343434;
+  margin: 0.4rem 0rem;
+}
+
+.signup-details-caption-subtitle{
+  font-family: Raleway;
+  margin: 0;
+  font-size: 13px;
+  color: #343434;
+}
+
+.signup-details-logo{
+  height: 55px;
+}
+
+.access-form-div, .user-data-form-div{
+  padding: 0px 30px 30px 30px;
+}
+
+.user-avatar-form-div{
+  padding: 0px 0px 30px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+app-user-avatar-form{
+  width: 100%;
+}

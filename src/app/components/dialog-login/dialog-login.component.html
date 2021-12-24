@@ -1,0 +1,18 @@
+<nb-card>
+  <nb-card-body>
+    <div class="login-header">
+      <img class="login-header-logo" src="assets/img/logo_img_colorized_b.png">
+      <p class="login-header-title">Login to Hi Web</p>
+      <p  class="login-header-subtitle">Login to Hi Web with email and password
+        or with your Google account.</p>
+    </div>
+    <app-access-form [signingMode]="false"
+                     (formSubmit)="loginWithEmailPassword($event.email, $event.password)"
+                     (loginWithGoogle)="loginWithGoogle()"
+                     (sendResetPasswordMail)="sendResetPasswordMail($event)"
+                     [loading]="logging"
+                     [accessErrorMessage]="logingErrorMessage"
+                     [resetEmailMessage]="resetEmailMessage"
+    ></app-access-form>
+  </nb-card-body>
+</nb-card>

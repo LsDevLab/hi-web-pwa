@@ -1,0 +1,93 @@
+<form (ngSubmit)="formSubmit.emit({name, sex, surname, bio, age: ''+age})" #formRef="ngForm">
+  <div class="signup-userdata-fields">
+    <nb-form-field>
+      <input type="text"
+             id="name"
+             name="name"
+             #nameField="ngModel"
+             shape="semi-round"
+             required
+             [disabled]="loading"
+             [status]="(!nameField.valid && nameField.touched) ? 'danger' : 'basic'"
+             status='basic'
+             nbInput
+             placeholder="Choose a name"
+             [(ngModel)]="name">
+      <button nbSuffix
+              nbButton
+              ghost
+              type="button">
+        <nb-icon icon="person-outline" pack="eva"></nb-icon>
+      </button>
+    </nb-form-field>
+    <nb-form-field>
+      <input type="text"
+             id="surname"
+             name="surname"
+             #surnameField="ngModel"
+             required
+             shape="semi-round"
+             [status]="(!surnameField.valid && surnameField.touched) ? 'danger' : 'basic'"
+             [disabled]="loading"
+             status='basic'
+             nbInput
+             placeholder="Choose a surname"
+             [(ngModel)]="surname">
+      <button nbSuffix
+              nbButton
+              ghost
+              type="button">
+        <nb-icon icon="person-outline" pack="eva"></nb-icon>
+      </button>
+    </nb-form-field>
+    <nb-form-field>
+      <input type="text"
+             id="bio"
+             name="bio"
+             #bioField="ngModel"
+             shape="semi-round"
+             [disabled]="loading"
+             status='basic'
+             nbInput
+             placeholder="Choose a biography"
+             [(ngModel)]="bio">
+      <button nbSuffix
+              nbButton
+              ghost
+              type="button">
+        <nb-icon icon="text-outline" pack="eva"></nb-icon>
+      </button>
+    </nb-form-field>
+    <nb-select placeholder="Sex"
+               fullWidth
+               [disabled]="loading"
+               shape="semi-round"
+               [(selected)]="sex">
+      <nb-option value="">No sex specified</nb-option>
+      <nb-option value="M">M</nb-option>
+      <nb-option value="F">F</nb-option>
+      <nb-option value="Other">Other</nb-option>
+    </nb-select>
+    <nb-form-field>
+      <nb-icon nbPrefix icon="hash-outline" pack="eva"></nb-icon>
+      <input #ageField="ngModel"
+             type="number"
+             placeholder="Age"
+             [disabled]="loading"
+             shape="semi-round"
+             nbInput
+             fullWidth
+             [(ngModel)]="age" >
+    </nb-form-field>
+  </div>
+  <div class="signup-userdata-buttons">
+    <button [disabled]="loading || !formRef.valid"
+            type="submit"
+            class="next-step-signup-button"
+            nbButton
+            status="primary"
+            shape="semi-round">
+      Save
+    </button>
+  </div>
+</form>

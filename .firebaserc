@@ -2,7 +2,7 @@
   "targets": {
     "hi-chat-bec8f": {
       "hosting": {
-        "project-hi": [
+        "hi-web-pwa": [
           "hi-chat-bec8f"
         ]
       }

@@ -9,7 +9,7 @@ import { ChatUiService } from '../../services/chat-ui.service';
 })
 export class DialogTargetInfoComponent implements OnInit {
 
-  loadingUserData: boolean = false;
+  loadingUserData = false;
   currentName: string;
 
   constructor(protected dialogRef: NbDialogRef<DialogTargetInfoComponent>, public chatUiService: ChatUiService) {
@@ -18,7 +18,7 @@ export class DialogTargetInfoComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  closeDialog(){
+  closeDialog(): void{
     this.dialogRef.close();
   }
 }
